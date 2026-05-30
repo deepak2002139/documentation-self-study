@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Interview Basics for Freshers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2230;
+    --bg4: #21262d;
+    --border: #30363d;
+    --border2: #444c56;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #6e7681;
+    --accent: #f97316;
+    --accent2: #fb923c;
+    --accent-dim: rgba(249,115,22,0.12);
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --purple: #d2a8ff;
+    --yellow: #e3b341;
+    --red: #f85149;
+    --pink: #f778ba;
+    --teal: #39d353;
+    --cyan: #79c0ff;
+    --sidebar-w: 280px;
+    --nav-h: 60px;
+    --card-radius: 12px;
+    --font: 'Sora', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  [data-theme="light"] {
+    --bg: #f8f9fa;
+    --bg2: #ffffff;
+    --bg3: #f1f3f5;
+    --bg4: #e9ecef;
+    --border: #d0d7de;
+    --border2: #c1c9d2;
+    --text: #1c2128;
+    --text2: #57606a;
+    --text3: #8c959f;
+    --accent: #e8590c;
+    --accent2: #f97316;
+    --accent-dim: rgba(232,89,12,0.1);
+    --blue: #0969da;
+    --green: #1a7f37;
+    --purple: #8250df;
+    --yellow: #9a6700;
+    --red: #cf222e;
+    --pink: #bf3989;
+    --teal: #1a7f37;
+    --cyan: #0550ae;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:80px}
+  body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;font-size:15px}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{color:var(--accent2)}
+  /* ── Progress Bar ─────────────────────────── */
+  #progress-bar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2),#fbbf24);z-index:9999;transition:width 0.1s linear;box-shadow:0 0 8px var(--accent)}
+  /* ── Navbar ───────────────────────────────── */
+  nav{position:fixed;top:3px;left:0;right:0;height:var(--nav-h);background:rgba(13,17,23,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:1000;display:flex;align-items:center;padding:0 1.5rem;gap:1rem}
+  [data-theme="light"] nav{background:rgba(248,249,250,0.92)}
+  .nav-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem;color:var(--text);white-space:nowrap}
+  .nav-brand .logo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+  .nav-search{flex:1;max-width:360px;position:relative;margin-left:auto}
+  .nav-search input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:7px 12px 7px 36px;border-radius:8px;font-family:var(--font);font-size:13px;outline:none;transition:border-color 0.2s}
+  .nav-search input:focus{border-color:var(--accent)}
+  .nav-search .s-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px}
+  .search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:10px;max-height:320px;overflow-y:auto;z-index:2000;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+  .search-results.show{display:block}
+  .search-item{padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);transition:background 0.15s}
+  .search-item:last-child{border-bottom:none}
+  .search-item:hover{background:var(--bg3)}
+  .search-item span{font-size:11px;color:var(--text3);display:block;margin-top:2px}
+  .nav-actions{display:flex;align-items:center;gap:8px;margin-left:1rem}
+  .btn-icon{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;flex-shrink:0}
+  .btn-icon:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+  .hamburger{display:none}
+  /* ── Layout ───────────────────────────────── */
+  .layout{display:flex;min-height:100vh;padding-top:var(--nav-h)}
+  /* ── Sidebar ──────────────────────────────── */
+  aside{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg);padding:1.25rem 0;transition:transform 0.3s}
+  aside .sidebar-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:0 1rem .5rem}
+  aside ul{list-style:none}
+  aside ul li a{display:block;padding:6px 1rem;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:all 0.15s;border-radius:0 6px 6px 0;margin-right:8px}
+  aside ul li a:hover,aside ul li a.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+  aside ul li.section-header a{font-weight:600;color:var(--text);font-size:12px;margin-top:6px}
+  /* ── Main Content ─────────────────────────── */
+  main{flex:1;min-width:0;padding:2rem 2.5rem 4rem}
+  @media(max-width:900px){main{padding:1.5rem 1.25rem 4rem}}
+  /* ── Hero ─────────────────────────────────── */
+  .hero{text-align:center;padding:3rem 1rem 2.5rem;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(249,115,22,0.15) 0%,transparent 65%);pointer-events:none}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-dim);border:1px solid rgba(249,115,22,0.3);color:var(--accent);padding:5px 14px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:.05em;margin-bottom:1.25rem}
+  .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.2;margin-bottom:1rem;letter-spacing:-0.02em}
+  .hero h1 span{color:var(--accent)}
+  .hero p{font-size:1.05rem;color:var(--text2);max-width:600px;margin:0 auto 2rem}
+  .hero-stats{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+  .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:.75rem 1.25rem;text-align:center;min-width:100px}
+  .stat .n{font-size:1.5rem;font-weight:700;color:var(--accent)}
+  .stat .l{font-size:12px;color:var(--text3)}
+  /* ── Section ──────────────────────────────── */
+  .section{margin-bottom:3.5rem}
+  .section-header-block{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+  .section-num{font-family:var(--mono);font-size:12px;color:var(--accent);background:var(--accent-dim);border:1px solid rgba(249,115,22,0.25);padding:3px 8px;border-radius:5px;font-weight:600;flex-shrink:0}
+  .section h2{font-size:1.5rem;font-weight:700;color:var(--text)}
+  /* ── Cards ────────────────────────────────── */
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem 1.5rem;margin-bottom:1rem;transition:border-color .2s}
+  .card:hover{border-color:var(--border2)}
+  .card h3{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+  .card p{color:var(--text2);font-size:.9rem;line-height:1.7}
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1rem}
+  .feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem;transition:all .2s;cursor:default}
+  .feature-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(249,115,22,0.12)}
+  .feature-card .icon{font-size:1.5rem;margin-bottom:.5rem}
+  .feature-card h4{font-size:.9rem;font-weight:600;margin-bottom:.35rem;color:var(--text)}
+  .feature-card p{font-size:.82rem;color:var(--text2);line-height:1.6}
+  /* ── Code Blocks ──────────────────────────── */
+  .code-block{position:relative;margin:1rem 0;border-radius:var(--card-radius);overflow:hidden;border:1px solid var(--border)}
+  .code-header{background:var(--bg3);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .code-lang{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.05em}
+  .copy-btn{background:transparent;border:1px solid var(--border);color:var(--text3);padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font);transition:all .2s;display:flex;align-items:center;gap:4px}
+  .copy-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+  .copy-btn.copied{color:var(--green);border-color:var(--green)}
+  pre{background:var(--bg3);padding:1.25rem 1.5rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.7;margin:0}
+  .kw{color:var(--purple)}
+  .ty{color:var(--cyan)}
+  .fn{color:var(--blue)}
+  .st{color:var(--yellow)}
+  .cm{color:var(--text3);font-style:italic}
+  .nm{color:var(--green)}
+  .op{color:var(--pink)}
+  .an{color:var(--teal)}
+  /* ── Interview Tips ───────────────────────── */
+  .tip-box{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 var(--card-radius) var(--card-radius) 0;padding:1rem 1.25rem;margin:.75rem 0}
+  .tip-box.info{border-left-color:var(--blue)}
+  .tip-box.success{border-left-color:var(--green)}
+  .tip-box.warn{border-left-color:var(--yellow)}
+  .tip-box .tip-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
+  .tip-box.info .tip-label{color:var(--blue)}
+  .tip-box.success .tip-label{color:var(--green)}
+  .tip-box.warn .tip-label{color:var(--yellow)}
+  .tip-box .tip-label{color:var(--accent)}
+  .tip-box p,.tip-box ul{color:var(--text2);font-size:.87rem;line-height:1.7}
+  .tip-box ul{padding-left:1.25rem}
+  .tip-box ul li{margin-bottom:.2rem}
+  /* ── Tables ───────────────────────────────── */
+  .table-wrap{overflow-x:auto;margin:.75rem 0;border-radius:var(--card-radius);border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th{background:var(--bg3);padding:.65rem 1rem;text-align:left;font-weight:600;color:var(--text);border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:.65rem 1rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:var(--bg3)}
+  td code,th code{font-family:var(--mono);font-size:.8rem;background:var(--bg4);padding:1px 5px;border-radius:4px;color:var(--accent)}
+  /* ── Badges ───────────────────────────────── */
+  .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;font-family:var(--mono)}
+  .badge-orange{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(249,115,22,.25)}
+  .badge-blue{background:rgba(88,166,255,.1);color:var(--blue);border:1px solid rgba(88,166,255,.2)}
+  .badge-green{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.2)}
+  .badge-purple{background:rgba(210,168,255,.1);color:var(--purple);border:1px solid rgba(210,168,255,.2)}
+  /* ── OOP Cards ────────────────────────────── */
+  .oop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+  .oop-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem;transition:all .2s}
+  .oop-card:hover{border-color:var(--accent);box-shadow:0 0 20px rgba(249,115,22,0.08)}
+  .oop-card .oop-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-dim);border:1px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.75rem}
+  .oop-card h4{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+  .oop-card p{font-size:.83rem;color:var(--text2);line-height:1.65}
+  .oop-card .analogy{margin-top:.75rem;padding:.5rem .75rem;background:var(--bg3);border-radius:6px;font-size:.8rem;color:var(--text3);border-left:2px solid var(--accent)}
+  /* ── FAQ ──────────────────────────────────── */
+  .faq-item{border:1px solid var(--border);border-radius:var(--card-radius);margin-bottom:.6rem;overflow:hidden}
+  .faq-q{padding:1rem 1.25rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:500;color:var(--text);font-size:.93rem;user-select:none;background:var(--bg2);transition:background .2s}
+  .faq-q:hover{background:var(--bg3)}
+  .faq-q .arr{color:var(--text3);transition:transform .2s;font-style:normal;font-size:1.1rem}
+  .faq-q.open .arr{transform:rotate(180deg)}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .faq-a.open{max-height:600px}
+  .faq-a-inner{padding:.75rem 1.25rem 1.25rem;color:var(--text2);font-size:.88rem;line-height:1.7;background:var(--bg2);border-top:1px solid var(--border)}
+  /* ── Comparison Card ──────────────────────── */
+  .vs-container{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:start;margin:.75rem 0}
+  .vs-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem}
+  .vs-card h4{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+  .vs-card ul{list-style:none;padding:0}
+  .vs-card ul li{font-size:.83rem;color:var(--text2);padding:.3rem 0;border-bottom:1px solid var(--border);padding-left:1rem;position:relative}
+  .vs-card ul li::before{content:'→';position:absolute;left:0;color:var(--accent);font-size:.8rem}
+  .vs-card ul li:last-child{border-bottom:none}
+  .vs-sep{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.5rem;margin-top:2.5rem}
+  /* ── Tips Section ─────────────────────────── */
+  .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+  .tips-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem}
+  .tips-card h4{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+  .tips-card ul{list-style:none;padding:0}
+  .tips-card ul li{font-size:.83rem;color:var(--text2);padding:.25rem 0;padding-left:1.2rem;position:relative}
+  .tips-card ul li::before{content:'✓';position:absolute;left:0;color:var(--green)}
+  /* ── Programs ─────────────────────────────── */
+  .programs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1.25rem}
+  /* ── Complexity Table ─────────────────────── */
+  .complexity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+  .complexity-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center}
+  .complexity-card .big{font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--accent);margin:.3rem 0}
+  .complexity-card .name{font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:.2rem}
+  .complexity-card .desc{font-size:.78rem;color:var(--text3)}
+  .complexity-card .speed{font-size:.78rem;margin-top:.4rem;padding:2px 8px;border-radius:100px;display:inline-block}
+  .speed-fast{background:rgba(63,185,80,.1);color:var(--green)}
+  .speed-ok{background:rgba(227,179,65,.1);color:var(--yellow)}
+  .speed-slow{background:rgba(248,81,73,.1);color:var(--red)}
+  /* ── Footer ───────────────────────────────── */
+  footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem}
+  footer .footer-logo{font-size:1.5rem;font-weight:700;color:var(--text);margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:.5rem}
+  footer .footer-logo span{color:var(--accent)}
+  footer p{color:var(--text3);font-size:.85rem;line-height:1.8}
+  footer .footer-links{display:flex;gap:1.5rem;justify-content:center;margin:1rem 0;flex-wrap:wrap}
+  footer .footer-links a{color:var(--text2);font-size:.85rem;transition:color .2s}
+  footer .footer-links a:hover{color:var(--accent)}
+  footer .footer-tags{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  /* ── Inline code ──────────────────────────── */
+  code{font-family:var(--mono);font-size:.82em;background:var(--bg4);padding:2px 6px;border-radius:4px;color:var(--accent)}
+  /* ── Inline list improvements ─────────────── */
+  .styled-list{padding-left:1.3rem;color:var(--text2);font-size:.9rem}
+  .styled-list li{margin-bottom:.35rem;line-height:1.65}
+  .styled-list li strong{color:var(--text);font-weight:600}
+  /* ── Back to Top ──────────────────────────── */
+  #back-top{position:fixed;bottom:1.5rem;right:1.5rem;width:40px;height:40px;background:var(--accent);color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:1.1rem;z-index:999;display:none;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(249,115,22,.4);transition:all .2s}
+  #back-top.show{display:flex}
+  #back-top:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(249,115,22,.5)}
+  /* ── Responsive ───────────────────────────── */
+  @media(max-width:900px){
+    aside{position:fixed;top:0;left:0;bottom:0;z-index:900;transform:translateX(-100%);padding-top:calc(var(--nav-h)+3px);width:260px;border-right:1px solid var(--border)}
+    aside.open{transform:translateX(0)}
+    .hamburger{display:flex}
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:none}
+    .sidebar-overlay.show{display:block}
+    .vs-container{grid-template-columns:1fr;gap:.5rem}
+    .vs-sep{margin-top:0}
+  }
+  @media(max-width:600px){.hero h1{font-size:1.8rem}.nav-search{max-width:160px}.programs-grid{grid-template-columns:1fr}}
+  /* ── Animations ───────────────────────────── */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .section{animation:fadeUp .4s ease both}
+  .section:nth-child(2){animation-delay:.05s}
+  .section:nth-child(3){animation-delay:.1s}
+  /* ── Highlight match ──────────────────────── */
+  .highlight-match{background:rgba(249,115,22,.25);border-radius:3px;padding:0 2px}
+</style>
+</head>
+<body>
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Navbar -->
+<nav>
+  <div class="nav-brand">
+    <div class="logo">☕</div>
+    <span>Java<span style="color:var(--accent)">Prep</span></span>
+  </div>
+  <div class="nav-search">
+    <span class="s-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search topics…" autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-icon hamburger" id="hamburgerBtn" title="Menu" onclick="toggleSidebar()">☰</button>
+    <button class="btn-icon" id="themeBtn" title="Toggle theme" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+
+<!-- Layout -->
+<div class="layout">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <p class="sidebar-title">Navigation</p>
+    <ul id="sidebarNav">
+      <li><a href="#intro">1. Introduction</a></li>
+      <li><a href="#features">2. Features of Java</a></li>
+      <li><a href="#jvm-jre-jdk">3. JVM, JRE & JDK</a></li>
+      <li><a href="#how-java-works">4. How Java Works</a></li>
+      <li><a href="#data-types">5. Data Types</a></li>
+      <li><a href="#variables">6. Variables & Scope</a></li>
+      <li><a href="#operators">7. Operators</a></li>
+      <li><a href="#conditionals">8. Conditionals</a></li>
+      <li><a href="#loops">9. Loops</a></li>
+      <li><a href="#arrays">10. Arrays</a></li>
+      <li><a href="#strings">11. Strings</a></li>
+      <li class="section-header"><a href="#oop">OOP Concepts</a></li>
+      <li><a href="#class-object">12. Class & Object</a></li>
+      <li><a href="#encapsulation">13. Encapsulation</a></li>
+      <li><a href="#inheritance">14. Inheritance</a></li>
+      <li><a href="#polymorphism">15. Polymorphism</a></li>
+      <li><a href="#abstraction">16. Abstraction</a></li>
+      <li class="section-header"><a href="#keywords">Java Keywords</a></li>
+      <li><a href="#constructors">17. Constructors</a></li>
+      <li><a href="#this-super">18. this & super</a></li>
+      <li><a href="#static">19. Static Keyword</a></li>
+      <li><a href="#final">20. Final Keyword</a></li>
+      <li><a href="#access-modifiers">21. Access Modifiers</a></li>
+      <li class="section-header"><a href="#advanced">Advanced Topics</a></li>
+      <li><a href="#overloading-overriding">22. Overloading vs Overriding</a></li>
+      <li><a href="#interface-abstract">23. Interface vs Abstract</a></li>
+      <li><a href="#exceptions">24. Exception Handling</a></li>
+      <li><a href="#collections">25. Collections</a></li>
+      <li><a href="#arraylist-linkedlist">26. ArrayList vs LinkedList</a></li>
+      <li><a href="#hashmap">27. HashMap</a></li>
+      <li><a href="#threads">28. Multithreading</a></li>
+      <li><a href="#sync">29. Synchronization</a></li>
+      <li><a href="#gc">30. Garbage Collection</a></li>
+      <li class="section-header"><a href="#java8">Java 8 Features</a></li>
+      <li><a href="#lambda">31. Lambda Expressions</a></li>
+      <li><a href="#streams">32. Stream API</a></li>
+      <li><a href="#functional">33. Functional Interfaces</a></li>
+      <li class="section-header"><a href="#programs">Programs</a></li>
+      <li><a href="#programs">34. Important Programs</a></li>
+      <li><a href="#interview-qa">35. Interview Q&A</a></li>
+      <li><a href="#coding-tips">36. Coding Tips</a></li>
+      <li><a href="#time-complexity">37. Time Complexity</a></li>
+      <li><a href="#best-practices">38. Best Practices</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main -->
+  <main>
+    <!-- Hero -->
+    <div class="hero" id="home">
+      <div class="hero-badge">☕ Freshers Edition · 2024</div>
+      <h1>Java Interview<br><span>Basics</span> Mastered</h1>
+      <p>Everything you need to crack your Java interviews — explained simply, with examples, code, and real-world analogies.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="n">38</div><div class="l">Topics</div></div>
+        <div class="stat"><div class="n">60+</div><div class="l">Code Examples</div></div>
+        <div class="stat"><div class="n">30+</div><div class="l">Interview Q&A</div></div>
+        <div class="stat"><div class="n">6</div><div class="l">Programs</div></div>
+      </div>
+    </div>
+
+    <!-- 1. Introduction -->
+    <div class="section" id="intro">
+      <div class="section-header-block">
+        <span class="section-num">01</span>
+        <h2>Introduction to Java</h2>
+      </div>
+      <div class="card">
+        <p>Java is a <strong>high-level, object-oriented, platform-independent programming language</strong> created by <strong>James Gosling</strong> at Sun Microsystems in <strong>1995</strong>. The key philosophy: <em>"Write Once, Run Anywhere" (WORA)</em> — you write Java code once and it runs on any device that has a JVM.</p>
+      </div>
+      <div class="cards-grid">
+        <div class="feature-card">
+          <div class="icon">📅</div>
+          <h4>Year Born</h4>
+          <p>Released in 1995. Originally called "Oak", later renamed Java.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🌐</div>
+          <h4>Platform Independent</h4>
+          <p>Compiles to bytecode that runs on any OS with JVM installed.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🏢</div>
+          <h4>Widely Used</h4>
+          <p>Used in Android apps, banking systems, enterprise software, and more.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🛡️</div>
+          <h4>Strongly Typed</h4>
+          <p>Every variable must be declared with a type. Prevents many bugs.</p>
+        </div>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Hello World</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">public class</span> <span class="ty">HelloWorld</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Hello, World!"</span>); <span class="cm">// Output: Hello, World!</span>
+    }
+}</pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li>Java is <strong>not 100% object-oriented</strong> because it has primitive data types (int, char, etc.)</li>
+          <li>Java is <strong>compiled AND interpreted</strong> — source code → bytecode (compiler) → machine code (JVM)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. Features -->
+    <div class="section" id="features">
+      <div class="section-header-block">
+        <span class="section-num">02</span>
+        <h2>Features of Java</h2>
+      </div>
+      <div class="cards-grid">
+        <div class="feature-card"><div class="icon">✍️</div><h4>Simple</h4><p>Clean syntax, no pointers, no manual memory management.</p></div>
+        <div class="feature-card"><div class="icon">🧱</div><h4>Object-Oriented</h4><p>Everything is modeled as objects with properties and behaviors.</p></div>
+        <div class="feature-card"><div class="icon">🌍</div><h4>Platform Independent</h4><p>Bytecode runs on any JVM, regardless of OS.</p></div>
+        <div class="feature-card"><div class="icon">🔒</div><h4>Secure</h4><p>No explicit pointers; built-in security manager.</p></div>
+        <div class="feature-card"><div class="icon">💪</div><h4>Robust</h4><p>Strong type-checking + exception handling = fewer crashes.</p></div>
+        <div class="feature-card"><div class="icon">🧵</div><h4>Multithreaded</h4><p>Can run multiple tasks simultaneously using threads.</p></div>
+        <div class="feature-card"><div class="icon">⚡</div><h4>High Performance</h4><p>JIT (Just-In-Time) compiler speeds up execution at runtime.</p></div>
+        <div class="feature-card"><div class="icon">🔄</div><h4>Dynamic</h4><p>Supports dynamic loading of classes and interfaces at runtime.</p></div>
+      </div>
+    </div>
+
+    <!-- 3. JVM JRE JDK -->
+    <div class="section" id="jvm-jre-jdk">
+      <div class="section-header-block">
+        <span class="section-num">03</span>
+        <h2>JVM, JRE, and JDK</h2>
+      </div>
+      <div class="tip-box info">
+        <div class="tip-label">🧠 Real World Analogy</div>
+        <p>Think of it like a car: <strong>JVM</strong> = the engine, <strong>JRE</strong> = the full car (engine + body), <strong>JDK</strong> = the full car + the factory to build more cars.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Full Name</th><th>What It Does</th><th>Who Needs It</th></tr></thead>
+          <tbody>
+            <tr><td><code>JVM</code></td><td>Java Virtual Machine</td><td>Executes bytecode on your machine</td><td>Everyone running Java</td></tr>
+            <tr><td><code>JRE</code></td><td>Java Runtime Environment</td><td>JVM + libraries needed to run Java apps</td><td>End users running Java apps</td></tr>
+            <tr><td><code>JDK</code></td><td>Java Development Kit</td><td>JRE + compiler + debugging tools</td><td>Developers writing Java code</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>📦 Containment Relationship</h3>
+        <p>JDK ⊇ JRE ⊇ JVM — The JDK contains everything. Install JDK when you're developing, JRE when you're just running.</p>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <p>JVM is <strong>platform-dependent</strong> (different JVM for Windows, Mac, Linux), but Java bytecode is <strong>platform-independent</strong>. That's the WORA magic.</p>
+      </div>
+    </div>
+
+    <!-- 4. How Java Works -->
+    <div class="section" id="how-java-works">
+      <div class="section-header-block">
+        <span class="section-num">04</span>
+        <h2>How Java Works</h2>
+      </div>
+      <div class="card">
+        <h3>Step-by-Step Execution</h3>
+        <ol class="styled-list">
+          <li><strong>Write:</strong> You write <code>.java</code> source code</li>
+          <li><strong>Compile:</strong> <code>javac</code> compiler converts it to <code>.class</code> bytecode</li>
+          <li><strong>Load:</strong> ClassLoader loads the bytecode into JVM</li>
+          <li><strong>Verify:</strong> Bytecode verifier checks for security issues</li>
+          <li><strong>Execute:</strong> JVM interprets bytecode (or JIT compiles it to native code)</li>
+        </ol>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TERMINAL — Compile & Run</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm"># Step 1: Compile Java source to bytecode</span>
+javac HelloWorld.java      <span class="cm"># Creates HelloWorld.class</span>
+
+<span class="cm"># Step 2: Run using JVM</span>
+java HelloWorld            <span class="cm"># Output: Hello, World!</span></pre>
+      </div>
+    </div>
+
+    <!-- 5. Data Types -->
+    <div class="section" id="data-types">
+      <div class="section-header-block">
+        <span class="section-num">05</span>
+        <h2>Data Types in Java</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Size</th><th>Range / Default</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>byte</code></td><td>1 byte</td><td>-128 to 127</td><td><code>byte b = 10;</code></td></tr>
+            <tr><td><code>short</code></td><td>2 bytes</td><td>-32,768 to 32,767</td><td><code>short s = 5000;</code></td></tr>
+            <tr><td><code>int</code></td><td>4 bytes</td><td>-2³¹ to 2³¹-1 / 0</td><td><code>int i = 100;</code></td></tr>
+            <tr><td><code>long</code></td><td>8 bytes</td><td>-2⁶³ to 2⁶³-1</td><td><code>long l = 100L;</code></td></tr>
+            <tr><td><code>float</code></td><td>4 bytes</td><td>6-7 decimal digits</td><td><code>float f = 3.14f;</code></td></tr>
+            <tr><td><code>double</code></td><td>8 bytes</td><td>15 decimal digits / 0.0</td><td><code>double d = 3.14;</code></td></tr>
+            <tr><td><code>char</code></td><td>2 bytes</td><td>'\u0000' to '\uffff'</td><td><code>char c = 'A';</code></td></tr>
+            <tr><td><code>boolean</code></td><td>1 bit</td><td>true / false</td><td><code>boolean b = true;</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Data Types Example</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">public class</span> <span class="ty">DataTypes</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="kw">int</span> age = <span class="nm">25</span>;
+        <span class="kw">double</span> salary = <span class="nm">45000.50</span>;
+        <span class="kw">char</span> grade = <span class="st">'A'</span>;
+        <span class="kw">boolean</span> isActive = <span class="kw">true</span>;
+        <span class="ty">String</span> name = <span class="st">"Deepak"</span>;  <span class="cm">// String is a class, not primitive</span>
+
+        <span class="ty">System</span>.out.<span class="fn">println</span>(name + <span class="st">" is "</span> + age + <span class="st">" years old."</span>);
+    }
+}</pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Points</div>
+        <ul class="styled-list">
+          <li><strong>Primitive types</strong> store actual values; <strong>Reference types</strong> store memory addresses</li>
+          <li><code>String</code> is not a primitive — it's a class (Reference type)</li>
+          <li>Default value of <code>int</code> is <code>0</code>, <code>boolean</code> is <code>false</code>, objects are <code>null</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 6. Variables -->
+    <div class="section" id="variables">
+      <div class="section-header-block">
+        <span class="section-num">06</span>
+        <h2>Variables and Scope</h2>
+      </div>
+      <div class="cards-grid">
+        <div class="feature-card"><div class="icon">📦</div><h4>Local Variable</h4><p>Declared inside a method. Only accessible within that method. No default value.</p></div>
+        <div class="feature-card"><div class="icon">🏠</div><h4>Instance Variable</h4><p>Declared inside a class but outside methods. Each object gets its own copy.</p></div>
+        <div class="feature-card"><div class="icon">🌐</div><h4>Static Variable</h4><p>Declared with <code>static</code> keyword. Shared by all objects of the class.</p></div>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Variable Types</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">public class</span> <span class="ty">Student</span> {
+    <span class="kw">static int</span> schoolId = <span class="nm">101</span>;    <span class="cm">// Static variable - shared</span>
+    <span class="kw">int</span> rollNumber;                 <span class="cm">// Instance variable - per object</span>
+
+    <span class="kw">void</span> <span class="fn">study</span>() {
+        <span class="kw">int</span> hours = <span class="nm">5</span>;               <span class="cm">// Local variable - only here</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Studying "</span> + hours + <span class="st">" hours"</span>);
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- 7. Operators -->
+    <div class="section" id="operators">
+      <div class="section-header-block">
+        <span class="section-num">07</span>
+        <h2>Operators in Java</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Operators</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Arithmetic</td><td><code>+ - * / % ++ --</code></td><td><code>a + b, a++</code></td></tr>
+            <tr><td>Relational</td><td><code>== != &gt; &lt; &gt;= &lt;=</code></td><td><code>a == b, a &gt; b</code></td></tr>
+            <tr><td>Logical</td><td><code>&amp;&amp; || !</code></td><td><code>a&amp;&amp;b, !a</code></td></tr>
+            <tr><td>Assignment</td><td><code>= += -= *= /= %=</code></td><td><code>a += 5</code></td></tr>
+            <tr><td>Bitwise</td><td><code>&amp; | ^ ~ &lt;&lt; &gt;&gt;</code></td><td><code>a &amp; b, a &lt;&lt; 2</code></td></tr>
+            <tr><td>Ternary</td><td><code>condition ? t : f</code></td><td><code>max = a&gt;b ? a : b</code></td></tr>
+            <tr><td>instanceof</td><td><code>instanceof</code></td><td><code>obj instanceof String</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Ternary & Common Operators</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">int</span> a = <span class="nm">10</span>, b = <span class="nm">20</span>;
+
+<span class="cm">// Ternary — like an if-else in one line</span>
+<span class="kw">int</span> max = (a > b) ? a : b;        <span class="cm">// max = 20</span>
+
+<span class="cm">// Post-increment vs Pre-increment</span>
+<span class="kw">int</span> x = <span class="nm">5</span>;
+<span class="ty">System</span>.out.<span class="fn">println</span>(x++);   <span class="cm">// Prints 5, then x becomes 6</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(++x);   <span class="cm">// x becomes 7, then prints 7</span></pre>
+      </div>
+    </div>
+
+    <!-- 8. Conditionals -->
+    <div class="section" id="conditionals">
+      <div class="section-header-block">
+        <span class="section-num">08</span>
+        <h2>Conditional Statements</h2>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — if-else & switch</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">int</span> marks = <span class="nm">85</span>;
+
+<span class="cm">// if-else chain</span>
+<span class="kw">if</span> (marks >= <span class="nm">90</span>) {
+    <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Grade A+"</span>);
+} <span class="kw">else if</span> (marks >= <span class="nm">80</span>) {
+    <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Grade A"</span>);  <span class="cm">// ← This runs</span>
+} <span class="kw">else</span> {
+    <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Grade B"</span>);
+}
+
+<span class="cm">// switch — best for fixed discrete values</span>
+<span class="kw">int</span> day = <span class="nm">3</span>;
+<span class="kw">switch</span> (day) {
+    <span class="kw">case</span> <span class="nm">1</span>: <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Monday"</span>); <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="nm">2</span>: <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Tuesday"</span>); <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="nm">3</span>: <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Wednesday"</span>); <span class="kw">break</span>; <span class="cm">// ← Runs</span>
+    <span class="kw">default</span>: <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Other"</span>);
+}</pre>
+      </div>
+      <div class="tip-box warn">
+        <div class="tip-label">⚠️ Watch Out</div>
+        <p>Always use <code>break</code> in switch cases to avoid <strong>fall-through</strong> (executing subsequent cases unintentionally).</p>
+      </div>
+    </div>
+
+    <!-- 9. Loops -->
+    <div class="section" id="loops">
+      <div class="section-header-block">
+        <span class="section-num">09</span>
+        <h2>Loops</h2>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — All Loop Types</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm">// 1. for loop — when you know the count</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i < <span class="nm">5</span>; i++) {
+    <span class="ty">System</span>.out.<span class="fn">print</span>(i + <span class="st">" "</span>); <span class="cm">// 0 1 2 3 4</span>
+}
+
+<span class="cm">// 2. while loop — when condition-based</span>
+<span class="kw">int</span> n = <span class="nm">1</span>;
+<span class="kw">while</span> (n <= <span class="nm">5</span>) {
+    <span class="ty">System</span>.out.<span class="fn">print</span>(n + <span class="st">" "</span>); <span class="cm">// 1 2 3 4 5</span>
+    n++;
+}
+
+<span class="cm">// 3. do-while — runs at LEAST once</span>
+<span class="kw">int</span> x = <span class="nm">10</span>;
+<span class="kw">do</span> {
+    <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Runs once even if false!"</span>);
+    x++;
+} <span class="kw">while</span> (x < <span class="nm">5</span>); <span class="cm">// condition false but runs once</span>
+
+<span class="cm">// 4. Enhanced for loop (for-each)</span>
+<span class="kw">int</span>[] nums = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>};
+<span class="kw">for</span> (<span class="kw">int</span> num : nums) {
+    <span class="ty">System</span>.out.<span class="fn">print</span>(num + <span class="st">" "</span>);
+}</pre>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Loop</th><th>Best Used When</th><th>Executes at least once?</th></tr></thead>
+          <tbody>
+            <tr><td><code>for</code></td><td>Number of iterations is known</td><td>No</td></tr>
+            <tr><td><code>while</code></td><td>Condition-based, count unknown</td><td>No</td></tr>
+            <tr><td><code>do-while</code></td><td>Must execute body at least once</td><td>Yes ✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 10. Arrays -->
+    <div class="section" id="arrays">
+      <div class="section-header-block">
+        <span class="section-num">10</span>
+        <h2>Arrays</h2>
+      </div>
+      <div class="card">
+        <p>An array stores a <strong>fixed-size</strong> collection of elements of the <strong>same type</strong>. Index starts at <strong>0</strong>.</p>
+        <p style="margin-top:.5rem">🔑 <em>Analogy: A row of numbered mailboxes — each box holds one letter and is identified by its number.</em></p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Arrays</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm">// Declaration and initialization</span>
+<span class="kw">int</span>[] nums = {<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>};
+
+<span class="cm">// Access by index</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(nums[<span class="nm">0</span>]);  <span class="cm">// 10</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(nums[<span class="nm">4</span>]);  <span class="cm">// 50</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(nums.length); <span class="cm">// 5</span>
+
+<span class="cm">// 2D Array (matrix)</span>
+<span class="kw">int</span>[][] matrix = {{<span class="nm">1</span>,<span class="nm">2</span>},{<span class="nm">3</span>,<span class="nm">4</span>},{<span class="nm">5</span>,<span class="nm">6</span>}};
+<span class="ty">System</span>.out.<span class="fn">println</span>(matrix[<span class="nm">1</span>][<span class="nm">0</span>]); <span class="cm">// 3</span>
+
+<span class="cm">// Useful: Arrays.sort()</span>
+<span class="ty">java.util.Arrays</span>.<span class="fn">sort</span>(nums);  <span class="cm">// sorts in-place</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <p>Arrays are <strong>fixed-size</strong>. If you need dynamic resizing, use <code>ArrayList</code>. Arrays can cause <code>ArrayIndexOutOfBoundsException</code> if you access an invalid index.</p>
+      </div>
+    </div>
+
+    <!-- 11. Strings -->
+    <div class="section" id="strings">
+      <div class="section-header-block">
+        <span class="section-num">11</span>
+        <h2>Strings and String Methods</h2>
+      </div>
+      <div class="card">
+        <p>Strings in Java are <strong>immutable</strong> — once created, they cannot be changed. Any operation on a String creates a new String object.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Method</th><th>What It Does</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>length()</code></td><td>Returns string length</td><td><code>"Java".length() → 4</code></td></tr>
+            <tr><td><code>charAt(i)</code></td><td>Character at index i</td><td><code>"Java".charAt(0) → 'J'</code></td></tr>
+            <tr><td><code>substring(i,j)</code></td><td>Extracts portion</td><td><code>"Java".substring(1,3) → "av"</code></td></tr>
+            <tr><td><code>toUpperCase()</code></td><td>Converts to uppercase</td><td><code>"java".toUpperCase() → "JAVA"</code></td></tr>
+            <tr><td><code>toLowerCase()</code></td><td>Converts to lowercase</td><td><code>"JAVA".toLowerCase() → "java"</code></td></tr>
+            <tr><td><code>trim()</code></td><td>Removes leading/trailing spaces</td><td><code>" hi ".trim() → "hi"</code></td></tr>
+            <tr><td><code>equals(s)</code></td><td>Content comparison</td><td><code>"a".equals("a") → true</code></td></tr>
+            <tr><td><code>contains(s)</code></td><td>Checks if substring exists</td><td><code>"Java".contains("av") → true</code></td></tr>
+            <tr><td><code>replace(a,b)</code></td><td>Replaces occurrences</td><td><code>"java".replace('a','o') → "jovo"</code></td></tr>
+            <tr><td><code>split(regex)</code></td><td>Splits into array</td><td><code>"a,b".split(",") → ["a","b"]</code></td></tr>
+            <tr><td><code>indexOf(s)</code></td><td>First occurrence index</td><td><code>"java".indexOf('a') → 1</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — String vs StringBuilder</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm">// String — immutable, thread-safe</span>
+<span class="ty">String</span> s1 = <span class="st">"Hello"</span>;
+<span class="ty">String</span> s2 = s1 + <span class="st">" World"</span>; <span class="cm">// New object created</span>
+
+<span class="cm">// StringBuilder — mutable, faster for concatenation</span>
+<span class="ty">StringBuilder</span> sb = <span class="kw">new</span> <span class="ty">StringBuilder</span>(<span class="st">"Hello"</span>);
+sb.<span class="fn">append</span>(<span class="st">" World"</span>);        <span class="cm">// Modifies in place — efficient</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(sb.<span class="fn">toString</span>()); <span class="cm">// Hello World</span>
+
+<span class="cm">// == vs equals() — VERY important!</span>
+<span class="ty">String</span> a = <span class="st">"Java"</span>;
+<span class="ty">String</span> b = <span class="st">"Java"</span>;
+<span class="ty">String</span> c = <span class="kw">new</span> <span class="ty">String</span>(<span class="st">"Java"</span>);
+<span class="ty">System</span>.out.<span class="fn">println</span>(a == b);       <span class="cm">// true  (same pool reference)</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(a == c);       <span class="cm">// false (different object)</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(a.<span class="fn">equals</span>(c));  <span class="cm">// true  (same content)</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li>Always use <code>.equals()</code> to compare String content, NOT <code>==</code></li>
+          <li><code>String</code> is stored in the <strong>String Pool</strong> (heap memory optimization)</li>
+          <li><code>StringBuilder</code> (not thread-safe) is faster than <code>StringBuffer</code> (thread-safe)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- OOP Section -->
+    <div class="section" id="oop">
+      <div class="section-header-block">
+        <span class="section-num">OOP</span>
+        <h2>Object-Oriented Programming</h2>
+      </div>
+      <div class="oop-grid">
+        <div class="oop-card"><div class="oop-icon">🧱</div><h4>Encapsulation</h4><p>Wrapping data and methods into a single unit (class). Hide internal details using private fields.</p><div class="analogy">📦 Like a medicine capsule — ingredients hidden inside</div></div>
+        <div class="oop-card"><div class="oop-icon">🧬</div><h4>Inheritance</h4><p>A class acquires properties from another class using <code>extends</code>.</p><div class="analogy">👨‍👧 Child inherits traits from parent</div></div>
+        <div class="oop-card"><div class="oop-icon">🎭</div><h4>Polymorphism</h4><p>One name, many forms. Same method behaves differently based on context.</p><div class="analogy">🎸 Same guitarist plays different genres differently</div></div>
+        <div class="oop-card"><div class="oop-icon">🕶️</div><h4>Abstraction</h4><p>Show only essential details, hide complexity using abstract classes or interfaces.</p><div class="analogy">📱 You use a phone without knowing circuit details</div></div>
+      </div>
+    </div>
+
+    <!-- 12. Class & Object -->
+    <div class="section" id="class-object">
+      <div class="section-header-block">
+        <span class="section-num">12</span>
+        <h2>Class and Object</h2>
+      </div>
+      <div class="card">
+        <p><strong>Class</strong> = Blueprint (e.g., car design). <strong>Object</strong> = Instance (e.g., an actual car built from that design). You can create many objects from one class.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Class and Object</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm">// Class definition = blueprint</span>
+<span class="kw">class</span> <span class="ty">Car</span> {
+    <span class="ty">String</span> brand;   <span class="cm">// Instance variable (attribute)</span>
+    <span class="kw">int</span> speed;
+
+    <span class="kw">void</span> <span class="fn">drive</span>() { <span class="cm">// Method (behavior)</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(brand + <span class="st">" driving at "</span> + speed + <span class="st">" km/h"</span>);
+    }
+}
+
+<span class="kw">public class</span> <span class="ty">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">Car</span> myCar = <span class="kw">new</span> <span class="ty">Car</span>();  <span class="cm">// Object created using 'new'</span>
+        myCar.brand = <span class="st">"Toyota"</span>;
+        myCar.speed = <span class="nm">120</span>;
+        myCar.<span class="fn">drive</span>(); <span class="cm">// Toyota driving at 120 km/h</span>
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- 13. Encapsulation -->
+    <div class="section" id="encapsulation">
+      <div class="section-header-block">
+        <span class="section-num">13</span>
+        <h2>Encapsulation</h2>
+      </div>
+      <div class="card">
+        <p>Make fields <code>private</code> and expose them through <code>public</code> getters/setters. This gives controlled access and protects data integrity.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Encapsulation</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">class</span> <span class="ty">BankAccount</span> {
+    <span class="kw">private double</span> balance;  <span class="cm">// Hidden from outside</span>
+
+    <span class="kw">public double</span> <span class="fn">getBalance</span>() {
+        <span class="kw">return</span> balance;      <span class="cm">// Controlled read</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount > <span class="nm">0</span>) balance += amount;  <span class="cm">// Validated write</span>
+    }
+}</pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <p>Encapsulation achieves <strong>data hiding</strong>. Benefits: security, flexibility to change implementation, validation in setters. A fully encapsulated class is called a <strong>POJO</strong> (Plain Old Java Object).</p>
+      </div>
+    </div>
+
+    <!-- 14. Inheritance -->
+    <div class="section" id="inheritance">
+      <div class="section-header-block">
+        <span class="section-num">14</span>
+        <h2>Inheritance</h2>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Inheritance Types</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm">// Parent (Super) class</span>
+<span class="kw">class</span> <span class="ty">Animal</span> {
+    <span class="ty">String</span> name;
+    <span class="kw">void</span> <span class="fn">eat</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(name + <span class="st">" is eating"</span>); }
+}
+
+<span class="cm">// Child (Sub) class — single inheritance</span>
+<span class="kw">class</span> <span class="ty">Dog</span> <span class="kw">extends</span> <span class="ty">Animal</span> {
+    <span class="kw">void</span> <span class="fn">bark</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(name + <span class="st">" says: Woof!"</span>); }
+}
+
+<span class="kw">class</span> <span class="ty">Labrador</span> <span class="kw">extends</span> <span class="ty">Dog</span> {  <span class="cm">// Multi-level inheritance</span>
+    <span class="kw">void</span> <span class="fn">fetch</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Fetching!"</span>); }
+}
+
+<span class="cm">// Usage</span>
+<span class="ty">Labrador</span> lab = <span class="kw">new</span> <span class="ty">Labrador</span>();
+lab.name = <span class="st">"Bruno"</span>;
+lab.<span class="fn">eat</span>();   <span class="cm">// Inherited from Animal</span>
+lab.<span class="fn">bark</span>();  <span class="cm">// Inherited from Dog</span>
+lab.<span class="fn">fetch</span>(); <span class="cm">// Own method</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li>Java supports <strong>Single, Multi-level, and Hierarchical</strong> inheritance</li>
+          <li>Java does <strong>NOT support multiple inheritance</strong> with classes (to avoid Diamond Problem)</li>
+          <li>Multiple inheritance is achieved using <strong>Interfaces</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 15. Polymorphism -->
+    <div class="section" id="polymorphism">
+      <div class="section-header-block">
+        <span class="section-num">15</span>
+        <h2>Polymorphism</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Also Called</th><th>Resolved At</th><th>How</th></tr></thead>
+          <tbody>
+            <tr><td>Compile-time</td><td>Static / Method Overloading</td><td>Compile time</td><td>Same method name, different parameters</td></tr>
+            <tr><td>Runtime</td><td>Dynamic / Method Overriding</td><td>Runtime</td><td>Subclass overrides parent method</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Runtime Polymorphism</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">class</span> <span class="ty">Shape</span> {
+    <span class="kw">void</span> <span class="fn">draw</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Drawing a shape"</span>); }
+}
+<span class="kw">class</span> <span class="ty">Circle</span> <span class="kw">extends</span> <span class="ty">Shape</span> {
+    <span class="an">@Override</span>
+    <span class="kw">void</span> <span class="fn">draw</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Drawing a circle ⭕"</span>); }
+}
+<span class="kw">class</span> <span class="ty">Square</span> <span class="kw">extends</span> <span class="ty">Shape</span> {
+    <span class="an">@Override</span>
+    <span class="kw">void</span> <span class="fn">draw</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Drawing a square 🟥"</span>); }
+}
+
+<span class="cm">// Upcasting — parent reference, child object</span>
+<span class="ty">Shape</span> s = <span class="kw">new</span> <span class="ty">Circle</span>();
+s.<span class="fn">draw</span>(); <span class="cm">// "Drawing a circle ⭕"  — decided at RUNTIME</span></pre>
+      </div>
+    </div>
+
+    <!-- 16. Abstraction -->
+    <div class="section" id="abstraction">
+      <div class="section-header-block">
+        <span class="section-num">16</span>
+        <h2>Abstraction</h2>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Abstract Class</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">abstract class</span> <span class="ty">Vehicle</span> {
+    <span class="ty">String</span> brand;
+
+    <span class="kw">abstract void</span> <span class="fn">startEngine</span>();   <span class="cm">// No body — must implement in child</span>
+
+    <span class="kw">void</span> <span class="fn">showBrand</span>() {              <span class="cm">// Concrete method — has body</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Brand: "</span> + brand);
+    }
+}
+
+<span class="kw">class</span> <span class="ty">Bike</span> <span class="kw">extends</span> <span class="ty">Vehicle</span> {
+    <span class="an">@Override</span>
+    <span class="kw">void</span> <span class="fn">startEngine</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Bike engine started 🏍️"</span>); }
+}
+
+<span class="cm">// Vehicle v = new Vehicle(); // ERROR! Can't instantiate abstract class</span>
+<span class="ty">Vehicle</span> v = <span class="kw">new</span> <span class="ty">Bike</span>();
+v.<span class="fn">startEngine</span>(); <span class="cm">// "Bike engine started 🏍️"</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li>Abstract class can have both abstract and concrete methods</li>
+          <li>You <strong>cannot instantiate</strong> an abstract class</li>
+          <li>A class with even one abstract method must be declared abstract</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 17. Constructors -->
+    <div class="section" id="constructors">
+      <div class="section-header-block">
+        <span class="section-num">17</span>
+        <h2>Constructor Types</h2>
+      </div>
+      <div class="card">
+        <p>A <strong>constructor</strong> is a special method called when an object is created. It has the same name as the class and no return type.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Constructor Types</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">class</span> <span class="ty">Student</span> {
+    <span class="ty">String</span> name;
+    <span class="kw">int</span> age;
+
+    <span class="cm">// 1. Default Constructor (no parameters)</span>
+    <span class="ty">Student</span>() {
+        name = <span class="st">"Unknown"</span>;
+        age = <span class="nm">0</span>;
+    }
+
+    <span class="cm">// 2. Parameterized Constructor</span>
+    <span class="ty">Student</span>(<span class="ty">String</span> name, <span class="kw">int</span> age) {
+        <span class="kw">this</span>.name = name;  <span class="cm">// 'this' refers to current object</span>
+        <span class="kw">this</span>.age = age;
+    }
+
+    <span class="cm">// 3. Copy Constructor</span>
+    <span class="ty">Student</span>(<span class="ty">Student</span> s) {
+        <span class="kw">this</span>.name = s.name;
+        <span class="kw">this</span>.age = s.age;
+    }
+}
+
+<span class="ty">Student</span> s1 = <span class="kw">new</span> <span class="ty">Student</span>();             <span class="cm">// Default</span>
+<span class="ty">Student</span> s2 = <span class="kw">new</span> <span class="ty">Student</span>(<span class="st">"Deepak"</span>, <span class="nm">21</span>); <span class="cm">// Parameterized</span>
+<span class="ty">Student</span> s3 = <span class="kw">new</span> <span class="ty">Student</span>(s2);           <span class="cm">// Copy</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <p>If you don't define any constructor, Java provides a <strong>default constructor</strong> automatically. Once you define a parameterized constructor, the default one is no longer provided automatically.</p>
+      </div>
+    </div>
+
+    <!-- 18. this & super -->
+    <div class="section" id="this-super">
+      <div class="section-header-block">
+        <span class="section-num">18</span>
+        <h2>this and super Keywords</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Keyword</th><th>Refers To</th><th>Common Uses</th></tr></thead>
+          <tbody>
+            <tr><td><code>this</code></td><td>Current class instance</td><td>Resolve naming conflict, call another constructor, pass current object</td></tr>
+            <tr><td><code>super</code></td><td>Parent class instance</td><td>Call parent constructor, call parent method, access parent field</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — this & super</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">class</span> <span class="ty">Animal</span> {
+    <span class="ty">String</span> name;
+    <span class="ty">Animal</span>(<span class="ty">String</span> name) {
+        <span class="kw">this</span>.name = name;
+    }
+    <span class="kw">void</span> <span class="fn">speak</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Animal sound"</span>); }
+}
+
+<span class="kw">class</span> <span class="ty">Dog</span> <span class="kw">extends</span> <span class="ty">Animal</span> {
+    <span class="ty">String</span> breed;
+    <span class="ty">Dog</span>(<span class="ty">String</span> name, <span class="ty">String</span> breed) {
+        <span class="kw">super</span>(name);  <span class="cm">// Call parent constructor — MUST be first line</span>
+        <span class="kw">this</span>.breed = breed;
+    }
+    <span class="an">@Override</span>
+    <span class="kw">void</span> <span class="fn">speak</span>() {
+        <span class="kw">super</span>.<span class="fn">speak</span>();  <span class="cm">// Call parent method</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Dog says Woof!"</span>);
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- 19. Static -->
+    <div class="section" id="static">
+      <div class="section-header-block">
+        <span class="section-num">19</span>
+        <h2>Static Keyword</h2>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — static variables, methods, blocks</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">class</span> <span class="ty">Counter</span> {
+    <span class="kw">static int</span> count = <span class="nm">0</span>;  <span class="cm">// Shared by all objects</span>
+    <span class="ty">String</span> name;
+
+    <span class="kw">static</span> {  <span class="cm">// Static block — runs once when class loads</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Counter class initialized"</span>);
+    }
+
+    <span class="ty">Counter</span>(<span class="ty">String</span> name) {
+        <span class="kw">this</span>.name = name;
+        count++;  <span class="cm">// Shared across all instances</span>
+    }
+
+    <span class="kw">static int</span> <span class="fn">getCount</span>() {  <span class="cm">// Static method — no 'this'</span>
+        <span class="kw">return</span> count;
+    }
+}
+
+<span class="kw">new</span> <span class="ty">Counter</span>(<span class="st">"A"</span>);
+<span class="kw">new</span> <span class="ty">Counter</span>(<span class="st">"B"</span>);
+<span class="ty">System</span>.out.<span class="fn">println</span>(<span class="ty">Counter</span>.<span class="fn">getCount</span>()); <span class="cm">// 2</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li>Static members belong to the <strong>class</strong>, not to any object</li>
+          <li>Static methods <strong>cannot access</strong> instance variables or use <code>this</code>/<code>super</code></li>
+          <li>Call static members using class name: <code>ClassName.method()</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 20. Final -->
+    <div class="section" id="final">
+      <div class="section-header-block">
+        <span class="section-num">20</span>
+        <h2>Final Keyword</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Used On</th><th>Effect</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Variable</td><td>Becomes a constant (cannot reassign)</td><td><code>final int MAX = 100;</code></td></tr>
+            <tr><td>Method</td><td>Cannot be overridden in subclass</td><td><code>final void display() {}</code></td></tr>
+            <tr><td>Class</td><td>Cannot be inherited (subclassed)</td><td><code>final class String {}</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — final examples</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">final double</span> PI = <span class="nm">3.14159</span>;
+<span class="cm">// PI = 3.0; // ERROR! Cannot reassign final variable</span>
+
+<span class="kw">final class</span> <span class="ty">Immutable</span> {}
+<span class="cm">// class Child extends Immutable {} // ERROR! Cannot extend final class</span>
+
+<span class="cm">// Note: String class in Java is final — that's why it's immutable!</span></pre>
+      </div>
+    </div>
+
+    <!-- 21. Access Modifiers -->
+    <div class="section" id="access-modifiers">
+      <div class="section-header-block">
+        <span class="section-num">21</span>
+        <h2>Access Modifiers</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Modifier</th><th>Same Class</th><th>Same Package</th><th>Subclass</th><th>Everywhere</th></tr></thead>
+          <tbody>
+            <tr><td><code>private</code></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+            <tr><td>default (none)</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+            <tr><td><code>protected</code></td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+            <tr><td><code>public</code></td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <p>For best encapsulation, use the most restrictive access level possible. Fields should almost always be <code>private</code>. Use <code>public</code> only when access is truly needed everywhere.</p>
+      </div>
+    </div>
+
+    <!-- 22. Overloading vs Overriding -->
+    <div class="section" id="overloading-overriding">
+      <div class="section-header-block">
+        <span class="section-num">22</span>
+        <h2>Method Overloading vs Overriding</h2>
+      </div>
+      <div class="vs-container">
+        <div class="vs-card">
+          <h4 style="color:var(--blue)">Method Overloading</h4>
+          <ul>
+            <li>Same method name, different parameters</li>
+            <li>In the same class</li>
+            <li>Compile-time polymorphism</li>
+            <li>Return type can differ</li>
+            <li>No inheritance needed</li>
+          </ul>
+        </div>
+        <div class="vs-sep">VS</div>
+        <div class="vs-card">
+          <h4 style="color:var(--green)">Method Overriding</h4>
+          <ul>
+            <li>Same method name AND parameters</li>
+            <li>In parent-child classes</li>
+            <li>Runtime polymorphism</li>
+            <li>Same return type (or covariant)</li>
+            <li>Requires inheritance</li>
+          </ul>
+        </div>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Overloading vs Overriding</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm">// OVERLOADING — same class, different params</span>
+<span class="kw">class</span> <span class="ty">Calculator</span> {
+    <span class="kw">int</span>    <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b)    { <span class="kw">return</span> a + b; }
+    <span class="kw">double</span> <span class="fn">add</span>(<span class="kw">double</span> a, <span class="kw">double</span> b) { <span class="kw">return</span> a + b; }
+    <span class="kw">int</span>    <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b, <span class="kw">int</span> c) { <span class="kw">return</span> a+b+c; }
+}
+
+<span class="cm">// OVERRIDING — parent-child, same signature</span>
+<span class="kw">class</span> <span class="ty">Animal</span> {
+    <span class="kw">void</span> <span class="fn">sound</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Some sound"</span>); }
+}
+<span class="kw">class</span> <span class="ty">Cat</span> <span class="kw">extends</span> <span class="ty">Animal</span> {
+    <span class="an">@Override</span>
+    <span class="kw">void</span> <span class="fn">sound</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Meow 🐱"</span>); }
+}</pre>
+      </div>
+    </div>
+
+    <!-- 23. Interface vs Abstract -->
+    <div class="section" id="interface-abstract">
+      <div class="section-header-block">
+        <span class="section-num">23</span>
+        <h2>Interface vs Abstract Class</h2>
+      </div>
+      <div class="vs-container">
+        <div class="vs-card">
+          <h4 style="color:var(--blue)">Interface</h4>
+          <ul>
+            <li>100% abstract (by default)</li>
+            <li>Multiple implementation allowed</li>
+            <li>All methods public by default</li>
+            <li>No constructors</li>
+            <li>Use: <code>implements</code></li>
+            <li>Variables are <code>public static final</code></li>
+          </ul>
+        </div>
+        <div class="vs-sep">VS</div>
+        <div class="vs-card">
+          <h4 style="color:var(--green)">Abstract Class</h4>
+          <ul>
+            <li>Partial abstraction possible</li>
+            <li>Single inheritance only</li>
+            <li>Any access modifier</li>
+            <li>Can have constructors</li>
+            <li>Use: <code>extends</code></li>
+            <li>Variables can be any type</li>
+          </ul>
+        </div>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Interface Example</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">interface</span> <span class="ty">Flyable</span> {
+    <span class="kw">void</span> <span class="fn">fly</span>();                       <span class="cm">// abstract by default</span>
+    <span class="kw">default void</span> <span class="fn">land</span>() {            <span class="cm">// default method (Java 8+)</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Landing..."</span>);
+    }
+}
+<span class="kw">interface</span> <span class="ty">Swimmable</span> { <span class="kw">void</span> <span class="fn">swim</span>(); }
+
+<span class="cm">// Multiple interfaces — solving diamond problem!</span>
+<span class="kw">class</span> <span class="ty">Duck</span> <span class="kw">implements</span> <span class="ty">Flyable</span>, <span class="ty">Swimmable</span> {
+    <span class="kw">public void</span> <span class="fn">fly</span>()  { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Duck flying 🦆"</span>); }
+    <span class="kw">public void</span> <span class="fn">swim</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Duck swimming 🏊"</span>); }
+}</pre>
+      </div>
+    </div>
+
+    <!-- 24. Exception Handling -->
+    <div class="section" id="exceptions">
+      <div class="section-header-block">
+        <span class="section-num">24</span>
+        <h2>Exception Handling</h2>
+      </div>
+      <div class="card">
+        <p>An exception is an unexpected event that disrupts normal program flow. Java provides a structured way to handle them using <code>try-catch-finally</code>.</p>
+        <p style="margin-top:.4rem">🔑 <em>Analogy: Like a safety net — if an acrobat (program) falls (exception), the net (catch) prevents disaster.</em></p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Examples</th><th>Must Handle?</th></tr></thead>
+          <tbody>
+            <tr><td>Checked Exception</td><td><code>IOException, SQLException, FileNotFoundException</code></td><td>Yes (compile-time)</td></tr>
+            <tr><td>Unchecked Exception</td><td><code>NullPointerException, ArrayIndexOutOfBoundsException, ArithmeticException</code></td><td>No (runtime)</td></tr>
+            <tr><td>Error</td><td><code>StackOverflowError, OutOfMemoryError</code></td><td>No (JVM level)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — try-catch-finally + custom exception</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">public class</span> <span class="ty">ExceptionDemo</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="kw">try</span> {
+            <span class="kw">int</span> result = <span class="nm">10</span> / <span class="nm">0</span>;  <span class="cm">// ArithmeticException!</span>
+        } <span class="kw">catch</span> (<span class="ty">ArithmeticException</span> e) {
+            <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Caught: "</span> + e.getMessage());
+        } <span class="kw">catch</span> (<span class="ty">Exception</span> e) {
+            <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Generic: "</span> + e.getMessage());
+        } <span class="kw">finally</span> {
+            <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Always runs!"</span>); <span class="cm">// Cleanup here</span>
+        }
+    }
+}
+
+<span class="cm">// Custom Exception</span>
+<span class="kw">class</span> <span class="ty">AgeException</span> <span class="kw">extends</span> <span class="ty">RuntimeException</span> {
+    <span class="ty">AgeException</span>(<span class="ty">String</span> msg) { <span class="kw">super</span>(msg); }
+}
+<span class="cm">// throw new AgeException("Age must be positive!");</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li><code>throw</code> = manually throw an exception; <code>throws</code> = declare that a method may throw</li>
+          <li><code>finally</code> block <strong>always executes</strong>, even if no exception occurs or return is used</li>
+          <li>Use <strong>multi-catch</strong> (Java 7+): <code>catch (IOException | SQLException e)</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 25. Collections -->
+    <div class="section" id="collections">
+      <div class="section-header-block">
+        <span class="section-num">25</span>
+        <h2>Collections Framework</h2>
+      </div>
+      <div class="card">
+        <p>The Collections Framework provides ready-made data structures (List, Set, Map, Queue) to store and manipulate groups of objects efficiently.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Interface</th><th>Common Implementations</th><th>Allows Duplicates?</th><th>Ordered?</th></tr></thead>
+          <tbody>
+            <tr><td><code>List</code></td><td><code>ArrayList, LinkedList, Vector</code></td><td>Yes</td><td>Yes (insertion order)</td></tr>
+            <tr><td><code>Set</code></td><td><code>HashSet, LinkedHashSet, TreeSet</code></td><td>No</td><td>HashSet: No</td></tr>
+            <tr><td><code>Map</code></td><td><code>HashMap, LinkedHashMap, TreeMap</code></td><td>Keys: No, Values: Yes</td><td>HashMap: No</td></tr>
+            <tr><td><code>Queue</code></td><td><code>LinkedList, PriorityQueue, ArrayDeque</code></td><td>Yes</td><td>FIFO</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 26. ArrayList vs LinkedList -->
+    <div class="section" id="arraylist-linkedlist">
+      <div class="section-header-block">
+        <span class="section-num">26</span>
+        <h2>ArrayList vs LinkedList</h2>
+      </div>
+      <div class="vs-container">
+        <div class="vs-card">
+          <h4 style="color:var(--blue)">ArrayList</h4>
+          <ul>
+            <li>Dynamic array internally</li>
+            <li>Fast random access O(1)</li>
+            <li>Slow insert/delete mid O(n)</li>
+            <li>Less memory</li>
+            <li>Best for: frequent reads</li>
+          </ul>
+        </div>
+        <div class="vs-sep">VS</div>
+        <div class="vs-card">
+          <h4 style="color:var(--green)">LinkedList</h4>
+          <ul>
+            <li>Doubly-linked list internally</li>
+            <li>Slow random access O(n)</li>
+            <li>Fast insert/delete O(1)</li>
+            <li>More memory (node pointers)</li>
+            <li>Best for: frequent inserts</li>
+          </ul>
+        </div>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — ArrayList Example</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">import</span> java.util.*;
+
+<span class="ty">ArrayList</span>&lt;<span class="ty">String</span>&gt; list = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+list.<span class="fn">add</span>(<span class="st">"Apple"</span>);
+list.<span class="fn">add</span>(<span class="st">"Banana"</span>);
+list.<span class="fn">add</span>(<span class="st">"Cherry"</span>);
+list.<span class="fn">remove</span>(<span class="st">"Banana"</span>);
+<span class="ty">System</span>.out.<span class="fn">println</span>(list.<span class="fn">get</span>(<span class="nm">0</span>));   <span class="cm">// Apple</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(list.<span class="fn">size</span>());   <span class="cm">// 2</span>
+<span class="ty">Collections</span>.<span class="fn">sort</span>(list);             <span class="cm">// Alphabetical sort</span>
+list.<span class="fn">forEach</span>(s -> <span class="ty">System</span>.out.<span class="fn">println</span>(s)); <span class="cm">// Apple, Cherry</span></pre>
+      </div>
+    </div>
+
+    <!-- 27. HashMap -->
+    <div class="section" id="hashmap">
+      <div class="section-header-block">
+        <span class="section-num">27</span>
+        <h2>HashMap Basics</h2>
+      </div>
+      <div class="card">
+        <p>HashMap stores <strong>key-value pairs</strong>. Keys are unique; values can repeat. Average O(1) for get/put. Not thread-safe.</p>
+        <p style="margin-top:.4rem">🔑 <em>Analogy: A dictionary — you look up a word (key) to get its meaning (value).</em></p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — HashMap</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">import</span> java.util.*;
+
+<span class="ty">HashMap</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; scores = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+scores.<span class="fn">put</span>(<span class="st">"Alice"</span>, <span class="nm">95</span>);
+scores.<span class="fn">put</span>(<span class="st">"Bob"</span>,   <span class="nm">87</span>);
+scores.<span class="fn">put</span>(<span class="st">"Alice"</span>, <span class="nm">98</span>);  <span class="cm">// Overwrites Alice's old value</span>
+
+<span class="ty">System</span>.out.<span class="fn">println</span>(scores.<span class="fn">get</span>(<span class="st">"Bob"</span>));       <span class="cm">// 87</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(scores.<span class="fn">containsKey</span>(<span class="st">"Alice"</span>)); <span class="cm">// true</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(scores.<span class="fn">size</span>());            <span class="cm">// 2</span>
+
+<span class="cm">// Iterate over entries</span>
+<span class="kw">for</span> (<span class="ty">Map.Entry</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; e : scores.<span class="fn">entrySet</span>()) {
+    <span class="ty">System</span>.out.<span class="fn">println</span>(e.<span class="fn">getKey</span>() + <span class="st">" → "</span> + e.<span class="fn">getValue</span>());
+}</pre>
+      </div>
+    </div>
+
+    <!-- 28. Multithreading -->
+    <div class="section" id="threads">
+      <div class="section-header-block">
+        <span class="section-num">28</span>
+        <h2>Multithreading Basics</h2>
+      </div>
+      <div class="card">
+        <p>A <strong>thread</strong> is the smallest unit of execution. Multithreading allows multiple threads to run concurrently, improving performance on multi-core processors.</p>
+        <p style="margin-top:.4rem">🔑 <em>Analogy: A restaurant with multiple waiters (threads) serving customers (tasks) simultaneously.</em></p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Creating Threads (2 ways)</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="cm">// Way 1: Extend Thread class</span>
+<span class="kw">class</span> <span class="ty">MyThread</span> <span class="kw">extends</span> <span class="ty">Thread</span> {
+    <span class="kw">public void</span> <span class="fn">run</span>() {
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Thread running: "</span> + <span class="ty">Thread</span>.<span class="fn">currentThread</span>().<span class="fn">getName</span>());
+    }
+}
+<span class="ty">MyThread</span> t = <span class="kw">new</span> <span class="ty">MyThread</span>();
+t.<span class="fn">start</span>(); <span class="cm">// Never call run() directly — use start()</span>
+
+<span class="cm">// Way 2: Implement Runnable (Preferred — avoids extends lock)</span>
+<span class="kw">class</span> <span class="ty">Task</span> <span class="kw">implements</span> <span class="ty">Runnable</span> {
+    <span class="kw">public void</span> <span class="fn">run</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Task running!"</span>); }
+}
+<span class="ty">Thread</span> t2 = <span class="kw">new</span> <span class="ty">Thread</span>(<span class="kw">new</span> <span class="ty">Task</span>());
+t2.<span class="fn">start</span>();
+
+<span class="cm">// Thread states: NEW → RUNNABLE → RUNNING → WAITING → TERMINATED</span></pre>
+      </div>
+    </div>
+
+    <!-- 29. Synchronization -->
+    <div class="section" id="sync">
+      <div class="section-header-block">
+        <span class="section-num">29</span>
+        <h2>Synchronization</h2>
+      </div>
+      <div class="card">
+        <p>When multiple threads access shared resources, synchronization prevents data corruption by ensuring only one thread executes a synchronized block at a time.</p>
+        <p style="margin-top:.4rem">🔑 <em>Analogy: One toilet stall (shared resource) with a lock — only one person (thread) can use it at a time.</em></p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — synchronized keyword</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">class</span> <span class="ty">Counter</span> {
+    <span class="kw">private int</span> count = <span class="nm">0</span>;
+
+    <span class="cm">// synchronized method — only one thread at a time</span>
+    <span class="kw">public synchronized void</span> <span class="fn">increment</span>() {
+        count++;
+    }
+
+    <span class="kw">public int</span> <span class="fn">getCount</span>() { <span class="kw">return</span> count; }
+}
+
+<span class="cm">// Without synchronized, concurrent increments cause race conditions!</span>
+<span class="cm">// With synchronized, count is always accurate.</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li><strong>Race condition:</strong> Two threads access shared data simultaneously, causing incorrect results</li>
+          <li><strong>Deadlock:</strong> Two threads wait for each other's lock forever</li>
+          <li>Use <code>volatile</code> keyword for visibility; use <code>synchronized</code> for atomicity</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 30. Garbage Collection -->
+    <div class="section" id="gc">
+      <div class="section-header-block">
+        <span class="section-num">30</span>
+        <h2>Garbage Collection</h2>
+      </div>
+      <div class="card">
+        <p>Java automatically manages memory. The <strong>Garbage Collector (GC)</strong> removes objects from heap memory that are no longer referenced, preventing memory leaks.</p>
+        <p style="margin-top:.4rem">🔑 <em>Analogy: A municipal garbage truck that automatically collects trash (unused objects) you've left out.</em></p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — GC & finalize</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">class</span> <span class="ty">Demo</span> {
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">finalize</span>() {  <span class="cm">// Called before GC (deprecated in Java 9)</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Object being garbage collected"</span>);
+    }
+}
+
+<span class="ty">Demo</span> d = <span class="kw">new</span> <span class="ty">Demo</span>();
+d = <span class="kw">null</span>;              <span class="cm">// Object now eligible for GC</span>
+<span class="ty">System</span>.gc();           <span class="cm">// Request GC (not guaranteed)</span></pre>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">⚡ Interview Point</div>
+        <ul class="styled-list">
+          <li>GC runs in the <strong>background</strong> — you can't control exactly when</li>
+          <li>Objects become eligible when there are <strong>no more references</strong> pointing to them</li>
+          <li>Java uses <strong>Mark-and-Sweep</strong> algorithm — mark live objects, sweep (delete) unmarked ones</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Java 8 -->
+    <div class="section" id="java8">
+      <div class="section-header-block">
+        <span class="section-num">J8</span>
+        <h2>Java 8 Features</h2>
+      </div>
+      <div class="cards-grid">
+        <div class="feature-card"><div class="icon">λ</div><h4>Lambda Expressions</h4><p>Anonymous functions — shorter, cleaner code for functional-style programming.</p></div>
+        <div class="feature-card"><div class="icon">🌊</div><h4>Stream API</h4><p>Process collections functionally with filter, map, reduce, collect operations.</p></div>
+        <div class="feature-card"><div class="icon">⚙️</div><h4>Functional Interfaces</h4><p>Interfaces with exactly one abstract method — enablers for lambdas.</p></div>
+        <div class="feature-card"><div class="icon">📦</div><h4>Optional</h4><p>Wrapper to avoid NullPointerException — represents value that may be absent.</p></div>
+        <div class="feature-card"><div class="icon">🕰️</div><h4>Date/Time API</h4><p>New java.time package — LocalDate, LocalTime, ZonedDateTime, etc.</p></div>
+        <div class="feature-card"><div class="icon">🔀</div><h4>Default Methods</h4><p>Interfaces can now have method implementations using <code>default</code> keyword.</p></div>
+      </div>
+    </div>
+
+    <!-- 31. Lambda -->
+    <div class="section" id="lambda">
+      <div class="section-header-block">
+        <span class="section-num">31</span>
+        <h2>Lambda Expressions</h2>
+      </div>
+      <div class="card">
+        <p>Lambda expressions provide a way to write anonymous functions inline. Syntax: <code>(parameters) -&gt; expression</code></p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Lambda Expressions</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">import</span> java.util.*;
+
+<span class="cm">// Before Java 8 (verbose)</span>
+<span class="ty">Runnable</span> r1 = <span class="kw">new</span> <span class="ty">Runnable</span>() {
+    <span class="kw">public void</span> <span class="fn">run</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Old way"</span>); }
+};
+
+<span class="cm">// With Lambda (clean!)</span>
+<span class="ty">Runnable</span> r2 = () -> <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Lambda way"</span>);
+
+<span class="cm">// Sorting with lambda</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; names = <span class="ty">Arrays</span>.<span class="fn">asList</span>(<span class="st">"Charlie"</span>, <span class="st">"Alice"</span>, <span class="st">"Bob"</span>);
+names.<span class="fn">sort</span>((a, b) -> a.<span class="fn">compareTo</span>(b));
+<span class="ty">System</span>.out.<span class="fn">println</span>(names); <span class="cm">// [Alice, Bob, Charlie]</span>
+
+<span class="cm">// Arithmetic with functional interface</span>
+<span class="ty">MathOperation</span> square = (n) -> n * n;
+<span class="ty">System</span>.out.<span class="fn">println</span>(square.<span class="fn">operate</span>(<span class="nm">5</span>)); <span class="cm">// 25</span></pre>
+      </div>
+    </div>
+
+    <!-- 32. Stream API -->
+    <div class="section" id="streams">
+      <div class="section-header-block">
+        <span class="section-num">32</span>
+        <h2>Stream API</h2>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Stream API</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; numbers = <span class="ty">Arrays</span>.<span class="fn">asList</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>,<span class="nm">7</span>,<span class="nm">8</span>,<span class="nm">9</span>,<span class="nm">10</span>);
+
+<span class="cm">// Find sum of even numbers squared</span>
+<span class="kw">int</span> result = numbers.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(n -> n % <span class="nm">2</span> == <span class="nm">0</span>)         <span class="cm">// Keep: 2,4,6,8,10</span>
+    .<span class="fn">map</span>(n -> n * n)                   <span class="cm">// Square: 4,16,36,64,100</span>
+    .<span class="fn">reduce</span>(<span class="nm">0</span>, <span class="ty">Integer</span>::sum);         <span class="cm">// Sum: 220</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(result); <span class="cm">// 220</span>
+
+<span class="cm">// Collect names starting with 'A'</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; names = <span class="ty">Arrays</span>.<span class="fn">asList</span>(<span class="st">"Alice"</span>,<span class="st">"Bob"</span>,<span class="st">"Anita"</span>,<span class="st">"Chris"</span>);
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; aNames = names.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(s -> s.<span class="fn">startsWith</span>(<span class="st">"A"</span>))
+    .<span class="fn">collect</span>(<span class="ty">Collectors</span>.<span class="fn">toList</span>());
+<span class="ty">System</span>.out.<span class="fn">println</span>(aNames); <span class="cm">// [Alice, Anita]</span></pre>
+      </div>
+    </div>
+
+    <!-- 33. Functional Interfaces -->
+    <div class="section" id="functional">
+      <div class="section-header-block">
+        <span class="section-num">33</span>
+        <h2>Functional Interfaces</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Interface</th><th>Method</th><th>Takes</th><th>Returns</th><th>Use Case</th></tr></thead>
+          <tbody>
+            <tr><td><code>Function&lt;T,R&gt;</code></td><td><code>apply(T)</code></td><td>T</td><td>R</td><td>Transform data</td></tr>
+            <tr><td><code>Predicate&lt;T&gt;</code></td><td><code>test(T)</code></td><td>T</td><td>boolean</td><td>Filter/check condition</td></tr>
+            <tr><td><code>Consumer&lt;T&gt;</code></td><td><code>accept(T)</code></td><td>T</td><td>void</td><td>Perform action</td></tr>
+            <tr><td><code>Supplier&lt;T&gt;</code></td><td><code>get()</code></td><td>nothing</td><td>T</td><td>Provide/generate value</td></tr>
+            <tr><td><code>BiFunction&lt;T,U,R&gt;</code></td><td><code>apply(T,U)</code></td><td>T, U</td><td>R</td><td>Two inputs, one output</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JAVA — Predicate & Function</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">import</span> java.util.function.*;
+
+<span class="ty">Predicate</span>&lt;<span class="ty">Integer</span>&gt; isEven = n -> n % <span class="nm">2</span> == <span class="nm">0</span>;
+<span class="ty">System</span>.out.<span class="fn">println</span>(isEven.<span class="fn">test</span>(<span class="nm">4</span>));  <span class="cm">// true</span>
+<span class="ty">System</span>.out.<span class="fn">println</span>(isEven.<span class="fn">test</span>(<span class="nm">7</span>));  <span class="cm">// false</span>
+
+<span class="ty">Function</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; length = s -> s.<span class="fn">length</span>();
+<span class="ty">System</span>.out.<span class="fn">println</span>(length.<span class="fn">apply</span>(<span class="st">"Hello"</span>)); <span class="cm">// 5</span>
+
+<span class="ty">Consumer</span>&lt;<span class="ty">String</span>&gt; printer = s -> <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"&gt;&gt; "</span> + s);
+printer.<span class="fn">accept</span>(<span class="st">"Java 8 rocks!"</span>); <span class="cm">// >> Java 8 rocks!</span></pre>
+      </div>
+    </div>
+
+    <!-- Programs Section -->
+    <div class="section" id="programs">
+      <div class="section-header-block">
+        <span class="section-num">34</span>
+        <h2>Important Java Programs</h2>
+      </div>
+      <div class="programs-grid">
+        <!-- Reverse String -->
+        <div class="card">
+          <h3>🔄 Reverse a String</h3>
+          <div class="code-block" style="margin-top:.5rem">
+            <div class="code-header"><span class="code-lang">JAVA</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+            <pre><span class="kw">public static</span> <span class="ty">String</span> <span class="fn">reverse</span>(<span class="ty">String</span> s) {
+    <span class="ty">StringBuilder</span> sb = <span class="kw">new</span> <span class="ty">StringBuilder</span>(s);
+    <span class="kw">return</span> sb.<span class="fn">reverse</span>().<span class="fn">toString</span>();
+}
+<span class="cm">// reverse("hello") → "olleh"</span></pre>
+          </div>
+        </div>
+
+        <!-- Palindrome -->
+        <div class="card">
+          <h3>🔃 Palindrome Check</h3>
+          <div class="code-block" style="margin-top:.5rem">
+            <div class="code-header"><span class="code-lang">JAVA</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+            <pre><span class="kw">public static boolean</span> <span class="fn">isPalindrome</span>(<span class="ty">String</span> s) {
+    <span class="ty">String</span> rev = <span class="kw">new</span> <span class="ty">StringBuilder</span>(s).<span class="fn">reverse</span>().<span class="fn">toString</span>();
+    <span class="kw">return</span> s.<span class="fn">equals</span>(rev);
+}
+<span class="cm">// isPalindrome("racecar") → true</span>
+<span class="cm">// isPalindrome("java")    → false</span></pre>
+          </div>
+        </div>
+
+        <!-- Fibonacci -->
+        <div class="card">
+          <h3>🐚 Fibonacci Series</h3>
+          <div class="code-block" style="margin-top:.5rem">
+            <div class="code-header"><span class="code-lang">JAVA</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+            <pre><span class="kw">public static void</span> <span class="fn">fibonacci</span>(<span class="kw">int</span> n) {
+    <span class="kw">int</span> a = <span class="nm">0</span>, b = <span class="nm">1</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i < n; i++) {
+        <span class="ty">System</span>.out.<span class="fn">print</span>(a + <span class="st">" "</span>);
+        <span class="kw">int</span> temp = a + b;
+        a = b;
+        b = temp;
+    }
+}
+<span class="cm">// fibonacci(7) → 0 1 1 2 3 5 8</span></pre>
+          </div>
+        </div>
+
+        <!-- Prime -->
+        <div class="card">
+          <h3>🔢 Prime Number Check</h3>
+          <div class="code-block" style="margin-top:.5rem">
+            <div class="code-header"><span class="code-lang">JAVA</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+            <pre><span class="kw">public static boolean</span> <span class="fn">isPrime</span>(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n <= <span class="nm">1</span>) <span class="kw">return false</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">2</span>; i <= <span class="ty">Math</span>.<span class="fn">sqrt</span>(n); i++) {
+        <span class="kw">if</span> (n % i == <span class="nm">0</span>) <span class="kw">return false</span>;
+    }
+    <span class="kw">return true</span>;
+}
+<span class="cm">// isPrime(17) → true, isPrime(15) → false</span></pre>
+          </div>
+        </div>
+
+        <!-- Factorial -->
+        <div class="card">
+          <h3>❗ Factorial</h3>
+          <div class="code-block" style="margin-top:.5rem">
+            <div class="code-header"><span class="code-lang">JAVA</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+            <pre><span class="cm">// Iterative</span>
+<span class="kw">public static long</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {
+    <span class="kw">long</span> result = <span class="nm">1</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">2</span>; i <= n; i++) result *= i;
+    <span class="kw">return</span> result;
+}
+<span class="cm">// Recursive version:</span>
+<span class="kw">public static long</span> <span class="fn">factRec</span>(<span class="kw">int</span> n) {
+    <span class="kw">return</span> (n <= <span class="nm">1</span>) ? <span class="nm">1</span> : n * <span class="fn">factRec</span>(n - <span class="nm">1</span>);
+}
+<span class="cm">// factorial(5) → 120</span></pre>
+          </div>
+        </div>
+
+        <!-- Sorting -->
+        <div class="card">
+          <h3>📊 Bubble Sort</h3>
+          <div class="code-block" style="margin-top:.5rem">
+            <div class="code-header"><span class="code-lang">JAVA</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+            <pre><span class="kw">public static void</span> <span class="fn">bubbleSort</span>(<span class="kw">int</span>[] arr) {
+    <span class="kw">int</span> n = arr.length;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i < n-<span class="nm">1</span>; i++) {
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="nm">0</span>; j < n-i-<span class="nm">1</span>; j++) {
+            <span class="kw">if</span> (arr[j] > arr[j+<span class="nm">1</span>]) {
+                <span class="kw">int</span> t = arr[j]; arr[j] = arr[j+<span class="nm">1</span>]; arr[j+<span class="nm">1</span>] = t;
+            }
+        }
+    }
+}
+<span class="cm">// {5,3,8,1} → {1,3,5,8}  O(n²)</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 35. Interview Q&A -->
+    <div class="section" id="interview-qa">
+      <div class="section-header-block">
+        <span class="section-num">35</span>
+        <h2>Common Interview Questions & Answers</h2>
+      </div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is the difference between == and .equals() in Java? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner"><code>==</code> compares <strong>references</strong> (memory addresses). <code>.equals()</code> compares <strong>content/values</strong>. For strings, always use <code>.equals()</code> unless you intentionally want reference comparison. Example: <code>new String("a") == new String("a")</code> is <code>false</code>, but <code>.equals()</code> returns <code>true</code>.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is the difference between abstract class and interface? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">Abstract class: can have state (fields), constructors, concrete methods, any access modifiers. Use when related classes share implementation. Interface: only constants and abstract methods (before Java 8), supports multiple implementation. Use to define a contract/capability. Key rule: a class can implement multiple interfaces but extend only one abstract class.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is the difference between String, StringBuilder, and StringBuffer? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner"><strong>String:</strong> Immutable, thread-safe, stored in String Pool. <strong>StringBuilder:</strong> Mutable, NOT thread-safe, fast — use for single-thread string manipulation. <strong>StringBuffer:</strong> Mutable, thread-safe (synchronized), slower — use in multi-threaded environments. For heavy concatenation in loops, always use StringBuilder.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is a NullPointerException and how to avoid it? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">NPE occurs when you try to use a reference that is <code>null</code> (e.g., calling a method on null object). Avoid by: checking <code>if (obj != null)</code> before use, using Java 8's <code>Optional</code>, using Objects.requireNonNull(), initializing variables properly, or using the safe navigation pattern.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is the difference between ArrayList and LinkedList? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">ArrayList uses a dynamic array internally — fast random access O(1) but slow insertion/deletion in middle O(n). LinkedList uses doubly-linked nodes — fast insertion/deletion O(1) but slow random access O(n). Use ArrayList for read-heavy operations, LinkedList for frequent add/remove at head or middle.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is method overloading vs overriding? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner"><strong>Overloading:</strong> Same method name, different parameter list in same class. Resolved at compile-time (static binding). <strong>Overriding:</strong> Subclass redefines a method from parent class with same signature. Resolved at runtime (dynamic binding). Overriding requires @Override annotation (recommended) and the method in parent must not be private/static/final.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is a constructor? Can it be private? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">A constructor is a special method invoked when an object is created. It has the class name and no return type. Yes, it can be private — used in the Singleton design pattern to prevent external instantiation. A private constructor means only the class itself can create its instance.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is the purpose of the 'final' keyword? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">final variable: constant — value cannot be changed after assignment. final method: cannot be overridden in subclass. final class: cannot be subclassed (inherited). Example: String is a final class, making it immutable. Use final to create constants: <code>static final double PI = 3.14;</code></div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: Explain try-with-resources (Java 7+) <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">Try-with-resources automatically closes resources (files, DB connections) that implement AutoCloseable. Syntax: <code>try (FileReader fr = new FileReader("file.txt")) { ... }</code>. The resource is automatically closed when the try block exits, even if an exception occurs. Eliminates verbose finally blocks for cleanup.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is the Java Collections hierarchy? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">Root: Iterable interface. Collection extends Iterable: → List (ArrayList, LinkedList, Vector) → Set (HashSet, TreeSet, LinkedHashSet) → Queue (LinkedList, PriorityQueue). Separate: Map interface (HashMap, TreeMap, LinkedHashMap, Hashtable). Note: Map does NOT extend Collection.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What is the difference between HashMap and Hashtable? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">HashMap: Not thread-safe, allows one null key and multiple null values, faster, introduced in Java 1.2. Hashtable: Thread-safe (synchronized), does NOT allow null keys or values, slower, legacy class from Java 1.0. In modern code, prefer ConcurrentHashMap over Hashtable for thread safety.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Q: What are Java 8 Stream API operations? <i class="arr">▼</i></div><div class="faq-a"><div class="faq-a-inner">Two types: Intermediate (lazy, return Stream): filter(), map(), flatMap(), sorted(), distinct(), limit(), skip(). Terminal (trigger execution, return result): collect(), forEach(), count(), reduce(), findFirst(), anyMatch(), allMatch(), toArray(). Streams are lazy — intermediate operations only run when a terminal operation is called.</div></div></div>
+
+    </div>
+
+    <!-- 36. Coding Tips -->
+    <div class="section" id="coding-tips">
+      <div class="section-header-block">
+        <span class="section-num">36</span>
+        <h2>Java Coding Tips for Interviews</h2>
+      </div>
+      <div class="tips-grid">
+        <div class="tips-card">
+          <h4>⚡ Before You Code</h4>
+          <ul>
+            <li>Read the problem 2–3 times before writing</li>
+            <li>Identify input/output types clearly</li>
+            <li>Think about edge cases (null, empty, 0)</li>
+            <li>Mention your approach before coding</li>
+            <li>Ask clarifying questions confidently</li>
+          </ul>
+        </div>
+        <div class="tips-card">
+          <h4>🧠 While Coding</h4>
+          <ul>
+            <li>Use meaningful variable names</li>
+            <li>Start with brute force, then optimize</li>
+            <li>Think out loud — narrate your reasoning</li>
+            <li>Use built-in Java methods (don't reinvent)</li>
+            <li>Handle exceptions and null checks</li>
+          </ul>
+        </div>
+        <div class="tips-card">
+          <h4>✅ After Coding</h4>
+          <ul>
+            <li>Test with sample input manually</li>
+            <li>Test edge cases: empty array, single element</li>
+            <li>Mention time and space complexity</li>
+            <li>Suggest improvements if time allows</li>
+            <li>Review for off-by-one errors in loops</li>
+          </ul>
+        </div>
+        <div class="tips-card">
+          <h4>🚫 Common Mistakes</h4>
+          <ul>
+            <li>Using == for String comparison</li>
+            <li>Not handling null inputs</li>
+            <li>Modifying a list while iterating</li>
+            <li>Forgetting break in switch</li>
+            <li>Integer overflow — use long when needed</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 37. Time Complexity -->
+    <div class="section" id="time-complexity">
+      <div class="section-header-block">
+        <span class="section-num">37</span>
+        <h2>Time Complexity Basics</h2>
+      </div>
+      <div class="card">
+        <p>Big O notation describes how runtime grows as input size (n) increases. Know these for every algorithm you use.</p>
+      </div>
+      <div class="complexity-grid">
+        <div class="complexity-card"><div class="name">Constant</div><div class="big">O(1)</div><div class="desc">HashMap get, array access by index</div><span class="speed speed-fast">⚡ Fastest</span></div>
+        <div class="complexity-card"><div class="name">Logarithmic</div><div class="big">O(log n)</div><div class="desc">Binary search, BST operations</div><span class="speed speed-fast">🚀 Very Fast</span></div>
+        <div class="complexity-card"><div class="name">Linear</div><div class="big">O(n)</div><div class="desc">Array traversal, linear search</div><span class="speed speed-ok">👍 Acceptable</span></div>
+        <div class="complexity-card"><div class="name">Linearithmic</div><div class="big">O(n log n)</div><div class="desc">Merge sort, heap sort</div><span class="speed speed-ok">✅ Good for sort</span></div>
+        <div class="complexity-card"><div class="name">Quadratic</div><div class="big">O(n²)</div><div class="desc">Bubble sort, nested loops</div><span class="speed speed-slow">⚠️ Avoid large n</span></div>
+        <div class="complexity-card"><div class="name">Exponential</div><div class="big">O(2ⁿ)</div><div class="desc">Recursive Fibonacci (naive)</div><span class="speed speed-slow">❌ Very Slow</span></div>
+      </div>
+      <div class="table-wrap" style="margin-top:1.25rem">
+        <table>
+          <thead><tr><th>Operation</th><th>ArrayList</th><th>LinkedList</th><th>HashMap</th><th>TreeMap</th></tr></thead>
+          <tbody>
+            <tr><td>Access</td><td>O(1)</td><td>O(n)</td><td>O(1) avg</td><td>O(log n)</td></tr>
+            <tr><td>Insert (middle)</td><td>O(n)</td><td>O(1)</td><td>O(1) avg</td><td>O(log n)</td></tr>
+            <tr><td>Delete (middle)</td><td>O(n)</td><td>O(1)</td><td>O(1) avg</td><td>O(log n)</td></tr>
+            <tr><td>Search</td><td>O(n)</td><td>O(n)</td><td>O(1) avg</td><td>O(log n)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 38. Best Practices -->
+    <div class="section" id="best-practices">
+      <div class="section-header-block">
+        <span class="section-num">38</span>
+        <h2>Best Practices in Java</h2>
+      </div>
+      <div class="tips-grid">
+        <div class="tips-card">
+          <h4>📐 Design</h4>
+          <ul>
+            <li>Follow SOLID principles</li>
+            <li>Prefer composition over inheritance</li>
+            <li>Program to interfaces, not implementations</li>
+            <li>Keep classes small and focused (SRP)</li>
+            <li>Use design patterns when appropriate</li>
+          </ul>
+        </div>
+        <div class="tips-card">
+          <h4>🧹 Clean Code</h4>
+          <ul>
+            <li>Use meaningful names for all identifiers</li>
+            <li>Keep methods short (&lt;20 lines ideal)</li>
+            <li>Don't repeat yourself (DRY principle)</li>
+            <li>Avoid magic numbers — use constants</li>
+            <li>One task per method</li>
+          </ul>
+        </div>
+        <div class="tips-card">
+          <h4>⚠️ Error Handling</h4>
+          <ul>
+            <li>Never catch generic Exception silently</li>
+            <li>Log exceptions with meaningful messages</li>
+            <li>Use specific exception types</li>
+            <li>Don't use exceptions for flow control</li>
+            <li>Always close resources in finally/try-with-resources</li>
+          </ul>
+        </div>
+        <div class="tips-card">
+          <h4>🚀 Performance</h4>
+          <ul>
+            <li>Use StringBuilder for string concatenation in loops</li>
+            <li>Choose the right collection (ArrayList vs LinkedList)</li>
+            <li>Avoid creating unnecessary objects</li>
+            <li>Use primitives over wrappers where possible</li>
+            <li>Profile before optimizing (don't guess)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip-box success" style="margin-top:1.5rem">
+        <div class="tip-label">🎯 Final Checklist for Interviews</div>
+        <ul class="styled-list">
+          <li>Know OOP concepts and their real-world examples cold</li>
+          <li>Be ready to write any of the 6 programs from memory</li>
+          <li>Understand time complexity of common operations</li>
+          <li>Know the differences: ArrayList vs LinkedList, HashMap vs Hashtable, == vs equals</li>
+          <li>Java 8 features (lambda, streams) are asked in almost every fresher interview</li>
+          <li>Exception handling hierarchy and try-with-resources</li>
+          <li>String immutability and String Pool concept</li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">☕ Java<span>Prep</span></div>
+  <p>Comprehensive Java interview preparation for freshers.<br>Study smart. Code with confidence. Land your dream job.</p>
+  <div class="footer-links">
+    <a href="#intro">Introduction</a>
+    <a href="#oop">OOP Concepts</a>
+    <a href="#java8">Java 8</a>
+    <a href="#programs">Programs</a>
+    <a href="#interview-qa">Q&A</a>
+    <a href="#best-practices">Best Practices</a>
+  </div>
+  <div class="footer-tags">
+    <span class="badge badge-orange">Java</span>
+    <span class="badge badge-blue">OOP</span>
+    <span class="badge badge-green">Collections</span>
+    <span class="badge badge-purple">Java 8</span>
+    <span class="badge badge-orange">Multithreading</span>
+    <span class="badge badge-blue">Freshers</span>
+  </div>
+  <p style="margin-top:1.5rem;font-size:.78rem;color:var(--text3)">Made with ☕ for freshers cracking their first Java interview · 2024</p>
+</footer>
+
+<!-- Back to Top -->
+<button id="back-top" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  // ─── Progress Bar ──────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    const s = document.documentElement;
+    const prog = (s.scrollTop / (s.scrollHeight - s.clientHeight)) * 100;
+    document.getElementById('progress-bar').style.width = prog + '%';
+    document.getElementById('back-top').classList.toggle('show', s.scrollTop > 400);
+    highlightNav();
+  });
+
+  // ─── Theme Toggle ──────────────────────────────────────
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  }
+
+  // ─── Sidebar Mobile ───────────────────────────────────
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('show');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
+
+  // Close sidebar on nav link click (mobile)
+  document.querySelectorAll('#sidebar a').forEach(a => {
+    a.addEventListener('click', () => { if (window.innerWidth < 900) closeSidebar(); });
+  });
+
+  // ─── Active Nav Highlight ─────────────────────────────
+  function highlightNav() {
+    const sections = document.querySelectorAll('.section');
+    const links = document.querySelectorAll('#sidebarNav a');
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+
+  // ─── Copy Code ────────────────────────────────────────
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ─── FAQ Toggle ───────────────────────────────────────
+  function toggleFaq(btn) {
+    const ans = btn.nextElementSibling;
+    const isOpen = ans.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-a.open').forEach(a => a.classList.remove('open'));
+    document.querySelectorAll('.faq-q.open').forEach(q => q.classList.remove('open'));
+    if (!isOpen) { ans.classList.add('open'); btn.classList.add('open'); }
+  }
+
+  // ─── Search ───────────────────────────────────────────
+  const searchData = [
+    {title:'Introduction to Java',sub:'WORA, history, basics',href:'#intro'},
+    {title:'Features of Java',sub:'OOP, platform-independent, multithreaded',href:'#features'},
+    {title:'JVM, JRE, JDK',sub:'Differences and relationship',href:'#jvm-jre-jdk'},
+    {title:'How Java Works',sub:'Compile, bytecode, execute',href:'#how-java-works'},
+    {title:'Data Types',sub:'int, double, char, boolean, byte',href:'#data-types'},
+    {title:'Variables & Scope',sub:'local, instance, static',href:'#variables'},
+    {title:'Operators',sub:'arithmetic, logical, ternary, bitwise',href:'#operators'},
+    {title:'Conditional Statements',sub:'if-else, switch',href:'#conditionals'},
+    {title:'Loops',sub:'for, while, do-while, for-each',href:'#loops'},
+    {title:'Arrays',sub:'1D, 2D arrays, Arrays.sort',href:'#arrays'},
+    {title:'Strings',sub:'immutability, methods, StringBuilder',href:'#strings'},
+    {title:'OOP Concepts',sub:'encapsulation, inheritance, polymorphism, abstraction',href:'#oop'},
+    {title:'Class & Object',sub:'blueprint, instance, new keyword',href:'#class-object'},
+    {title:'Encapsulation',sub:'private fields, getters, setters',href:'#encapsulation'},
+    {title:'Inheritance',sub:'extends, super, single, multi-level',href:'#inheritance'},
+    {title:'Polymorphism',sub:'overloading, overriding, upcasting',href:'#polymorphism'},
+    {title:'Abstraction',sub:'abstract class, abstract method',href:'#abstraction'},
+    {title:'Constructors',sub:'default, parameterized, copy constructor',href:'#constructors'},
+    {title:'this & super keyword',sub:'current object, parent class reference',href:'#this-super'},
+    {title:'Static Keyword',sub:'static variables, methods, blocks',href:'#static'},
+    {title:'Final Keyword',sub:'constants, final method, final class',href:'#final'},
+    {title:'Access Modifiers',sub:'public, private, protected, default',href:'#access-modifiers'},
+    {title:'Overloading vs Overriding',sub:'compile vs runtime polymorphism',href:'#overloading-overriding'},
+    {title:'Interface vs Abstract Class',sub:'implements vs extends, multiple inheritance',href:'#interface-abstract'},
+    {title:'Exception Handling',sub:'try-catch-finally, throw, throws, custom',href:'#exceptions'},
+    {title:'Collections Framework',sub:'List, Set, Map, Queue',href:'#collections'},
+    {title:'ArrayList vs LinkedList',sub:'performance, use cases',href:'#arraylist-linkedlist'},
+    {title:'HashMap',sub:'key-value, get, put, entrySet',href:'#hashmap'},
+    {title:'Multithreading',sub:'Thread, Runnable, start, run',href:'#threads'},
+    {title:'Synchronization',sub:'synchronized, race condition, deadlock',href:'#sync'},
+    {title:'Garbage Collection',sub:'GC, mark-and-sweep, finalize',href:'#gc'},
+    {title:'Java 8 Features',sub:'lambda, stream, optional, date-time',href:'#java8'},
+    {title:'Lambda Expressions',sub:'anonymous functions, -> syntax',href:'#lambda'},
+    {title:'Stream API',sub:'filter, map, reduce, collect',href:'#streams'},
+    {title:'Functional Interfaces',sub:'Predicate, Function, Consumer, Supplier',href:'#functional'},
+    {title:'Important Programs',sub:'reverse, palindrome, fibonacci, prime',href:'#programs'},
+    {title:'Interview Q&A',sub:'30+ common questions answered',href:'#interview-qa'},
+    {title:'Coding Tips',sub:'before, during, after coding tips',href:'#coding-tips'},
+    {title:'Time Complexity',sub:'Big O, O(1), O(n), O(log n)',href:'#time-complexity'},
+    {title:'Best Practices',sub:'SOLID, clean code, performance',href:'#best-practices'},
+  ];
+
+  const searchInput = document.getElementById('searchInput');
+  const searchResults = document.getElementById('searchResults');
+
+  searchInput.addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove('show'); return; }
+    const matches = searchData.filter(d =>
+      d.title.toLowerCase().includes(q) || d.sub.toLowerCase().includes(q)
+    ).slice(0, 8);
+    if (!matches.length) { searchResults.classList.remove('show'); return; }
+    searchResults.innerHTML = matches.map(m => `
+      <div class="search-item" onclick="goTo('${m.href}')">
+        ${m.title}
+        <span>${m.sub}</span>
+      </div>
+    `).join('');
+    searchResults.classList.add('show');
+  });
+
+  function goTo(href) {
+    searchResults.classList.remove('show');
+    searchInput.value = '';
+    document.querySelector(href)?.scrollIntoView({behavior:'smooth'});
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-search')) searchResults.classList.remove('show');
+  });
+
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { searchResults.classList.remove('show'); searchInput.blur(); }
+  });
+</script>
+</body>
+</html>

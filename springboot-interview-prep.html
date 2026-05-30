@@ -1,0 +1,3050 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spring Boot Interview Prep — 2+ Years Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<style>
+/* ── CSS VARIABLES ── */
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2330;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --accent: #58a6ff;
+  --accent2: #79c0ff;
+  --green: #3fb950;
+  --orange: #f0883e;
+  --red: #f85149;
+  --purple: #d2a8ff;
+  --yellow: #e3b341;
+  --teal: #39d353;
+  --card-bg: #161b22;
+  --card-border: #30363d;
+  --code-bg: #0d1117;
+  --sidebar-w: 280px;
+  --nav-h: 60px;
+  --radius: 8px;
+  --shadow: 0 8px 32px rgba(0,0,0,.4);
+  --transition: .2s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"] {
+  --bg: #f6f8fa;
+  --bg2: #ffffff;
+  --bg3: #f0f3f6;
+  --border: #d0d7de;
+  --text: #1f2328;
+  --text2: #656d76;
+  --text3: #8c959f;
+  --accent: #0969da;
+  --accent2: #0550ae;
+  --green: #1a7f37;
+  --orange: #bc4c00;
+  --red: #d1242f;
+  --purple: #8250df;
+  --yellow: #9a6700;
+  --card-bg: #ffffff;
+  --card-border: #d0d7de;
+  --code-bg: #f6f8fa;
+  --shadow: 0 4px 16px rgba(0,0,0,.1);
+}
+
+/* ── RESET & BASE ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;transition:background var(--transition),color var(--transition)}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;line-height:1.2}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code,pre{font-family:'JetBrains Mono',monospace}
+img{max-width:100%}
+ul{list-style:none}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+
+/* ── PROGRESS BAR ── */
+#progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple));width:0%;z-index:9999;transition:width .1s linear}
+
+/* ── NAVBAR ── */
+#navbar{position:fixed;top:3px;left:0;right:0;height:var(--nav-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.2rem;gap:1rem;z-index:1000;backdrop-filter:blur(12px)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);white-space:nowrap;display:flex;align-items:center;gap:.5rem}
+.nav-logo span{color:var(--accent)}
+.nav-badge{background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:20px;font-family:'JetBrains Mono',monospace}
+.nav-search{flex:1;max-width:380px;position:relative}
+.nav-search input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.45rem .9rem .45rem 2.4rem;border-radius:6px;font-size:.85rem;font-family:'DM Sans',sans-serif;transition:border var(--transition),background var(--transition)}
+.nav-search input:focus{outline:none;border-color:var(--accent);background:var(--bg2)}
+.nav-search input::placeholder{color:var(--text3)}
+.search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;font-size:.9rem}
+.nav-actions{margin-left:auto;display:flex;align-items:center;gap:.6rem}
+.btn-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);transition:all var(--transition);font-size:1rem}
+.btn-icon:hover{background:var(--border);color:var(--text)}
+#sidebar-toggle{display:none}
+.nav-stats{display:flex;gap:.8rem;font-size:.75rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.nav-stat{display:flex;align-items:center;gap:.3rem;background:var(--bg3);padding:.25rem .6rem;border-radius:4px;border:1px solid var(--border)}
+.nav-stat .dot{width:6px;height:6px;border-radius:50%}
+.dot-green{background:var(--green)}
+.dot-orange{background:var(--orange)}
+
+/* ── LAYOUT ── */
+#layout{display:flex;padding-top:calc(var(--nav-h) + 3px)}
+#sidebar{width:var(--sidebar-w);min-height:calc(100vh - var(--nav-h) - 3px);position:fixed;top:calc(var(--nav-h) + 3px);left:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;transition:transform var(--transition);z-index:900;padding-bottom:2rem}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-track{background:transparent}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#main{margin-left:var(--sidebar-w);flex:1;min-width:0;padding:2rem 2.5rem 4rem}
+
+/* ── SIDEBAR NAV ── */
+.sidebar-section{padding:.5rem 0}
+.sidebar-section-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:.4rem 1.2rem;margin-top:.5rem}
+.sidebar-link{display:flex;align-items:center;gap:.6rem;padding:.35rem 1.2rem;font-size:.82rem;color:var(--text2);transition:all var(--transition);border-left:2px solid transparent;cursor:pointer}
+.sidebar-link:hover,.sidebar-link.active{background:var(--bg3);color:var(--text);border-left-color:var(--accent)}
+.sidebar-link .icon{font-size:.9rem;width:18px;text-align:center;flex-shrink:0}
+.sidebar-link .num{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);background:var(--bg3);padding:.1rem .4rem;border-radius:3px}
+.sidebar-divider{border:none;border-top:1px solid var(--border);margin:.5rem 1.2rem}
+
+/* ── HERO ── */
+#hero{background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);border:1px solid var(--border);border-radius:12px;padding:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(88,166,255,.12) 0%,transparent 70%);pointer-events:none}
+#hero::after{content:'';position:absolute;bottom:-40px;left:40%;width:200px;height:200px;background:radial-gradient(circle,rgba(210,168,255,.08) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);color:var(--accent);font-size:.75rem;font-family:'JetBrains Mono',monospace;padding:.3rem .8rem;border-radius:20px;margin-bottom:1rem}
+#hero h1{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;margin-bottom:.75rem;background:linear-gradient(135deg,var(--text) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+#hero p{color:var(--text2);font-size:.95rem;max-width:600px;margin-bottom:1.5rem}
+.hero-tags{display:flex;flex-wrap:wrap;gap:.5rem}
+.hero-tag{background:var(--bg);border:1px solid var(--border);color:var(--text2);font-size:.75rem;font-family:'JetBrains Mono',monospace;padding:.3rem .7rem;border-radius:4px}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1rem;margin-top:1.5rem}
+.hero-stat{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;text-align:center}
+.hero-stat .val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--accent);line-height:1}
+.hero-stat .lbl{font-size:.7rem;color:var(--text3);margin-top:.3rem;font-family:'JetBrains Mono',monospace}
+
+/* ── SECTION STYLES ── */
+.section{margin-bottom:2.5rem;scroll-margin-top:calc(var(--nav-h) + 3px + 1rem)}
+.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.section-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.si-blue{background:rgba(88,166,255,.15);border:1px solid rgba(88,166,255,.3)}
+.si-green{background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3)}
+.si-orange{background:rgba(240,136,62,.15);border:1px solid rgba(240,136,62,.3)}
+.si-purple{background:rgba(210,168,255,.15);border:1px solid rgba(210,168,255,.3)}
+.si-red{background:rgba(248,81,73,.15);border:1px solid rgba(248,81,73,.3)}
+.si-teal{background:rgba(57,211,83,.15);border:1px solid rgba(57,211,83,.3)}
+.si-yellow{background:rgba(227,179,65,.15);border:1px solid rgba(227,179,65,.3)}
+.section-header h2{font-size:1.3rem;font-weight:700}
+.section-header .section-count{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:.2rem .5rem;border-radius:4px}
+
+/* ── CARDS ── */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-bottom:1rem}
+.card-grid-2{grid-template-columns:repeat(auto-fill,minmax(460px,1fr))}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.2rem;transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);position:relative;overflow:hidden}
+.card:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 4px 20px rgba(88,166,255,.1);transform:translateY(-1px)}
+.card-tag{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-family:'JetBrains Mono',monospace;font-weight:600;padding:.2rem .6rem;border-radius:4px;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.05em}
+.tag-core{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid rgba(88,166,255,.2)}
+.tag-security{background:rgba(248,81,73,.15);color:var(--red);border:1px solid rgba(248,81,73,.2)}
+.tag-data{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.2)}
+.tag-perf{background:rgba(240,136,62,.15);color:var(--orange);border:1px solid rgba(240,136,62,.2)}
+.tag-infra{background:rgba(210,168,255,.15);color:var(--purple);border:1px solid rgba(210,168,255,.2)}
+.tag-testing{background:rgba(57,211,83,.15);color:var(--teal);border:1px solid rgba(57,211,83,.2)}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:.5rem;font-family:'Syne',sans-serif}
+.card p{font-size:.85rem;color:var(--text2);line-height:1.6}
+.card-accent{border-left:3px solid var(--accent)}
+.card-green{border-left:3px solid var(--green)}
+.card-orange{border-left:3px solid var(--orange)}
+.card-red{border-left:3px solid var(--red)}
+.card-purple{border-left:3px solid var(--purple)}
+.card ul{margin-top:.6rem;padding-left:0}
+.card ul li{font-size:.83rem;color:var(--text2);padding:.15rem 0;padding-left:1rem;position:relative}
+.card ul li::before{content:'›';position:absolute;left:0;color:var(--accent);font-weight:700}
+
+/* ── CODE BLOCKS ── */
+.code-wrap{position:relative;margin:1rem 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.code-header{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);padding:.5rem 1rem;border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.code-title{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2)}
+.copy-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);background:var(--bg);border:1px solid var(--border);padding:.25rem .7rem;border-radius:4px;transition:all var(--transition);display:flex;align-items:center;gap:.3rem}
+.copy-btn:hover{color:var(--text);border-color:var(--accent)}
+.copy-btn.copied{color:var(--green);border-color:var(--green)}
+pre{background:var(--code-bg);padding:1.1rem 1.2rem;overflow-x:auto;margin:0;font-size:.8rem;line-height:1.7}
+pre::-webkit-scrollbar{height:4px}
+pre::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+/* syntax tokens */
+.kw{color:#ff79c6}
+.cls{color:#8be9fd}
+.fn{color:#50fa7b}
+.str{color:#f1fa8c}
+.num{color:#bd93f9}
+.cmt{color:#6272a4;font-style:italic}
+.ann{color:#ffb86c}
+.type{color:#8be9fd}
+[data-theme="light"] .kw{color:#d63384}
+[data-theme="light"] .cls{color:#0d6efd}
+[data-theme="light"] .fn{color:#0a8754}
+[data-theme="light"] .str{color:#664d03}
+[data-theme="light"] .num{color:#6f42c1}
+[data-theme="light"] .cmt{color:#6c757d}
+[data-theme="light"] .ann{color:#d44000}
+[data-theme="light"] .type{color:#0d6efd}
+
+/* ── TABS ── */
+.tabs{margin:1rem 0}
+.tab-nav{display:flex;gap:.25rem;border-bottom:1px solid var(--border);margin-bottom:1rem;overflow-x:auto;padding-bottom:.1rem}
+.tab-nav::-webkit-scrollbar{height:3px}
+.tab-btn{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text3);padding:.5rem 1rem;border-radius:4px 4px 0 0;border:1px solid transparent;border-bottom:2px solid transparent;transition:all var(--transition);white-space:nowrap}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg3)}
+.tab-btn:hover:not(.active){color:var(--text2)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ── FAQ / ACCORDION ── */
+.faq-list{display:flex;flex-direction:column;gap:.5rem}
+.faq-item{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color var(--transition)}
+.faq-item.open{border-color:var(--accent)}
+.faq-q{display:flex;align-items:flex-start;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;gap:1rem;transition:background var(--transition)}
+.faq-q:hover{background:var(--bg3)}
+.faq-q-text{font-size:.87rem;font-weight:600;color:var(--text);line-height:1.4;font-family:'Syne',sans-serif}
+.faq-chevron{color:var(--text3);transition:transform var(--transition);flex-shrink:0;margin-top:.1rem;font-size:.85rem}
+.faq-item.open .faq-chevron{transform:rotate(180deg);color:var(--accent)}
+.faq-a{display:none;padding:.1rem 1.1rem 1rem;font-size:.84rem;color:var(--text2);line-height:1.7;border-top:1px solid var(--border)}
+.faq-item.open .faq-a{display:block}
+.faq-a code{background:var(--bg3);padding:.1rem .4rem;border-radius:3px;font-size:.8rem;color:var(--accent)}
+
+/* ── BADGES / PILLS ── */
+.badge{display:inline-flex;align-items:center;font-size:.7rem;font-family:'JetBrains Mono',monospace;font-weight:600;padding:.15rem .5rem;border-radius:4px}
+.badge-green{background:rgba(63,185,80,.15);color:var(--green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--red)}
+.badge-orange{background:rgba(240,136,62,.15);color:var(--orange)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent)}
+.badge-purple{background:rgba(210,168,255,.15);color:var(--purple)}
+
+/* ── ALERT BOXES ── */
+.alert{display:flex;gap:.7rem;padding:.9rem 1rem;border-radius:var(--radius);margin:.75rem 0;font-size:.84rem}
+.alert-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+.alert-tip{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.25);color:var(--text)}
+.alert-warn{background:rgba(240,136,62,.08);border:1px solid rgba(240,136,62,.25);color:var(--text)}
+.alert-danger{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.25);color:var(--text)}
+.alert-info{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.25);color:var(--text)}
+
+/* ── COMPARISON TABLE ── */
+.comp-table{width:100%;border-collapse:collapse;font-size:.83rem;margin:1rem 0}
+.comp-table th{background:var(--bg3);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;padding:.65rem 1rem;text-align:left;border-bottom:2px solid var(--border);font-size:.82rem}
+.comp-table td{padding:.55rem 1rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+.comp-table tr:hover td{background:var(--bg3);color:var(--text)}
+.comp-table td:first-child{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:.78rem;font-weight:500}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin:1rem 0}
+
+/* ── ARCHITECTURE DIAGRAM ── */
+.arch-diagram{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1rem 0;font-family:'JetBrains Mono',monospace;font-size:.78rem;overflow-x:auto}
+.arch-box{display:inline-block;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.4rem .9rem;margin:.2rem;white-space:nowrap;font-size:.77rem;color:var(--text2)}
+.arch-box.highlight{border-color:var(--accent);color:var(--accent);background:rgba(88,166,255,.06)}
+.arch-box.green{border-color:var(--green);color:var(--green);background:rgba(63,185,80,.06)}
+.arch-box.orange{border-color:var(--orange);color:var(--orange);background:rgba(240,136,62,.06)}
+.arch-box.purple{border-color:var(--purple);color:var(--purple);background:rgba(210,168,255,.06)}
+.arch-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.3rem;margin:.5rem 0}
+.arch-arrow{color:var(--text3);font-size:1rem;margin:0 .3rem}
+.arch-label{font-size:.7rem;color:var(--text3);text-align:center;margin:.2rem 0}
+.arch-sep{border-top:1px dashed var(--border);margin:.7rem 0}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:2rem;margin:1rem 0}
+.timeline::before{content:'';position:absolute;left:.4rem;top:.3rem;bottom:.3rem;width:1.5px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:1.2rem}
+.tl-item::before{content:'';position:absolute;left:-1.65rem;top:.35rem;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg2);box-shadow:0 0 0 2px var(--accent)}
+.tl-item:last-child{margin-bottom:0}
+.tl-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:.2rem}
+.tl-desc{font-size:.83rem;color:var(--text2);line-height:1.6}
+.tl-item.green::before{background:var(--green);box-shadow:0 0 0 2px var(--green)}
+.tl-item.orange::before{background:var(--orange);box-shadow:0 0 0 2px var(--orange)}
+.tl-item.purple::before{background:var(--purple);box-shadow:0 0 0 2px var(--purple)}
+
+/* ── CHIP LIST ── */
+.chip-list{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.chip{font-size:.74rem;font-family:'JetBrains Mono',monospace;background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:.2rem .6rem;border-radius:20px;transition:all var(--transition)}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── SEARCH HIGHLIGHT ── */
+.search-highlight{background:rgba(227,179,65,.35);border-radius:2px;color:var(--yellow)}
+
+/* ── BEST PRACTICES ── */
+.bp-list{display:flex;flex-direction:column;gap:.4rem;margin:.5rem 0}
+.bp-item{display:flex;align-items:flex-start;gap:.6rem;font-size:.84rem;color:var(--text2);padding:.4rem .7rem;background:var(--bg3);border-radius:5px;border-left:3px solid var(--green)}
+.bp-item.warn{border-left-color:var(--orange)}
+.bp-item.danger{border-left-color:var(--red)}
+.bp-item .bp-icon{flex-shrink:0;margin-top:.1rem}
+
+/* ── GRID UTILITY ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+
+/* ── DIVIDER ── */
+.divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+/* ── SCROLL TO TOP ── */
+#scroll-top{position:fixed;bottom:2rem;right:2rem;width:40px;height:40px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;opacity:0;pointer-events:none;transition:all var(--transition);z-index:800;box-shadow:0 4px 16px rgba(88,166,255,.4)}
+#scroll-top.visible{opacity:1;pointer-events:all}
+#scroll-top:hover{background:var(--accent2);transform:translateY(-2px)}
+
+/* ── SEARCH RESULTS OVERLAY ── */
+#search-results{position:fixed;top:calc(var(--nav-h) + 3px + .5rem);left:50%;transform:translateX(-50%);width:560px;max-width:90vw;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);z-index:1100;display:none;max-height:400px;overflow-y:auto}
+.sr-item{padding:.7rem 1.1rem;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.6rem;transition:background var(--transition)}
+.sr-item:last-child{border-bottom:none}
+.sr-item:hover,.sr-item.focused{background:var(--bg3)}
+.sr-item-icon{flex-shrink:0;font-size:1rem;margin-top:.05rem}
+.sr-item-title{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:var(--text)}
+.sr-item-sub{font-size:.75rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+#search-overlay{position:fixed;inset:0;z-index:1050;display:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0;padding:1.5rem 1rem 3rem}
+  #sidebar-toggle{display:flex}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .card-grid-2{grid-template-columns:1fr}
+  .nav-stats{display:none}
+  #hero{padding:1.5rem}
+}
+@media(max-width:600px){
+  .card-grid{grid-template-columns:1fr}
+  #hero h1{font-size:1.4rem}
+}
+
+/* ── MISC UTILITY ── */
+.mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:1rem}.mb-3{margin-bottom:1.5rem}
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}
+.text-accent{color:var(--accent)}
+.text-green{color:var(--green)}
+.text-orange{color:var(--orange)}
+.text-red{color:var(--red)}
+.text-purple{color:var(--purple)}
+.text-muted{color:var(--text3)}
+.mono{font-family:'JetBrains Mono',monospace}
+.fw-bold{font-weight:700}
+.small{font-size:.8rem}
+
+/* ── SIDEBAR OVERLAY ── */
+#sidebar-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:850;display:none}
+#sidebar.open~#sidebar-bg{display:block}
+.section-divider{display:flex;align-items:center;gap:.75rem;margin:2rem 0 1.5rem}
+.section-divider::before,.section-divider::after{content:'';flex:1;border-top:1px solid var(--border)}
+.section-divider span{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);white-space:nowrap;text-transform:uppercase;letter-spacing:.1em}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <button class="btn-icon" id="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+  <div class="nav-logo">☕ <span>Spring</span>Boot<span class="nav-badge">2+ YOE</span></div>
+  <div class="nav-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Search topics, concepts..." autocomplete="off" />
+  </div>
+  <div class="nav-stats">
+    <span class="nav-stat"><span class="dot dot-green"></span>60+ Topics</span>
+    <span class="nav-stat"><span class="dot dot-orange"></span>Interview Ready</span>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-icon" id="theme-toggle" title="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay"></div>
+<div id="search-results"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Core Spring</div>
+    <div class="sidebar-link active" onclick="scrollTo('hero')"><span class="icon">🏠</span>Overview</div>
+    <div class="sidebar-link" onclick="scrollTo('spring-arch')"><span class="icon">🏗️</span>Spring Architecture</div>
+    <div class="sidebar-link" onclick="scrollTo('spring-boot-internal')"><span class="icon">⚙️</span>Boot Internals</div>
+    <div class="sidebar-link" onclick="scrollTo('autoconfig')"><span class="icon">🔧</span>Auto Configuration</div>
+    <div class="sidebar-link" onclick="scrollTo('di-lifecycle')"><span class="icon">🔄</span>DI & Bean Lifecycle</div>
+    <div class="sidebar-link" onclick="scrollTo('ioc')"><span class="icon">📦</span>IOC Container</div>
+    <div class="sidebar-link" onclick="scrollTo('bean-scopes')"><span class="icon">🎯</span>Bean Scopes</div>
+    <div class="sidebar-link" onclick="scrollTo('lazy')"><span class="icon">⏳</span>Lazy Init</div>
+    <div class="sidebar-link" onclick="scrollTo('circular')"><span class="icon">🔁</span>Circular Dependency</div>
+    <div class="sidebar-link" onclick="scrollTo('custom-bean')"><span class="icon">🛠️</span>Custom Bean Config</div>
+    <div class="sidebar-link" onclick="scrollTo('profiles')"><span class="icon">🌍</span>Profiles & Env</div>
+    <div class="sidebar-link" onclick="scrollTo('config-props')"><span class="icon">📋</span>Config Properties</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">REST API</div>
+    <div class="sidebar-link" onclick="scrollTo('rest-best')"><span class="icon">🌐</span>REST Best Practices</div>
+    <div class="sidebar-link" onclick="scrollTo('api-versioning')"><span class="icon">📌</span>API Versioning</div>
+    <div class="sidebar-link" onclick="scrollTo('exception')"><span class="icon">🚨</span>Exception Handling</div>
+    <div class="sidebar-link" onclick="scrollTo('dto-entity')"><span class="icon">🔀</span>DTO vs Entity</div>
+    <div class="sidebar-link" onclick="scrollTo('validation')"><span class="icon">✅</span>Validation</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">Observability</div>
+    <div class="sidebar-link" onclick="scrollTo('logging')"><span class="icon">📝</span>Logging Strategy</div>
+    <div class="sidebar-link" onclick="scrollTo('slf4j')"><span class="icon">📊</span>SLF4J & Logback</div>
+    <div class="sidebar-link" onclick="scrollTo('correlation')"><span class="icon">🔗</span>Correlation IDs</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">Data & JPA</div>
+    <div class="sidebar-link" onclick="scrollTo('jpa')"><span class="icon">🗄️</span>JPA Internals</div>
+    <div class="sidebar-link" onclick="scrollTo('hibernate')"><span class="icon">🐘</span>Hibernate Lifecycle</div>
+    <div class="sidebar-link" onclick="scrollTo('dirty')"><span class="icon">🧹</span>Dirty Checking</div>
+    <div class="sidebar-link" onclick="scrollTo('lazy-eager')"><span class="icon">⚡</span>Lazy vs Eager</div>
+    <div class="sidebar-link" onclick="scrollTo('n1')"><span class="icon">⚠️</span>N+1 Problem</div>
+    <div class="sidebar-link" onclick="scrollTo('transaction')"><span class="icon">💳</span>Transactions</div>
+    <div class="sidebar-link" onclick="scrollTo('isolation')"><span class="icon">🔒</span>Isolation Levels</div>
+    <div class="sidebar-link" onclick="scrollTo('locking')"><span class="icon">🔐</span>Locking</div>
+    <div class="sidebar-link" onclick="scrollTo('hikari')"><span class="icon">🌊</span>HikariCP</div>
+    <div class="sidebar-link" onclick="scrollTo('query-opt')"><span class="icon">🚀</span>Query Optimization</div>
+    <div class="sidebar-link" onclick="scrollTo('pagination')"><span class="icon">📄</span>Pagination</div>
+    <div class="sidebar-link" onclick="scrollTo('specs')"><span class="icon">🔍</span>Specs & Criteria API</div>
+    <div class="sidebar-link" onclick="scrollTo('caching')"><span class="icon">🗃️</span>Redis Caching</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">Security</div>
+    <div class="sidebar-link" onclick="scrollTo('security')"><span class="icon">🛡️</span>Security Architecture</div>
+    <div class="sidebar-link" onclick="scrollTo('jwt')"><span class="icon">🔑</span>JWT Authentication</div>
+    <div class="sidebar-link" onclick="scrollTo('rbac')"><span class="icon">👤</span>Role-Based Auth</div>
+    <div class="sidebar-link" onclick="scrollTo('oauth2')"><span class="icon">🔏</span>OAuth2</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">Advanced</div>
+    <div class="sidebar-link" onclick="scrollTo('gateway')"><span class="icon">🌉</span>API Gateway</div>
+    <div class="sidebar-link" onclick="scrollTo('filters')"><span class="icon">🔽</span>Interceptors & Filters</div>
+    <div class="sidebar-link" onclick="scrollTo('aop')"><span class="icon">🎭</span>AOP</div>
+    <div class="sidebar-link" onclick="scrollTo('annotations')"><span class="icon">🏷️</span>Custom Annotations</div>
+    <div class="sidebar-link" onclick="scrollTo('async')"><span class="icon">⚡</span>Async Processing</div>
+    <div class="sidebar-link" onclick="scrollTo('scheduling')"><span class="icon">⏰</span>Scheduling</div>
+    <div class="sidebar-link" onclick="scrollTo('kafka')"><span class="icon">📨</span>Kafka</div>
+    <div class="sidebar-link" onclick="scrollTo('rabbitmq')"><span class="icon">🐇</span>RabbitMQ</div>
+    <div class="sidebar-link" onclick="scrollTo('file-upload')"><span class="icon">📁</span>File Upload</div>
+    <div class="sidebar-link" onclick="scrollTo('rate-limit')"><span class="icon">🚦</span>Rate Limiting</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">DevOps & Testing</div>
+    <div class="sidebar-link" onclick="scrollTo('docker')"><span class="icon">🐳</span>Dockerizing</div>
+    <div class="sidebar-link" onclick="scrollTo('cicd')"><span class="icon">🔄</span>CI/CD</div>
+    <div class="sidebar-link" onclick="scrollTo('testing')"><span class="icon">🧪</span>Unit Testing</div>
+    <div class="sidebar-link" onclick="scrollTo('integration-test')"><span class="icon">🔬</span>Integration Testing</div>
+    <div class="sidebar-link" onclick="scrollTo('mockito')"><span class="icon">🎭</span>Mockito & MockMvc</div>
+    <div class="sidebar-link" onclick="scrollTo('actuator')"><span class="icon">📡</span>Actuator</div>
+    <div class="sidebar-link" onclick="scrollTo('prometheus')"><span class="icon">📈</span>Prometheus & Grafana</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">Microservices</div>
+    <div class="sidebar-link" onclick="scrollTo('ms-comm')"><span class="icon">🔗</span>MS Communication</div>
+    <div class="sidebar-link" onclick="scrollTo('feign')"><span class="icon">📡</span>Feign Client</div>
+    <div class="sidebar-link" onclick="scrollTo('resilience')"><span class="icon">🛡️</span>Resilience4j</div>
+    <div class="sidebar-link" onclick="scrollTo('circuit')"><span class="icon">⚡</span>Circuit Breaker</div>
+    <div class="sidebar-link" onclick="scrollTo('eureka')"><span class="icon">🔭</span>Eureka & Discovery</div>
+    <div class="sidebar-link" onclick="scrollTo('config-server')"><span class="icon">🖥️</span>Config Server</div>
+    <div class="sidebar-link" onclick="scrollTo('distributed-tracing')"><span class="icon">🔎</span>Distributed Tracing</div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section-title">Production</div>
+    <div class="sidebar-link" onclick="scrollTo('prod-best')"><span class="icon">🏆</span>Best Practices</div>
+    <div class="sidebar-link" onclick="scrollTo('prod-issues')"><span class="icon">🐛</span>Production Issues</div>
+    <div class="sidebar-link" onclick="scrollTo('perf-opt')"><span class="icon">⚡</span>Performance Tuning</div>
+    <div class="sidebar-link" onclick="scrollTo('memory')"><span class="icon">🧠</span>Memory Leaks</div>
+    <div class="sidebar-link" onclick="scrollTo('interview-qa')"><span class="icon">❓</span>Interview Q&A</div>
+  </div>
+</aside>
+<div id="sidebar-bg" onclick="closeSidebar()"></div>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+<!-- HERO -->
+<section id="hero" class="section">
+  <div class="hero-badge">☕ Spring Boot Interview Guide</div>
+  <h1>Spring Boot — 2+ Years Experience Prep</h1>
+  <p>A comprehensive, production-focused reference covering every Spring Boot topic you need for your backend interview. From IOC internals to microservices resilience patterns.</p>
+  <div class="hero-tags">
+    <span class="hero-tag">Spring Boot 3.x</span>
+    <span class="hero-tag">Java 17+</span>
+    <span class="hero-tag">Spring Security</span>
+    <span class="hero-tag">Spring Data JPA</span>
+    <span class="hero-tag">Hibernate 6</span>
+    <span class="hero-tag">Kafka</span>
+    <span class="hero-tag">Redis</span>
+    <span class="hero-tag">Docker</span>
+    <span class="hero-tag">Microservices</span>
+    <span class="hero-tag">JWT</span>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="val">60+</div><div class="lbl">Topics</div></div>
+    <div class="hero-stat"><div class="val">150+</div><div class="lbl">Code Samples</div></div>
+    <div class="hero-stat"><div class="val">100+</div><div class="lbl">Interview Q&A</div></div>
+    <div class="hero-stat"><div class="val">2+</div><div class="lbl">YOE Focused</div></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ SPRING ARCHITECTURE ════════════════════════════════════ -->
+<section id="spring-arch" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🏗️</div>
+    <h2>Spring Framework Architecture</h2>
+    <span class="section-count">Core</span>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-core">Core Container</span>
+      <h3>Layered Module Architecture</h3>
+      <p>Spring is built on a modular architecture. The Core Container provides IOC/DI. Built on top are: AOP, Data Access, Web MVC, Test.</p>
+      <ul>
+        <li>spring-core: Fundamental abstractions, IOC</li>
+        <li>spring-beans: BeanFactory, bean definitions</li>
+        <li>spring-context: ApplicationContext, events</li>
+        <li>spring-expression: SpEL language support</li>
+      </ul>
+    </div>
+    <div class="card card-accent">
+      <span class="card-tag tag-core">Spring Boot</span>
+      <h3>What Spring Boot Adds</h3>
+      <p>Spring Boot is an <em>opinionated wrapper</em> around Spring Framework. It adds:</p>
+      <ul>
+        <li>Auto-configuration based on classpath</li>
+        <li>Embedded server (Tomcat/Jetty/Undertow)</li>
+        <li>Starter POMs for dependency management</li>
+        <li>Actuator for metrics &amp; health endpoints</li>
+        <li>Externalized configuration support</li>
+      </ul>
+    </div>
+  </div>
+  <div class="arch-diagram">
+    <div class="arch-label">Spring Boot Layered Architecture</div>
+    <div class="arch-row">
+      <div class="arch-box highlight">@SpringBootApplication</div>
+    </div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row">
+      <div class="arch-box highlight">SpringApplication.run()</div>
+    </div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row">
+      <div class="arch-box green">Auto-Configuration</div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-box green">Component Scan</div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-box green">Embedded Server</div>
+    </div>
+    <div class="arch-sep"></div>
+    <div class="arch-row">
+      <div class="arch-box orange">Web Layer (Controllers)</div>
+      <div class="arch-box orange">Service Layer</div>
+      <div class="arch-box orange">Repository Layer</div>
+    </div>
+    <div class="arch-sep"></div>
+    <div class="arch-row">
+      <div class="arch-box purple">Spring IOC Container</div>
+      <div class="arch-box purple">AOP Proxy</div>
+      <div class="arch-box purple">Event Bus</div>
+    </div>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">What's the difference between BeanFactory and ApplicationContext?</span>
+        <span class="faq-chevron">▼</span>
+      </div>
+      <div class="faq-a"><strong>BeanFactory</strong> is the basic container providing DI. <strong>ApplicationContext</strong> extends it and adds enterprise features: event publishing, i18n, AOP auto-proxy, web support. In production always use ApplicationContext (specifically <code>AnnotationConfigApplicationContext</code> or Spring Boot's <code>SpringApplication</code>). BeanFactory lazily instantiates beans; ApplicationContext eagerly instantiates singletons at startup.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ BOOT INTERNALS ════════════════════════════════════ -->
+<section id="spring-boot-internal" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">⚙️</div>
+    <h2>Spring Boot Internal Working</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-title">1. main() → SpringApplication.run()</div>
+      <div class="tl-desc">Entry point. SpringApplication creates an instance, detects web app type (SERVLET, REACTIVE, NONE).</div>
+    </div>
+    <div class="tl-item green">
+      <div class="tl-title">2. Spring Environment Prepared</div>
+      <div class="tl-desc">Loads application.properties/yaml, system env, command-line args. Fires ApplicationEnvironmentPreparedEvent.</div>
+    </div>
+    <div class="tl-item orange">
+      <div class="tl-title">3. ApplicationContext Created</div>
+      <div class="tl-desc">AnnotationConfigServletWebServerApplicationContext created. Fires ApplicationContextInitializedEvent.</div>
+    </div>
+    <div class="tl-item purple">
+      <div class="tl-title">4. Bean Definitions Loaded</div>
+      <div class="tl-desc">Classpath scanning, @Bean methods, imports processed. All bean definitions registered in BeanDefinitionRegistry.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-title">5. Auto-Configuration Applied</div>
+      <div class="tl-desc">spring.factories / AutoConfiguration.imports processed. Conditional annotations evaluated.</div>
+    </div>
+    <div class="tl-item green">
+      <div class="tl-title">6. Beans Instantiated &amp; Wired</div>
+      <div class="tl-desc">Singletons instantiated. DI performed. BeanPostProcessors run. @PostConstruct executed.</div>
+    </div>
+    <div class="tl-item orange">
+      <div class="tl-title">7. Embedded Server Started</div>
+      <div class="tl-desc">Tomcat/Jetty started. DispatcherServlet registered. ApplicationStartedEvent fired.</div>
+    </div>
+    <div class="tl-item purple">
+      <div class="tl-title">8. ApplicationRunners Executed</div>
+      <div class="tl-desc">CommandLineRunner and ApplicationRunner beans execute. ApplicationReadyEvent fired.</div>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">SpringApplication startup hook</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@SpringBootApplication</span>
+<span class="kw">public class</span> <span class="cls">MyApp</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        SpringApplication app = <span class="kw">new</span> <span class="cls">SpringApplication</span>(<span class="cls">MyApp</span>.class);
+        app.<span class="fn">addListeners</span>(<span class="kw">new</span> <span class="cls">ApplicationStartupListener</span>());
+        app.<span class="fn">run</span>(args);
+    }
+}
+
+<span class="cmt">// Hook into startup lifecycle</span>
+<span class="ann">@Component</span>
+<span class="kw">public class</span> <span class="cls">StartupRunner</span> <span class="kw">implements</span> <span class="cls">ApplicationRunner</span> {
+    <span class="ann">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>(<span class="cls">ApplicationArguments</span> args) {
+        <span class="cmt">// Runs after full context initialization</span>
+        log.<span class="fn">info</span>(<span class="str">"App started. Args: {}"</span>, args.<span class="fn">getOptionNames</span>());
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ AUTO CONFIGURATION ════════════════════════════════════ -->
+<section id="autoconfig" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🔧</div>
+    <h2>Auto Configuration Deep Dive</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-green">
+      <span class="card-tag tag-core">Mechanism</span>
+      <h3>How @EnableAutoConfiguration Works</h3>
+      <p>Spring Boot scans <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code> (Boot 3.x). Each entry is a config class annotated with <code>@AutoConfiguration</code>.</p>
+    </div>
+    <div class="card card-green">
+      <span class="card-tag tag-core">Conditional</span>
+      <h3>@Conditional Annotations</h3>
+      <ul>
+        <li><code>@ConditionalOnClass</code> — if class on classpath</li>
+        <li><code>@ConditionalOnMissingBean</code> — if no bean defined</li>
+        <li><code>@ConditionalOnProperty</code> — if property set</li>
+        <li><code>@ConditionalOnWebApplication</code> — if web app</li>
+        <li><code>@ConditionalOnBean</code> — if specific bean exists</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Custom Auto Configuration</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@AutoConfiguration</span>
+<span class="ann">@ConditionalOnClass</span>(<span class="cls">DataSource</span>.class)
+<span class="ann">@ConditionalOnMissingBean</span>(<span class="cls">DataSource</span>.class)
+<span class="ann">@EnableConfigurationProperties</span>(<span class="cls">DataSourceProperties</span>.class)
+<span class="kw">public class</span> <span class="cls">MyDataSourceAutoConfig</span> {
+
+    <span class="ann">@Bean</span>
+    <span class="ann">@ConditionalOnProperty</span>(name = <span class="str">"app.datasource.url"</span>)
+    <span class="kw">public</span> <span class="cls">DataSource</span> <span class="fn">dataSource</span>(<span class="cls">DataSourceProperties</span> props) {
+        <span class="kw">return</span> props.<span class="fn">initializeDataSourceBuilder</span>().<span class="fn">build</span>();
+    }
+}</pre>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div>Run <code>./mvnw spring-boot:run --debug</code> or set <code>debug=true</code> in application.properties to see the Auto-Configuration Report — which configs applied and why.</div></div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">How do you exclude an auto-configuration?</span><span class="faq-chevron">▼</span>
+      </div>
+      <div class="faq-a">Use <code>@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})</code> or in properties: <code>spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration</code></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">What changed from spring.factories to AutoConfiguration.imports in Boot 3.x?</span><span class="faq-chevron">▼</span>
+      </div>
+      <div class="faq-a">Boot 3.x introduced <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code> as the new standard. The old <code>spring.factories</code> still works but is deprecated. The new file is more explicit and improves startup performance because it doesn't need to load all entries at once.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ DI & BEAN LIFECYCLE ════════════════════════════════════ -->
+<section id="di-lifecycle" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">🔄</div>
+    <h2>Dependency Injection &amp; Bean Lifecycle</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-purple">
+      <span class="card-tag tag-core">DI Types</span>
+      <h3>Constructor vs Field vs Setter Injection</h3>
+      <ul>
+        <li><strong>Constructor</strong> — recommended; immutable, testable, mandatory deps</li>
+        <li><strong>Field (@Autowired)</strong> — avoid in production; hard to test, no immutability</li>
+        <li><strong>Setter</strong> — for optional deps; allows reconfiguration</li>
+      </ul>
+    </div>
+    <div class="card card-purple">
+      <span class="card-tag tag-core">Lifecycle</span>
+      <h3>Bean Lifecycle Phases</h3>
+      <div class="timeline" style="margin-top:.5rem">
+        <div class="tl-item"><div class="tl-title">Instantiation</div><div class="tl-desc">Constructor called</div></div>
+        <div class="tl-item green"><div class="tl-title">Populate Properties</div><div class="tl-desc">DI performed, @Autowired set</div></div>
+        <div class="tl-item orange"><div class="tl-title">BeanNameAware / BeanFactoryAware</div><div class="tl-desc">Aware interfaces callbacks</div></div>
+        <div class="tl-item purple"><div class="tl-title">BeanPostProcessor.before</div><div class="tl-desc">Pre-initialization hooks</div></div>
+        <div class="tl-item"><div class="tl-title">@PostConstruct / InitializingBean</div><div class="tl-desc">Custom init logic</div></div>
+        <div class="tl-item green"><div class="tl-title">BeanPostProcessor.after</div><div class="tl-desc">AOP proxy creation happens here</div></div>
+        <div class="tl-item orange"><div class="tl-title">Bean Ready — In Use</div><div class="tl-desc">Application uses the bean</div></div>
+        <div class="tl-item purple"><div class="tl-title">@PreDestroy / DisposableBean</div><div class="tl-desc">Cleanup on context close</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Constructor Injection — Best Practice</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">OrderService</span> {
+    <span class="kw">private final</span> <span class="cls">OrderRepository</span> orderRepository;
+    <span class="kw">private final</span> <span class="cls">PaymentService</span> paymentService;
+    <span class="kw">private final</span> <span class="cls">NotificationService</span> notificationService;
+
+    <span class="cmt">// Spring auto-injects if single constructor (no @Autowired needed in Boot)</span>
+    <span class="kw">public</span> <span class="cls">OrderService</span>(<span class="cls">OrderRepository</span> orderRepository,
+                       <span class="cls">PaymentService</span> paymentService,
+                       <span class="cls">NotificationService</span> notificationService) {
+        this.orderRepository = orderRepository;
+        this.paymentService = paymentService;
+        this.notificationService = notificationService;
+    }
+
+    <span class="ann">@PostConstruct</span>
+    <span class="kw">public void</span> <span class="fn">init</span>() {
+        log.<span class="fn">info</span>(<span class="str">"OrderService initialized"</span>);
+    }
+
+    <span class="ann">@PreDestroy</span>
+    <span class="kw">public void</span> <span class="fn">destroy</span>() {
+        log.<span class="fn">info</span>(<span class="str">"OrderService shutting down"</span>);
+    }
+}</pre>
+  </div>
+  <div class="alert alert-warn"><span class="alert-icon">⚠️</span><div><strong>Common Mistake:</strong> Using <code>@Autowired</code> on fields makes unit testing hard — you can't inject mocks without reflection. Always prefer constructor injection.</div></div>
+</section>
+
+<!-- IOC CONTAINER -->
+<section id="ioc" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">📦</div>
+    <h2>IOC Container Internals</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-core">Internals</span>
+      <h3>BeanDefinition Registry</h3>
+      <p>Every bean is described by a <code>BeanDefinition</code> object: class name, scope, constructor args, property values, init/destroy method names. Registered via <code>BeanDefinitionRegistry</code>.</p>
+    </div>
+    <div class="card card-accent">
+      <span class="card-tag tag-core">Resolution</span>
+      <h3>Bean Resolution Order</h3>
+      <ul>
+        <li>Exact type match</li>
+        <li>By qualifier (<code>@Qualifier</code>)</li>
+        <li>By primary (<code>@Primary</code>)</li>
+        <li>By name (field/param name matches bean name)</li>
+        <li>Throws NoUniqueBeanDefinitionException if ambiguous</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Programmatic Bean Registration</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@SpringBootApplication</span>
+<span class="kw">public class</span> <span class="cls">App</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="kw">var</span> context = <span class="kw">new</span> <span class="cls">AnnotationConfigApplicationContext</span>();
+        context.<span class="fn">registerBean</span>(<span class="str">"myService"</span>, <span class="cls">MyService</span>.class,
+            () -> <span class="kw">new</span> <span class="cls">MyService</span>(<span class="str">"custom-config"</span>));
+        context.<span class="fn">refresh</span>();
+        <span class="cls">MyService</span> svc = context.<span class="fn">getBean</span>(<span class="cls">MyService</span>.class);
+    }
+}</pre>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How does @Qualifier vs @Primary work when multiple beans of same type exist?</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a"><code>@Primary</code> marks one bean as the default when multiple candidates exist — used at the bean definition site. <code>@Qualifier("name")</code> is used at the injection site to specify which exact bean you want. <code>@Qualifier</code> takes precedence over <code>@Primary</code>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- BEAN SCOPES -->
+<section id="bean-scopes" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🎯</div>
+    <h2>Bean Scopes</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="comp-table">
+      <tr><th>Scope</th><th>Lifecycle</th><th>Use Case</th><th>Thread Safe?</th></tr>
+      <tr><td>singleton</td><td>One instance per container (default)</td><td>Services, Repositories</td><td>Yes (if stateless)</td></tr>
+      <tr><td>prototype</td><td>New instance per injection/getBean</td><td>Stateful helper objects</td><td>Yes</td></tr>
+      <tr><td>request</td><td>One per HTTP request</td><td>Web: request-scoped data</td><td>Yes</td></tr>
+      <tr><td>session</td><td>One per HTTP session</td><td>Web: user session state</td><td>No</td></tr>
+      <tr><td>application</td><td>One per ServletContext</td><td>App-wide shared state</td><td>No (synchronize)</td></tr>
+      <tr><td>websocket</td><td>One per WebSocket session</td><td>WebSocket handlers</td><td>Yes</td></tr>
+    </table>
+  </div>
+  <div class="alert alert-warn"><span class="alert-icon">⚠️</span><div><strong>Scope Mismatch Problem:</strong> Injecting a prototype bean into a singleton means the prototype is only created once. Fix: use <code>ApplicationContext.getBean()</code>, <code>@Lookup</code>, or <code>ObjectProvider</code>.</div></div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Prototype in Singleton via ObjectProvider</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">ReportService</span> {
+    <span class="kw">private final</span> <span class="cls">ObjectProvider</span>&lt;<span class="cls">ReportBuilder</span>&gt; reportBuilderProvider;
+
+    <span class="kw">public</span> <span class="cls">ReportService</span>(<span class="cls">ObjectProvider</span>&lt;<span class="cls">ReportBuilder</span>&gt; provider) {
+        <span class="kw">this</span>.reportBuilderProvider = provider;
+    }
+
+    <span class="kw">public</span> <span class="cls">Report</span> <span class="fn">generate</span>(<span class="cls">ReportRequest</span> req) {
+        <span class="cls">ReportBuilder</span> builder = reportBuilderProvider.<span class="fn">getObject</span>();  <span class="cmt">// fresh each time</span>
+        <span class="kw">return</span> builder.<span class="fn">build</span>(req);
+    }
+}
+
+<span class="ann">@Component</span>
+<span class="ann">@Scope</span>(<span class="str">"prototype"</span>)
+<span class="kw">public class</span> <span class="cls">ReportBuilder</span> { <span class="cmt">/* stateful */</span> }</pre>
+  </div>
+</section>
+
+<!-- LAZY INIT -->
+<section id="lazy" class="section">
+  <div class="section-header">
+    <div class="section-icon si-yellow">⏳</div>
+    <h2>Lazy Initialization</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-tag tag-core">Default</span>
+      <h3>Eager vs Lazy</h3>
+      <p>By default Spring Boot eagerly creates all singleton beans at startup. With <code>@Lazy</code> or <code>spring.main.lazy-initialization=true</code>, beans are created on first use.</p>
+      <ul>
+        <li>Eager: catches wiring errors at startup</li>
+        <li>Lazy: faster startup, useful in dev/test</li>
+        <li>Lazy: errors surface at runtime — risky in prod</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-core">Usage</span>
+      <h3>When to Use Lazy</h3>
+      <ul>
+        <li>Rarely-used heavyweight services (PDF generators, report builders)</li>
+        <li>Dev/test environments for fast startup</li>
+        <li>Serverless functions where cold start matters</li>
+        <li>Avoid globally in production microservices</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CIRCULAR DEPENDENCY -->
+<section id="circular" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">🔁</div>
+    <h2>Circular Dependency</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-red">
+      <span class="card-tag tag-core">Problem</span>
+      <h3>What is Circular Dependency?</h3>
+      <p>A → B → A: Service A needs Service B, and Service B needs Service A. Spring Boot 3.x throws <code>BeanCurrentlyInCreationException</code> by default (constructor injection).</p>
+    </div>
+    <div class="card card-green">
+      <span class="card-tag tag-core">Solutions</span>
+      <h3>How to Resolve</h3>
+      <ul>
+        <li><strong>Refactor</strong> — extract common logic to a third service (best)</li>
+        <li><strong>@Lazy on one param</strong> — breaks the cycle with proxy</li>
+        <li><strong>Setter injection</strong> — Spring resolves setter after construction</li>
+        <li><strong>ApplicationContext</strong> — manual late lookup</li>
+      </ul>
+    </div>
+  </div>
+  <div class="alert alert-danger"><span class="alert-icon">🚨</span><div>Circular dependencies usually indicate a design smell — consider whether the classes have single responsibility. Fix the design rather than working around it with <code>@Lazy</code>.</div></div>
+</section>
+
+<!-- CUSTOM BEAN CONFIG -->
+<section id="custom-bean" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🛠️</div>
+    <h2>Custom Bean Configuration</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">@Configuration with conditional beans</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">AppConfig</span> {
+
+    <span class="ann">@Bean</span>
+    <span class="ann">@Primary</span>
+    <span class="kw">public</span> <span class="cls">ObjectMapper</span> <span class="fn">objectMapper</span>() {
+        <span class="kw">return new</span> <span class="cls">ObjectMapper</span>()
+            .<span class="fn">configure</span>(<span class="cls">DeserializationFeature</span>.FAIL_ON_UNKNOWN_PROPERTIES, <span class="kw">false</span>)
+            .<span class="fn">registerModule</span>(<span class="kw">new</span> <span class="cls">JavaTimeModule</span>());
+    }
+
+    <span class="ann">@Bean</span>
+    <span class="ann">@ConditionalOnProperty</span>(name = <span class="str">"app.cache.enabled"</span>, havingValue = <span class="str">"true"</span>)
+    <span class="kw">public</span> <span class="cls">CacheManager</span> <span class="fn">redisCacheManager</span>(<span class="cls">RedisConnectionFactory</span> factory) {
+        <span class="kw">return</span> <span class="cls">RedisCacheManager</span>.<span class="fn">builder</span>(factory)
+            .<span class="fn">cacheDefaults</span>(<span class="cls">RedisCacheConfiguration</span>.<span class="fn">defaultCacheConfig</span>()
+                .<span class="fn">entryTtl</span>(<span class="cls">Duration</span>.<span class="fn">ofMinutes</span>(<span class="num">10</span>)))
+            .<span class="fn">build</span>();
+    }
+
+    <span class="ann">@Bean</span>
+    <span class="ann">@Scope</span>(<span class="str">"prototype"</span>)
+    <span class="kw">public</span> <span class="cls">RestTemplate</span> <span class="fn">restTemplate</span>() {
+        <span class="kw">return new</span> <span class="cls">RestTemplateBuilder</span>()
+            .<span class="fn">connectTimeout</span>(<span class="cls">Duration</span>.<span class="fn">ofSeconds</span>(<span class="num">5</span>))
+            .<span class="fn">readTimeout</span>(<span class="cls">Duration</span>.<span class="fn">ofSeconds</span>(<span class="num">10</span>))
+            .<span class="fn">build</span>();
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- PROFILES -->
+<section id="profiles" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🌍</div>
+    <h2>Profiles &amp; Environment Management</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-green">
+      <span class="card-tag tag-core">Profiles</span>
+      <h3>Spring Profiles</h3>
+      <p>Profiles let you have environment-specific beans and properties. Activate with <code>-Dspring.profiles.active=prod</code> or env var <code>SPRING_PROFILES_ACTIVE=prod</code>.</p>
+      <ul>
+        <li>application-dev.yml, application-prod.yml</li>
+        <li><code>@Profile("prod")</code> on beans/configs</li>
+        <li>Multiple profiles: <code>spring.profiles.active=prod,cloud</code></li>
+        <li><code>@ActiveProfiles</code> in tests</li>
+      </ul>
+    </div>
+    <div class="card card-green">
+      <span class="card-tag tag-core">Priority</span>
+      <h3>Property Source Priority (high → low)</h3>
+      <ul>
+        <li>Command-line arguments</li>
+        <li>JNDI attributes</li>
+        <li>Java System properties (<code>-D</code>)</li>
+        <li>OS environment variables</li>
+        <li>Profile-specific application props</li>
+        <li>application.properties / application.yml</li>
+        <li>@PropertySource annotations</li>
+        <li>Default properties</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">yaml</span><span class="code-title">application.yml with profiles</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt"># application.yml (base)</span>
+spring:
+  application:
+    name: my-service
+
+<span class="cmt">---  # Profile separator</span>
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+logging:
+  level:
+    root: DEBUG
+
+<span class="cmt">---</span>
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+  jpa:
+    show-sql: false</pre>
+  </div>
+</section>
+
+<!-- CONFIG PROPERTIES -->
+<section id="config-props" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">📋</div>
+    <h2>Configuration Properties</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Type-safe @ConfigurationProperties</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@ConfigurationProperties</span>(prefix = <span class="str">"app.payment"</span>)
+<span class="ann">@Validated</span>
+<span class="kw">public record</span> <span class="cls">PaymentProperties</span>(
+    <span class="ann">@NotBlank</span> String apiKey,
+    <span class="ann">@NotBlank</span> String baseUrl,
+    <span class="ann">@Min</span>(<span class="num">1</span>) <span class="ann">@Max</span>(<span class="num">60</span>) int timeoutSeconds,
+    <span class="ann">@NotNull</span> <span class="cls">RetryConfig</span> retry
+) {
+    <span class="kw">public record</span> <span class="cls">RetryConfig</span>(<span class="kw">int</span> maxAttempts, <span class="cls">Duration</span> backoff) {}
+}
+
+<span class="cmt">// Register in @SpringBootApplication or @Configuration:</span>
+<span class="ann">@EnableConfigurationProperties</span>(<span class="cls">PaymentProperties</span>.class)</pre>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div>Add <code>spring-boot-configuration-processor</code> dependency for IDE auto-completion of your custom properties in application.yml.</div></div>
+</section>
+
+<!-- REST BEST PRACTICES -->
+<section id="rest-best" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🌐</div>
+    <h2>REST API Best Practices</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-core">Design</span>
+      <h3>REST Principles</h3>
+      <ul>
+        <li>Use nouns for resources: <code>/users</code>, <code>/orders/{id}</code></li>
+        <li>Use HTTP verbs correctly: GET/POST/PUT/PATCH/DELETE</li>
+        <li>Return proper HTTP status codes</li>
+        <li>Consistent JSON response structure</li>
+        <li>API versioning from day one</li>
+        <li>HATEOAS for discoverable APIs (when appropriate)</li>
+      </ul>
+    </div>
+    <div class="card card-accent">
+      <span class="card-tag tag-core">Status Codes</span>
+      <h3>Correct HTTP Status Usage</h3>
+      <ul>
+        <li><span class="badge badge-green">200</span> OK — GET, PUT success</li>
+        <li><span class="badge badge-green">201</span> Created — POST success, include Location header</li>
+        <li><span class="badge badge-green">204</span> No Content — DELETE success</li>
+        <li><span class="badge badge-orange">400</span> Bad Request — validation failure</li>
+        <li><span class="badge badge-orange">401</span> Unauthorized — not authenticated</li>
+        <li><span class="badge badge-orange">403</span> Forbidden — not authorized</li>
+        <li><span class="badge badge-orange">404</span> Not Found — resource missing</li>
+        <li><span class="badge badge-orange">409</span> Conflict — duplicate/version conflict</li>
+        <li><span class="badge badge-red">500</span> Internal Server Error — unexpected</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">REST Controller — Best Practice</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@RestController</span>
+<span class="ann">@RequestMapping</span>(<span class="str">"/api/v1/orders"</span>)
+<span class="ann">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">OrderController</span> {
+    <span class="kw">private final</span> <span class="cls">OrderService</span> orderService;
+
+    <span class="ann">@GetMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">OrderResponse</span>&gt; <span class="fn">getOrder</span>(<span class="ann">@PathVariable</span> <span class="cls">UUID</span> id) {
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">ok</span>(orderService.<span class="fn">findById</span>(id));
+    }
+
+    <span class="ann">@PostMapping</span>
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">OrderResponse</span>&gt; <span class="fn">createOrder</span>(
+            <span class="ann">@Valid @RequestBody</span> <span class="cls">CreateOrderRequest</span> request) {
+        <span class="cls">OrderResponse</span> created = orderService.<span class="fn">create</span>(request);
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>
+            .<span class="fn">created</span>(<span class="cls">URI</span>.<span class="fn">create</span>(<span class="str">"/api/v1/orders/"</span> + created.<span class="fn">id</span>()))
+            .<span class="fn">body</span>(created);
+    }
+
+    <span class="ann">@PatchMapping</span>(<span class="str">"/{id}/status"</span>)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">OrderResponse</span>&gt; <span class="fn">updateStatus</span>(
+            <span class="ann">@PathVariable</span> <span class="cls">UUID</span> id,
+            <span class="ann">@Valid @RequestBody</span> <span class="cls">UpdateStatusRequest</span> request) {
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">ok</span>(orderService.<span class="fn">updateStatus</span>(id, request));
+    }
+
+    <span class="ann">@DeleteMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;Void&gt; <span class="fn">deleteOrder</span>(<span class="ann">@PathVariable</span> <span class="cls">UUID</span> id) {
+        orderService.<span class="fn">delete</span>(id);
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">noContent</span>().<span class="fn">build</span>();
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- API VERSIONING -->
+<section id="api-versioning" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">📌</div>
+    <h2>API Versioning</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="comp-table">
+      <tr><th>Strategy</th><th>Example</th><th>Pros</th><th>Cons</th></tr>
+      <tr><td>URI Path</td><td>/api/v1/users</td><td>Simple, cacheable</td><td>URI pollution</td></tr>
+      <tr><td>Request Param</td><td>/api/users?version=1</td><td>Simple</td><td>Not RESTful</td></tr>
+      <tr><td>Header</td><td>X-API-Version: 1</td><td>Clean URIs</td><td>Less discoverable</td></tr>
+      <tr><td>Accept Header</td><td>Accept: application/vnd.api.v1+json</td><td>RFC-compliant</td><td>Complex</td></tr>
+    </table>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div><strong>Recommendation:</strong> URI path versioning (<code>/api/v1/</code>) is most common in enterprise because it's explicit, cacheable, and easy to route at the gateway level.</div></div>
+</section>
+
+<!-- EXCEPTION HANDLING -->
+<section id="exception" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">🚨</div>
+    <h2>Global Exception Handling</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">@RestControllerAdvice — Complete Pattern</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@RestControllerAdvice</span>
+<span class="ann">@Slf4j</span>
+<span class="kw">public class</span> <span class="cls">GlobalExceptionHandler</span> {
+
+    <span class="ann">@ExceptionHandler</span>(<span class="cls">ResourceNotFoundException</span>.class)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">ErrorResponse</span>&gt; <span class="fn">handleNotFound</span>(<span class="cls">ResourceNotFoundException</span> ex) {
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">status</span>(404).<span class="fn">body</span>(<span class="cls">ErrorResponse</span>.<span class="fn">of</span>(ex.<span class="fn">getMessage</span>()));
+    }
+
+    <span class="ann">@ExceptionHandler</span>(<span class="cls">MethodArgumentNotValidException</span>.class)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">ValidationErrorResponse</span>&gt; <span class="fn">handleValidation</span>(
+            <span class="cls">MethodArgumentNotValidException</span> ex) {
+        Map&lt;String, String&gt; errors = ex.<span class="fn">getBindingResult</span>().<span class="fn">getFieldErrors</span>().<span class="fn">stream</span>()
+            .<span class="fn">collect</span>(<span class="cls">Collectors</span>.<span class="fn">toMap</span>(
+                <span class="cls">FieldError</span>::<span class="fn">getField</span>,
+                fe -> <span class="cls">Objects</span>.<span class="fn">requireNonNullElse</span>(fe.<span class="fn">getDefaultMessage</span>(), <span class="str">"Invalid"</span>)));
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">badRequest</span>().<span class="fn">body</span>(<span class="kw">new</span> <span class="cls">ValidationErrorResponse</span>(errors));
+    }
+
+    <span class="ann">@ExceptionHandler</span>(<span class="cls">Exception</span>.class)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">ErrorResponse</span>&gt; <span class="fn">handleGeneral</span>(<span class="cls">Exception</span> ex) {
+        log.<span class="fn">error</span>(<span class="str">"Unhandled exception"</span>, ex);
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">internalServerError</span>()
+            .<span class="fn">body</span>(<span class="cls">ErrorResponse</span>.<span class="fn">of</span>(<span class="str">"An internal error occurred"</span>));
+    }
+}
+
+<span class="kw">public record</span> <span class="cls">ErrorResponse</span>(String message, <span class="cls">Instant</span> timestamp, String traceId) {
+    <span class="kw">public static</span> <span class="cls">ErrorResponse</span> <span class="fn">of</span>(String msg) {
+        <span class="kw">return new</span> <span class="cls">ErrorResponse</span>(msg, <span class="cls">Instant</span>.<span class="fn">now</span>(), <span class="cls">MDC</span>.<span class="fn">get</span>(<span class="str">"traceId"</span>));
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- DTO vs ENTITY -->
+<section id="dto-entity" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🔀</div>
+    <h2>DTO vs Entity</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-data">Entity</span>
+      <h3>JPA Entity</h3>
+      <p>Represents the database table. Contains JPA annotations. <strong>Never expose directly in API</strong> — sensitive fields, bidirectional relations can cause infinite serialization loops.</p>
+    </div>
+    <div class="card card-accent">
+      <span class="card-tag tag-core">DTO</span>
+      <h3>Data Transfer Object</h3>
+      <p>Tailored view for API consumers. Decouples API contract from DB schema. Use Java Records for immutable DTOs in Java 16+.</p>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Entity + DTO + MapStruct Mapper</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt">// Entity</span>
+<span class="ann">@Entity</span>
+<span class="ann">@Table</span>(name = <span class="str">"users"</span>)
+<span class="kw">public class</span> <span class="cls">User</span> {
+    <span class="ann">@Id @GeneratedValue</span>(strategy = <span class="cls">GenerationType</span>.UUID)
+    <span class="kw">private</span> <span class="cls">UUID</span> id;
+    <span class="kw">private</span> String email;
+    <span class="kw">private</span> String passwordHash; <span class="cmt">// NEVER expose in DTO</span>
+    <span class="ann">@OneToMany</span>(mappedBy = <span class="str">"user"</span>, fetch = <span class="cls">FetchType</span>.LAZY)
+    <span class="kw">private</span> List&lt;<span class="cls">Order</span>&gt; orders;
+}
+
+<span class="cmt">// Request DTO (record)</span>
+<span class="kw">public record</span> <span class="cls">CreateUserRequest</span>(
+    <span class="ann">@Email @NotBlank</span> String email,
+    <span class="ann">@NotBlank @Size</span>(min = <span class="num">8</span>) String password
+) {}
+
+<span class="cmt">// Response DTO</span>
+<span class="kw">public record</span> <span class="cls">UserResponse</span>(<span class="cls">UUID</span> id, String email, <span class="cls">Instant</span> createdAt) {}
+
+<span class="cmt">// MapStruct mapper (generates impl at compile time)</span>
+<span class="ann">@Mapper</span>(componentModel = <span class="str">"spring"</span>)
+<span class="kw">public interface</span> <span class="cls">UserMapper</span> {
+    <span class="cls">UserResponse</span> <span class="fn">toResponse</span>(<span class="cls">User</span> user);
+    <span class="cls">User</span> <span class="fn">toEntity</span>(<span class="cls">CreateUserRequest</span> request);
+}</pre>
+  </div>
+</section>
+
+<!-- VALIDATION -->
+<section id="validation" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">✅</div>
+    <h2>Validation &amp; Custom Validators</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Custom Constraint Annotation</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt">// 1. Define annotation</span>
+<span class="ann">@Documented</span>
+<span class="ann">@Constraint</span>(validatedBy = <span class="cls">PhoneNumberValidator</span>.class)
+<span class="ann">@Target</span>({<span class="cls">ElementType</span>.FIELD})
+<span class="ann">@Retention</span>(<span class="cls">RetentionPolicy</span>.RUNTIME)
+<span class="kw">public @interface</span> <span class="cls">ValidPhone</span> {
+    String message() <span class="kw">default</span> <span class="str">"Invalid phone number"</span>;
+    Class&lt;?&gt;[] groups() <span class="kw">default</span> {};
+    Class&lt;? extends Payload&gt;[] payload() <span class="kw">default</span> {};
+}
+
+<span class="cmt">// 2. Implement validator</span>
+<span class="kw">public class</span> <span class="cls">PhoneNumberValidator</span> <span class="kw">implements</span> <span class="cls">ConstraintValidator</span>&lt;<span class="cls">ValidPhone</span>, String&gt; {
+    <span class="kw">private static final</span> Pattern PHONE_PATTERN =
+        Pattern.<span class="fn">compile</span>(<span class="str">"^\\+?[1-9]\\d{9,14}$"</span>);
+
+    <span class="ann">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">isValid</span>(String value, <span class="cls">ConstraintValidatorContext</span> ctx) {
+        <span class="kw">if</span> (value == <span class="kw">null</span>) <span class="kw">return true</span>; <span class="cmt">// use @NotNull separately</span>
+        <span class="kw">return</span> PHONE_PATTERN.<span class="fn">matcher</span>(value).<span class="fn">matches</span>();
+    }
+}
+
+<span class="cmt">// 3. Use it</span>
+<span class="kw">public record</span> <span class="cls">ContactRequest</span>(
+    <span class="ann">@NotBlank</span> String name,
+    <span class="ann">@ValidPhone</span> String phone,
+    <span class="ann">@Email</span> String email
+) {}</pre>
+  </div>
+</section>
+
+<!-- LOGGING -->
+<section id="logging" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">📝</div>
+    <h2>Logging Strategy</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-orange">
+      <span class="card-tag tag-core">Levels</span>
+      <h3>Log Level Guidelines</h3>
+      <ul>
+        <li><strong>ERROR</strong> — exceptions, critical failures (alert needed)</li>
+        <li><strong>WARN</strong> — degraded but operational (fallback used)</li>
+        <li><strong>INFO</strong> — business events, startup, key operations</li>
+        <li><strong>DEBUG</strong> — developer diagnostics (dev/staging only)</li>
+        <li><strong>TRACE</strong> — fine-grained, method entry/exit (never prod)</li>
+      </ul>
+    </div>
+    <div class="card card-orange">
+      <span class="card-tag tag-core">Rules</span>
+      <h3>Production Logging Rules</h3>
+      <ul>
+        <li>Never log passwords, tokens, PII</li>
+        <li>Use structured JSON logging in production</li>
+        <li>Include correlation/trace ID in every log</li>
+        <li>Use parameterized messages: <code>log.info("{}", val)</code></li>
+        <li>Log at service boundaries (entry/exit)</li>
+        <li>Async logging (LMAX Disruptor in Logback)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SLF4J -->
+<section id="slf4j" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">📊</div>
+    <h2>SLF4J &amp; Logback</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">xml</span><span class="code-title">logback-spring.xml — JSON structured logging</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre>&lt;configuration&gt;
+  &lt;springProfile name="prod"&gt;
+    &lt;appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender"&gt;
+      &lt;encoder class="net.logstash.logback.encoder.LogstashEncoder"&gt;
+        &lt;includeMdcKeyName&gt;traceId&lt;/includeMdcKeyName&gt;
+        &lt;includeMdcKeyName&gt;userId&lt;/includeMdcKeyName&gt;
+        &lt;includeMdcKeyName&gt;requestId&lt;/includeMdcKeyName&gt;
+      &lt;/encoder&gt;
+    &lt;/appender&gt;
+    &lt;!-- Async wrapper for performance --&gt;
+    &lt;appender name="ASYNC_JSON" class="ch.qos.logback.classic.AsyncAppender"&gt;
+      &lt;queueSize&gt;512&lt;/queueSize&gt;
+      &lt;appender-ref ref="JSON_CONSOLE"/&gt;
+    &lt;/appender&gt;
+    &lt;root level="INFO"&gt;
+      &lt;appender-ref ref="ASYNC_JSON"/&gt;
+    &lt;/root&gt;
+  &lt;/springProfile&gt;
+&lt;/configuration&gt;</pre>
+  </div>
+</section>
+
+<!-- CORRELATION IDs -->
+<section id="correlation" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">🔗</div>
+    <h2>Correlation IDs &amp; Traceability</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Request Tracing Filter</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Component</span>
+<span class="ann">@Order</span>(<span class="num">1</span>)
+<span class="kw">public class</span> <span class="cls">CorrelationIdFilter</span> <span class="kw">extends</span> <span class="cls">OncePerRequestFilter</span> {
+    <span class="kw">private static final</span> String TRACE_HEADER = <span class="str">"X-Trace-Id"</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">doFilterInternal</span>(<span class="cls">HttpServletRequest</span> req,
+            <span class="cls">HttpServletResponse</span> res, <span class="cls">FilterChain</span> chain)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        String traceId = <span class="cls">Optional</span>.<span class="fn">ofNullable</span>(req.<span class="fn">getHeader</span>(TRACE_HEADER))
+            .<span class="fn">orElseGet</span>(() -> <span class="cls">UUID</span>.<span class="fn">randomUUID</span>().<span class="fn">toString</span>());
+        <span class="cls">MDC</span>.<span class="fn">put</span>(<span class="str">"traceId"</span>, traceId);
+        res.<span class="fn">setHeader</span>(TRACE_HEADER, traceId);
+        <span class="kw">try</span> {
+            chain.<span class="fn">doFilter</span>(req, res);
+        } <span class="kw">finally</span> {
+            <span class="cls">MDC</span>.<span class="fn">clear</span>(); <span class="cmt">// crucial — thread pool reuse</span>
+        }
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- JPA INTERNALS -->
+<section id="jpa" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🗄️</div>
+    <h2>Spring Data JPA Internals</h2>
+  </div>
+  <div class="arch-diagram">
+    <div class="arch-label">JPA Layer Stack</div>
+    <div class="arch-row"><div class="arch-box highlight">Spring Data Repository (interface)</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓ proxy generated at runtime</div></div>
+    <div class="arch-row"><div class="arch-box green">SimpleJpaRepository (implementation)</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row"><div class="arch-box orange">EntityManager (JPA API)</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row"><div class="arch-box purple">Hibernate SessionFactory (ORM)</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row"><div class="arch-box">JDBC Connection Pool (HikariCP)</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row"><div class="arch-box highlight">Database</div></div>
+  </div>
+  <div class="card-grid">
+    <div class="card card-green">
+      <span class="card-tag tag-data">Query Methods</span>
+      <h3>Query Derivation</h3>
+      <ul>
+        <li><code>findByEmailAndStatus</code> — AND query</li>
+        <li><code>findByAgeGreaterThan</code> — comparison</li>
+        <li><code>findTop10ByOrderByCreatedAtDesc</code> — limit + sort</li>
+        <li><code>existsByEmail</code> — existence check</li>
+        <li><code>countByStatus</code> — count</li>
+        <li><code>@Query("JPQL/HQL here")</code> — custom queries</li>
+        <li><code>@NativeQuery</code> — raw SQL</li>
+      </ul>
+    </div>
+    <div class="card card-green">
+      <span class="card-tag tag-data">Projections</span>
+      <h3>Interface &amp; DTO Projections</h3>
+      <p>Avoid loading full entities when you only need a few fields. Projections reduce memory and SQL data transfer.</p>
+      <div class="code-wrap" style="margin-top:.5rem">
+        <div class="code-header"><span class="code-lang">java</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="kw">public interface</span> <span class="cls">UserSummary</span> {
+    <span class="cls">UUID</span> <span class="fn">getId</span>();
+    String <span class="fn">getEmail</span>();
+}
+<span class="cmt">// In repository:</span>
+List&lt;<span class="cls">UserSummary</span>&gt; <span class="fn">findByStatus</span>(String status);</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIBERNATE LIFECYCLE -->
+<section id="hibernate" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">🐘</div>
+    <h2>Hibernate Entity Lifecycle</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-title">Transient</div><div class="tl-desc">new MyEntity() — not tracked by Hibernate, no DB row</div></div>
+    <div class="tl-item green"><div class="tl-title">Persistent (Managed)</div><div class="tl-desc">Inside active session. Changes tracked by dirty checking. entityManager.persist() or loaded from DB.</div></div>
+    <div class="tl-item orange"><div class="tl-title">Detached</div><div class="tl-desc">Session closed. Entity no longer tracked. Changes not auto-saved. entityManager.merge() to reattach.</div></div>
+    <div class="tl-item purple"><div class="tl-title">Removed</div><div class="tl-desc">entityManager.remove() — delete on flush/commit</div></div>
+  </div>
+</section>
+
+<!-- DIRTY CHECKING -->
+<section id="dirty" class="section">
+  <div class="section-header">
+    <div class="section-icon si-yellow">🧹</div>
+    <h2>Dirty Checking</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-data">Mechanism</span>
+      <h3>How Dirty Checking Works</h3>
+      <p>On loading, Hibernate stores a snapshot of each managed entity. On session flush, it compares current state with snapshot. If different, it generates an UPDATE SQL automatically.</p>
+    </div>
+    <div class="card card-orange">
+      <span class="card-tag tag-data">Performance</span>
+      <h3>Dirty Checking Overhead</h3>
+      <p>With thousands of entities in session, snapshot comparison is expensive. Solutions:</p>
+      <ul>
+        <li>Load only what you need (projections)</li>
+        <li><code>@DynamicUpdate</code> — updates only changed columns</li>
+        <li>Use <code>@Transactional(readOnly=true)</code> for reads — disables dirty checking</li>
+        <li>Keep sessions short</li>
+      </ul>
+    </div>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div>Always annotate read-only service methods with <code>@Transactional(readOnly = true)</code>. This disables dirty checking, optimizes connection handling, and signals read replicas for routing.</div></div>
+</section>
+
+<!-- LAZY vs EAGER -->
+<section id="lazy-eager" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">⚡</div>
+    <h2>Lazy vs Eager Loading</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="comp-table">
+      <tr><th>Type</th><th>Default For</th><th>SQL</th><th>Risk</th></tr>
+      <tr><td>LAZY</td><td>@OneToMany, @ManyToMany</td><td>Extra query on access</td><td>LazyInitializationException if session closed</td></tr>
+      <tr><td>EAGER</td><td>@ManyToOne, @OneToOne</td><td>JOIN on every load</td><td>Loads unneeded data, N+1</td></tr>
+    </table>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Solving LazyInitializationException</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt">// ❌ Problem: accessing lazy collection outside transaction</span>
+<span class="cls">User</span> user = userRepository.<span class="fn">findById</span>(id).<span class="fn">orElseThrow</span>();
+user.<span class="fn">getOrders</span>().<span class="fn">size</span>(); <span class="cmt">// LazyInitializationException!</span>
+
+<span class="cmt">// ✅ Solution 1: JPQL JOIN FETCH</span>
+<span class="ann">@Query</span>(<span class="str">"SELECT u FROM User u LEFT JOIN FETCH u.orders WHERE u.id = :id"</span>)
+<span class="cls">Optional</span>&lt;<span class="cls">User</span>&gt; <span class="fn">findByIdWithOrders</span>(<span class="ann">@Param</span>(<span class="str">"id"</span>) <span class="cls">UUID</span> id);
+
+<span class="cmt">// ✅ Solution 2: @EntityGraph</span>
+<span class="ann">@EntityGraph</span>(attributePaths = {<span class="str">"orders"</span>, <span class="str">"orders.items"</span>})
+<span class="cls">Optional</span>&lt;<span class="cls">User</span>&gt; <span class="fn">findWithOrdersById</span>(<span class="cls">UUID</span> id);
+
+<span class="cmt">// ✅ Solution 3: @Transactional on service method</span>
+<span class="ann">@Transactional</span>(<span class="fn">readOnly</span> = <span class="kw">true</span>)
+<span class="kw">public</span> <span class="cls">UserDetailResponse</span> <span class="fn">getUserDetails</span>(<span class="cls">UUID</span> id) {
+    <span class="cls">User</span> user = userRepository.<span class="fn">findById</span>(id).<span class="fn">orElseThrow</span>();
+    <span class="kw">return</span> mapper.<span class="fn">toDetailResponse</span>(user); <span class="cmt">// safe within transaction</span>
+}</pre>
+  </div>
+</section>
+
+<!-- N+1 PROBLEM -->
+<section id="n1" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">⚠️</div>
+    <h2>N+1 Query Problem</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-red">
+      <span class="card-tag tag-data">Problem</span>
+      <h3>What is N+1?</h3>
+      <p>Loading N parent entities, then issuing N separate queries for each parent's lazy collection. 1 query for users + N queries for each user's orders = N+1 total queries.</p>
+    </div>
+    <div class="card card-green">
+      <span class="card-tag tag-data">Solutions</span>
+      <h3>Fixes</h3>
+      <ul>
+        <li>JOIN FETCH in JPQL</li>
+        <li>@EntityGraph for selective fetching</li>
+        <li>@BatchSize(size=25) — batch sub-selects</li>
+        <li>@Fetch(FetchMode.SUBSELECT)</li>
+        <li>DTO projections with flat joins</li>
+        <li>Hibernate statistics to detect</li>
+      </ul>
+    </div>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div>Enable Hibernate stats in dev: <code>spring.jpa.properties.hibernate.generate_statistics=true</code>. Check for "query count" in logs. Use <code>p6spy</code> or <code>datasource-proxy</code> to log every SQL with stack trace.</div></div>
+</section>
+
+<!-- TRANSACTION MANAGEMENT -->
+<section id="transaction" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">💳</div>
+    <h2>Transaction Management</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">@Transactional — Production Patterns</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">TransferService</span> {
+
+    <span class="cmt">// Full transaction — any exception rolls back</span>
+    <span class="ann">@Transactional</span>
+    <span class="kw">public void</span> <span class="fn">transfer</span>(<span class="cls">UUID</span> fromId, <span class="cls">UUID</span> toId, <span class="cls">BigDecimal</span> amount) {
+        <span class="cls">Account</span> from = accountRepo.<span class="fn">findByIdForUpdate</span>(fromId); <span class="cmt">// SELECT FOR UPDATE</span>
+        <span class="cls">Account</span> to = accountRepo.<span class="fn">findByIdForUpdate</span>(toId);
+        from.<span class="fn">debit</span>(amount);
+        to.<span class="fn">credit</span>(amount);
+        auditService.<span class="fn">record</span>(fromId, toId, amount); <span class="cmt">// same transaction</span>
+    }
+
+    <span class="cmt">// Read-only - no dirty check, read replica routing</span>
+    <span class="ann">@Transactional</span>(readOnly = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cls">AccountBalance</span> <span class="fn">getBalance</span>(<span class="cls">UUID</span> id) {
+        <span class="kw">return</span> accountRepo.<span class="fn">findBalanceById</span>(id);
+    }
+
+    <span class="cmt">// New transaction for audit — always commits independently</span>
+    <span class="ann">@Transactional</span>(propagation = <span class="cls">Propagation</span>.REQUIRES_NEW)
+    <span class="kw">public void</span> <span class="fn">recordAudit</span>(<span class="cls">AuditEvent</span> event) {
+        auditRepo.<span class="fn">save</span>(event);
+    }
+
+    <span class="cmt">// Rollback on checked exceptions too</span>
+    <span class="ann">@Transactional</span>(rollbackFor = <span class="cls">BusinessException</span>.class)
+    <span class="kw">public void</span> <span class="fn">process</span>(<span class="cls">Request</span> req) <span class="kw">throws</span> <span class="cls">BusinessException</span> { ... }
+}</pre>
+  </div>
+  <div class="alert alert-danger"><span class="alert-icon">🚨</span><div><strong>Self-invocation trap:</strong> Calling a <code>@Transactional</code> method from within the same class bypasses the AOP proxy — the transaction won't start. Always inject the service from outside, or use <code>ApplicationContext.getBean()</code>.</div></div>
+</section>
+
+<!-- ISOLATION LEVELS -->
+<section id="isolation" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🔒</div>
+    <h2>Transaction Isolation Levels</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="comp-table">
+      <tr><th>Level</th><th>Dirty Read</th><th>Non-Repeatable Read</th><th>Phantom Read</th><th>Use Case</th></tr>
+      <tr><td>READ_UNCOMMITTED</td><td>Possible</td><td>Possible</td><td>Possible</td><td>Analytics (rarely use)</td></tr>
+      <tr><td>READ_COMMITTED</td><td>Prevented</td><td>Possible</td><td>Possible</td><td>Default in PostgreSQL, Oracle</td></tr>
+      <tr><td>REPEATABLE_READ</td><td>Prevented</td><td>Prevented</td><td>Possible</td><td>Default in MySQL/InnoDB</td></tr>
+      <tr><td>SERIALIZABLE</td><td>Prevented</td><td>Prevented</td><td>Prevented</td><td>Financial, critical ops</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- LOCKING -->
+<section id="locking" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">🔐</div>
+    <h2>Optimistic vs Pessimistic Locking</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-green">
+      <span class="card-tag tag-data">Optimistic</span>
+      <h3>@Version — Optimistic Locking</h3>
+      <p>No DB lock. Add a version column. On update, checks if version matches. Throws <code>OptimisticLockException</code> on conflict. Best for low-contention scenarios.</p>
+      <div class="code-wrap" style="margin-top:.5rem">
+        <div class="code-header"><span class="code-lang">java</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="cls">Product</span> {
+    <span class="ann">@Version</span>
+    <span class="kw">private</span> Long version;
+    <span class="kw">private int</span> stock;
+}</pre>
+      </div>
+    </div>
+    <div class="card card-red">
+      <span class="card-tag tag-data">Pessimistic</span>
+      <h3>SELECT FOR UPDATE — Pessimistic Locking</h3>
+      <p>Acquires DB lock immediately. Other transactions wait. Use for high-contention: inventory, wallet deductions.</p>
+      <div class="code-wrap" style="margin-top:.5rem">
+        <div class="code-header"><span class="code-lang">java</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="ann">@Lock</span>(<span class="cls">LockModeType</span>.PESSIMISTIC_WRITE)
+<span class="ann">@Query</span>(<span class="str">"SELECT p FROM Product p WHERE p.id = :id"</span>)
+<span class="cls">Optional</span>&lt;<span class="cls">Product</span>&gt; <span class="fn">findByIdForUpdate</span>(<span class="ann">@Param</span>(<span class="str">"id"</span>) <span class="cls">UUID</span> id);</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIKARI -->
+<section id="hikari" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🌊</div>
+    <h2>Connection Pooling — HikariCP</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">yaml</span><span class="code-title">HikariCP tuning for production</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre>spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 20         <span class="cmt"># = (core_count * 2) + effective_spindle_count</span>
+      minimum-idle: 5
+      connection-timeout: 30000     <span class="cmt"># 30s - time to wait for connection</span>
+      idle-timeout: 600000          <span class="cmt"># 10min - remove idle connections</span>
+      max-lifetime: 1800000         <span class="cmt"># 30min - must be less than DB wait_timeout</span>
+      connection-test-query: SELECT 1
+      pool-name: MyAppHikariPool
+      leak-detection-threshold: 5000 <span class="cmt"># detect leaks after 5s</span></pre>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div><strong>Pool Sizing Rule (Hikari docs):</strong> <code>pool_size = (core_count * 2) + effective_spindle_count</code>. For SSD, effective spindle ≈ 1. Don't over-provision — too many connections hurt DB performance.</div></div>
+</section>
+
+<!-- QUERY OPTIMIZATION -->
+<section id="query-opt" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🚀</div>
+    <h2>Query Optimization</h2>
+  </div>
+  <div class="bp-list">
+    <div class="bp-item">✅ Use indexes on frequently queried columns (especially FK columns)</div>
+    <div class="bp-item">✅ Use projections/DTOs instead of full entity queries for reads</div>
+    <div class="bp-item">✅ Use @BatchSize or JOIN FETCH to avoid N+1</div>
+    <div class="bp-item">✅ Use pageable queries — never SELECT * without LIMIT</div>
+    <div class="bp-item">✅ Use @Transactional(readOnly=true) on read methods</div>
+    <div class="bp-item warn">⚠️ Avoid LIKE '%value%' — can't use indexes</div>
+    <div class="bp-item warn">⚠️ Avoid functions on indexed columns in WHERE clause</div>
+    <div class="bp-item danger">❌ Never load all records in memory for processing — use streaming</div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Stream large dataset</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Transactional</span>(readOnly = <span class="kw">true</span>)
+<span class="kw">public void</span> <span class="fn">processAllUsers</span>() {
+    <span class="kw">try</span> (<span class="cls">Stream</span>&lt;<span class="cls">User</span>&gt; stream = userRepository.<span class="fn">findAllByStream</span>()) {
+        stream.<span class="fn">forEach</span>(u -> processingService.<span class="fn">process</span>(u));
+    }
+}
+
+<span class="cmt">// In repository:</span>
+<span class="ann">@Query</span>(<span class="str">"SELECT u FROM User u"</span>)
+<span class="ann">@QueryHints</span>(value = {<span class="ann">@QueryHint</span>(name = HINT_FETCH_SIZE, value = <span class="str">"500"</span>)})
+<span class="cls">Stream</span>&lt;<span class="cls">User</span>&gt; <span class="fn">findAllByStream</span>();</pre>
+  </div>
+</section>
+
+<!-- PAGINATION -->
+<section id="pagination" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">📄</div>
+    <h2>Pagination &amp; Sorting</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Pageable — controller to repository</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt">// Controller</span>
+<span class="ann">@GetMapping</span>
+<span class="kw">public</span> <span class="cls">Page</span>&lt;<span class="cls">UserResponse</span>&gt; <span class="fn">getUsers</span>(
+        <span class="ann">@PageableDefault</span>(size = <span class="num">20</span>, sort = <span class="str">"createdAt"</span>,
+                         direction = <span class="cls">Sort.Direction</span>.DESC)
+        <span class="cls">Pageable</span> pageable) {
+    <span class="kw">return</span> userService.<span class="fn">findAll</span>(pageable);
+}
+
+<span class="cmt">// Service</span>
+<span class="ann">@Transactional</span>(readOnly = <span class="kw">true</span>)
+<span class="kw">public</span> <span class="cls">Page</span>&lt;<span class="cls">UserResponse</span>&gt; <span class="fn">findAll</span>(<span class="cls">Pageable</span> pageable) {
+    <span class="kw">return</span> userRepository.<span class="fn">findAll</span>(pageable).<span class="fn">map</span>(mapper::<span class="fn">toResponse</span>);
+}
+
+<span class="cmt">// Cursor-based pagination for large datasets (no OFFSET)</span>
+<span class="ann">@Query</span>(<span class="str">"SELECT u FROM User u WHERE u.id > :lastId ORDER BY u.id ASC"</span>)
+List&lt;<span class="cls">User</span>&gt; <span class="fn">findNextPage</span>(<span class="ann">@Param</span>(<span class="str">"lastId"</span>) <span class="cls">UUID</span> lastId, <span class="cls">Pageable</span> pageable);</pre>
+  </div>
+  <div class="alert alert-warn"><span class="alert-icon">⚠️</span><div>OFFSET pagination degrades with large offsets (DB scans skipped rows). For tables with millions of rows, use cursor/keyset pagination using the last seen ID.</div></div>
+</section>
+
+<!-- SPECS -->
+<section id="specs" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">🔍</div>
+    <h2>Specifications &amp; Criteria API</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">JPA Specification for dynamic queries</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="kw">public class</span> <span class="cls">UserSpecifications</span> {
+
+    <span class="kw">public static</span> <span class="cls">Specification</span>&lt;<span class="cls">User</span>&gt; <span class="fn">hasEmail</span>(String email) {
+        <span class="kw">return</span> (root, query, cb) ->
+            email == <span class="kw">null</span> ? <span class="kw">null</span> : cb.<span class="fn">equal</span>(root.<span class="fn">get</span>(<span class="str">"email"</span>), email);
+    }
+
+    <span class="kw">public static</span> <span class="cls">Specification</span>&lt;<span class="cls">User</span>&gt; <span class="fn">hasStatus</span>(String status) {
+        <span class="kw">return</span> (root, query, cb) ->
+            status == <span class="kw">null</span> ? <span class="kw">null</span> : cb.<span class="fn">equal</span>(root.<span class="fn">get</span>(<span class="str">"status"</span>), status);
+    }
+
+    <span class="kw">public static</span> <span class="cls">Specification</span>&lt;<span class="cls">User</span>&gt; <span class="fn">createdAfter</span>(<span class="cls">LocalDate</span> date) {
+        <span class="kw">return</span> (root, query, cb) ->
+            date == <span class="kw">null</span> ? <span class="kw">null</span> : cb.<span class="fn">greaterThan</span>(root.&lt;<span class="cls">LocalDate</span>&gt;<span class="fn">get</span>(<span class="str">"createdAt"</span>), date);
+    }
+}
+
+<span class="cmt">// Usage: combine dynamically</span>
+<span class="kw">var</span> spec = <span class="cls">Specification</span>.<span class="fn">where</span>(<span class="fn">hasEmail</span>(filter.<span class="fn">email</span>()))
+    .<span class="fn">and</span>(<span class="fn">hasStatus</span>(filter.<span class="fn">status</span>()))
+    .<span class="fn">and</span>(<span class="fn">createdAfter</span>(filter.<span class="fn">from</span>()));
+<span class="kw">return</span> userRepository.<span class="fn">findAll</span>(spec, pageable);</pre>
+  </div>
+</section>
+
+<!-- CACHING -->
+<section id="caching" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🗃️</div>
+    <h2>Caching with Redis</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Spring Cache + Redis</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">ProductService</span> {
+
+    <span class="ann">@Cacheable</span>(value = <span class="str">"products"</span>, key = <span class="str">"#id"</span>,
+               unless = <span class="str">"#result == null"</span>)
+    <span class="kw">public</span> <span class="cls">ProductResponse</span> <span class="fn">findById</span>(<span class="cls">UUID</span> id) {
+        <span class="kw">return</span> productRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">map</span>(mapper::<span class="fn">toResponse</span>)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cls">NotFoundException</span>(<span class="str">"Product not found"</span>));
+    }
+
+    <span class="ann">@CacheEvict</span>(value = <span class="str">"products"</span>, key = <span class="str">"#id"</span>)
+    <span class="kw">public void</span> <span class="fn">updateProduct</span>(<span class="cls">UUID</span> id, <span class="cls">UpdateProductRequest</span> req) {
+        <span class="cmt">// ... update logic</span>
+    }
+
+    <span class="ann">@CachePut</span>(value = <span class="str">"products"</span>, key = <span class="str">"#result.id()"</span>)
+    <span class="kw">public</span> <span class="cls">ProductResponse</span> <span class="fn">createProduct</span>(<span class="cls">CreateProductRequest</span> req) {
+        <span class="cmt">// ... create logic — also populates cache</span>
+    }
+}
+
+<span class="cmt">// Config with per-cache TTL</span>
+<span class="ann">@Bean</span>
+<span class="kw">public</span> <span class="cls">RedisCacheManagerBuilderCustomizer</span> <span class="fn">cacheCustomizer</span>() {
+    <span class="kw">return</span> builder -> builder
+        .<span class="fn">withCacheConfiguration</span>(<span class="str">"products"</span>,
+            <span class="cls">RedisCacheConfiguration</span>.<span class="fn">defaultCacheConfig</span>()
+                .<span class="fn">entryTtl</span>(<span class="cls">Duration</span>.<span class="fn">ofMinutes</span>(<span class="num">15</span>)))
+        .<span class="fn">withCacheConfiguration</span>(<span class="str">"users"</span>,
+            <span class="cls">RedisCacheConfiguration</span>.<span class="fn">defaultCacheConfig</span>()
+                .<span class="fn">entryTtl</span>(<span class="cls">Duration</span>.<span class="fn">ofHours</span>(<span class="num">1</span>)));
+}</pre>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section id="security" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">🛡️</div>
+    <h2>Spring Security Architecture</h2>
+  </div>
+  <div class="arch-diagram">
+    <div class="arch-label">Security Filter Chain</div>
+    <div class="arch-row"><div class="arch-box highlight">HTTP Request</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row"><div class="arch-box green">SecurityFilterChain</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row">
+      <div class="arch-box">CORS Filter</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">CSRF Filter</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box highlight">JWT Auth Filter</div>
+    </div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row"><div class="arch-box orange">AuthenticationManager</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row">
+      <div class="arch-box">DaoAuthenticationProvider</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">UserDetailsService</div>
+    </div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row"><div class="arch-box purple">SecurityContextHolder (ThreadLocal)</div></div>
+    <div class="arch-row"><div class="arch-arrow">↓</div></div>
+    <div class="arch-row">
+      <div class="arch-box">AccessDecisionManager</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box highlight">Controller / Resource</div>
+    </div>
+  </div>
+</section>
+
+<!-- JWT -->
+<section id="jwt" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">🔑</div>
+    <h2>JWT Authentication</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">JWT Filter + Security Config</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Component</span>
+<span class="kw">public class</span> <span class="cls">JwtAuthFilter</span> <span class="kw">extends</span> <span class="cls">OncePerRequestFilter</span> {
+    <span class="ann">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">doFilterInternal</span>(<span class="cls">HttpServletRequest</span> req,
+            <span class="cls">HttpServletResponse</span> res, <span class="cls">FilterChain</span> chain)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        String authHeader = req.<span class="fn">getHeader</span>(<span class="str">"Authorization"</span>);
+        <span class="kw">if</span> (authHeader == <span class="kw">null</span> || !authHeader.<span class="fn">startsWith</span>(<span class="str">"Bearer "</span>)) {
+            chain.<span class="fn">doFilter</span>(req, res); <span class="kw">return</span>;
+        }
+        String token = authHeader.<span class="fn">substring</span>(<span class="num">7</span>);
+        String username = jwtService.<span class="fn">extractUsername</span>(token);
+        <span class="kw">if</span> (username != <span class="kw">null</span> && <span class="cls">SecurityContextHolder</span>.<span class="fn">getContext</span>().<span class="fn">getAuthentication</span>() == <span class="kw">null</span>) {
+            <span class="cls">UserDetails</span> userDetails = userDetailsService.<span class="fn">loadUserByUsername</span>(username);
+            <span class="kw">if</span> (jwtService.<span class="fn">isTokenValid</span>(token, userDetails)) {
+                <span class="kw">var</span> authToken = <span class="kw">new</span> <span class="cls">UsernamePasswordAuthenticationToken</span>(
+                    userDetails, <span class="kw">null</span>, userDetails.<span class="fn">getAuthorities</span>());
+                authToken.<span class="fn">setDetails</span>(<span class="kw">new</span> <span class="cls">WebAuthenticationDetailsSource</span>().<span class="fn">buildDetails</span>(req));
+                <span class="cls">SecurityContextHolder</span>.<span class="fn">getContext</span>().<span class="fn">setAuthentication</span>(authToken);
+            }
+        }
+        chain.<span class="fn">doFilter</span>(req, res);
+    }
+}
+
+<span class="ann">@Configuration</span>
+<span class="ann">@EnableMethodSecurity</span>
+<span class="kw">public class</span> <span class="cls">SecurityConfig</span> {
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> <span class="cls">SecurityFilterChain</span> <span class="fn">filterChain</span>(<span class="cls">HttpSecurity</span> http) <span class="kw">throws</span> <span class="cls">Exception</span> {
+        <span class="kw">return</span> http
+            .<span class="fn">csrf</span>(<span class="cls">AbstractHttpConfigurer</span>::disable)
+            .<span class="fn">sessionManagement</span>(s -> s.<span class="fn">sessionCreationPolicy</span>(<span class="cls">STATELESS</span>))
+            .<span class="fn">authorizeHttpRequests</span>(auth -> auth
+                .<span class="fn">requestMatchers</span>(<span class="str">"/api/v1/auth/**"</span>, <span class="str">"/actuator/health"</span>).<span class="fn">permitAll</span>()
+                .<span class="fn">requestMatchers</span>(<span class="str">"/api/v1/admin/**"</span>).<span class="fn">hasRole</span>(<span class="str">"ADMIN"</span>)
+                .<span class="fn">anyRequest</span>().<span class="fn">authenticated</span>())
+            .<span class="fn">addFilterBefore</span>(jwtAuthFilter, <span class="cls">UsernamePasswordAuthenticationFilter</span>.class)
+            .<span class="fn">build</span>();
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- RBAC -->
+<section id="rbac" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">👤</div>
+    <h2>Role-Based Authorization</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Method-level security</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@RestController</span>
+<span class="kw">public class</span> <span class="cls">AdminController</span> {
+
+    <span class="ann">@GetMapping</span>(<span class="str">"/api/v1/admin/users"</span>)
+    <span class="ann">@PreAuthorize</span>(<span class="str">"hasRole('ADMIN')"</span>)
+    <span class="kw">public</span> List&lt;<span class="cls">UserResponse</span>&gt; <span class="fn">getAllUsers</span>() { ... }
+
+    <span class="ann">@DeleteMapping</span>(<span class="str">"/api/v1/users/{id}"</span>)
+    <span class="ann">@PreAuthorize</span>(<span class="str">"hasRole('ADMIN') or #id == authentication.principal.id"</span>)
+    <span class="kw">public void</span> <span class="fn">deleteUser</span>(<span class="ann">@PathVariable</span> <span class="cls">UUID</span> id) { ... }
+
+    <span class="ann">@GetMapping</span>(<span class="str">"/api/v1/orders/{id}"</span>)
+    <span class="ann">@PostAuthorize</span>(<span class="str">"returnObject.userId == authentication.principal.id"</span>)
+    <span class="kw">public</span> <span class="cls">OrderResponse</span> <span class="fn">getOrder</span>(<span class="ann">@PathVariable</span> <span class="cls">UUID</span> id) { ... }
+}</pre>
+  </div>
+</section>
+
+<!-- OAUTH2 -->
+<section id="oauth2" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🔏</div>
+    <h2>OAuth2 Basics</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-security">OAuth2</span>
+      <h3>OAuth2 Flow Types</h3>
+      <ul>
+        <li><strong>Authorization Code + PKCE</strong> — web/mobile apps (recommended)</li>
+        <li><strong>Client Credentials</strong> — machine-to-machine (microservices)</li>
+        <li><strong>Implicit</strong> — deprecated, avoid</li>
+        <li><strong>Resource Owner Password</strong> — legacy, avoid</li>
+      </ul>
+    </div>
+    <div class="card card-accent">
+      <span class="card-tag tag-security">Resource Server</span>
+      <h3>Spring Boot as Resource Server</h3>
+      <div class="code-wrap" style="margin-top:.5rem">
+        <div class="code-header"><span class="code-lang">yaml</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre>spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AOP -->
+<section id="aop" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">🎭</div>
+    <h2>AOP in Spring Boot</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Custom Logging AOP Aspect</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Aspect</span>
+<span class="ann">@Component</span>
+<span class="ann">@Slf4j</span>
+<span class="kw">public class</span> <span class="cls">PerformanceLoggingAspect</span> {
+
+    <span class="ann">@Around</span>(<span class="str">"@annotation(LogExecutionTime)"</span>)
+    <span class="kw">public</span> Object <span class="fn">logTime</span>(<span class="cls">ProceedingJoinPoint</span> pjp) <span class="kw">throws</span> Throwable {
+        <span class="kw">long</span> start = <span class="cls">System</span>.<span class="fn">currentTimeMillis</span>();
+        <span class="kw">try</span> {
+            Object result = pjp.<span class="fn">proceed</span>();
+            <span class="kw">long</span> duration = <span class="cls">System</span>.<span class="fn">currentTimeMillis</span>() - start;
+            log.<span class="fn">info</span>(<span class="str">"{}#{} took {}ms"</span>,
+                pjp.<span class="fn">getSignature</span>().<span class="fn">getDeclaringTypeName</span>(),
+                pjp.<span class="fn">getSignature</span>().<span class="fn">getName</span>(), duration);
+            <span class="kw">return</span> result;
+        } <span class="kw">catch</span> (Throwable ex) {
+            log.<span class="fn">error</span>(<span class="str">"Exception in {}"</span>, pjp.<span class="fn">getSignature</span>(), ex);
+            <span class="kw">throw</span> ex;
+        }
+    }
+
+    <span class="cmt">// Pointcut: all public methods in service layer</span>
+    <span class="ann">@Pointcut</span>(<span class="str">"execution(public * com.example..service.*.*(..))"</span>)
+    <span class="kw">public void</span> <span class="fn">serviceLayer</span>() {}
+
+    <span class="ann">@Before</span>(<span class="str">"serviceLayer()"</span>)
+    <span class="kw">public void</span> <span class="fn">logServiceEntry</span>(<span class="cls">JoinPoint</span> jp) {
+        log.<span class="fn">debug</span>(<span class="str">"Entering: {}"</span>, jp.<span class="fn">getSignature</span>().<span class="fn">getName</span>());
+    }
+}</pre>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Why doesn't @Transactional work when called within the same class?</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Spring AOP creates a proxy around your bean. When you call a method internally (<code>this.method()</code>), you bypass the proxy and the AOP advice (including transaction management) is never invoked. To fix: inject the bean into itself via <code>@Autowired @Lazy</code>, or use <code>AspectJ</code> weaving for self-invocation, or restructure to avoid the pattern.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CUSTOM ANNOTATIONS -->
+<section id="annotations" class="section">
+  <div class="section-header">
+    <div class="section-icon si-yellow">🏷️</div>
+    <h2>Custom Annotations</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">@RateLimit custom annotation with AOP</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt">// Annotation definition</span>
+<span class="ann">@Target</span>(<span class="cls">ElementType</span>.METHOD)
+<span class="ann">@Retention</span>(<span class="cls">RetentionPolicy</span>.RUNTIME)
+<span class="kw">public @interface</span> <span class="cls">RateLimit</span> {
+    <span class="kw">int</span> requests() <span class="kw">default</span> <span class="num">100</span>;
+    <span class="kw">int</span> perSeconds() <span class="kw">default</span> <span class="num">60</span>;
+}
+
+<span class="cmt">// AOP handler</span>
+<span class="ann">@Aspect</span>
+<span class="ann">@Component</span>
+<span class="kw">public class</span> <span class="cls">RateLimitAspect</span> {
+    <span class="kw">private final</span> Map&lt;String, <span class="cls">RateLimiter</span>&gt; limiters = <span class="kw">new</span> <span class="cls">ConcurrentHashMap</span>&lt;&gt;();
+
+    <span class="ann">@Around</span>(<span class="str">"@annotation(rateLimit)"</span>)
+    <span class="kw">public</span> Object <span class="fn">enforce</span>(<span class="cls">ProceedingJoinPoint</span> pjp, <span class="cls">RateLimit</span> rateLimit) <span class="kw">throws</span> Throwable {
+        String key = pjp.<span class="fn">getSignature</span>().<span class="fn">toShortString</span>();
+        <span class="cls">RateLimiter</span> limiter = limiters.<span class="fn">computeIfAbsent</span>(key,
+            k -> <span class="cls">RateLimiter</span>.<span class="fn">create</span>((double) rateLimit.<span class="fn">requests</span>() / rateLimit.<span class="fn">perSeconds</span>()));
+        <span class="kw">if</span> (!limiter.<span class="fn">tryAcquire</span>()) {
+            <span class="kw">throw new</span> <span class="cls">TooManyRequestsException</span>(<span class="str">"Rate limit exceeded"</span>);
+        }
+        <span class="kw">return</span> pjp.<span class="fn">proceed</span>();
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- ASYNC -->
+<section id="async" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">⚡</div>
+    <h2>Async Processing</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">@Async with custom thread pool</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Configuration</span>
+<span class="ann">@EnableAsync</span>
+<span class="kw">public class</span> <span class="cls">AsyncConfig</span> {
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> <span class="cls">Executor</span> <span class="fn">asyncExecutor</span>() {
+        <span class="kw">var</span> exec = <span class="kw">new</span> <span class="cls">ThreadPoolTaskExecutor</span>();
+        exec.<span class="fn">setCorePoolSize</span>(<span class="num">5</span>);
+        exec.<span class="fn">setMaxPoolSize</span>(<span class="num">20</span>);
+        exec.<span class="fn">setQueueCapacity</span>(<span class="num">200</span>);
+        exec.<span class="fn">setThreadNamePrefix</span>(<span class="str">"async-"</span>);
+        exec.<span class="fn">setRejectedExecutionHandler</span>(<span class="kw">new</span> <span class="cls">ThreadPoolExecutor</span>.<span class="cls">CallerRunsPolicy</span>());
+        exec.<span class="fn">initialize</span>();
+        <span class="kw">return</span> exec;
+    }
+}
+
+<span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">EmailService</span> {
+    <span class="ann">@Async</span>
+    <span class="kw">public</span> <span class="cls">CompletableFuture</span>&lt;Void&gt; <span class="fn">sendEmail</span>(<span class="cls">EmailRequest</span> req) {
+        <span class="cmt">// non-blocking email sending</span>
+        smtpClient.<span class="fn">send</span>(req);
+        <span class="kw">return</span> <span class="cls">CompletableFuture</span>.<span class="fn">completedFuture</span>(<span class="kw">null</span>);
+    }
+}
+
+<span class="cmt">// In controller — fire and forget:</span>
+emailService.<span class="fn">sendEmail</span>(req); <span class="cmt">// returns immediately</span></pre>
+  </div>
+  <div class="alert alert-warn"><span class="alert-icon">⚠️</span><div><code>@Async</code> suffers from the same self-invocation problem as <code>@Transactional</code>. Must be called from outside the class. Also, exceptions in <code>void</code> async methods are silently swallowed — always return <code>CompletableFuture</code> and handle exceptions.</div></div>
+</section>
+
+<!-- SCHEDULING -->
+<section id="scheduling" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">⏰</div>
+    <h2>Scheduling Jobs</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">@Scheduled — Cron jobs</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Component</span>
+<span class="ann">@Slf4j</span>
+<span class="kw">public class</span> <span class="cls">ReportScheduler</span> {
+
+    <span class="cmt">// Every day at 2 AM</span>
+    <span class="ann">@Scheduled</span>(cron = <span class="str">"0 0 2 * * ?"</span>)
+    <span class="kw">public void</span> <span class="fn">generateDailyReport</span>() {
+        log.<span class="fn">info</span>(<span class="str">"Starting daily report..."</span>);
+        reportService.<span class="fn">generate</span>();
+    }
+
+    <span class="cmt">// Fixed delay: 5min after last run completes</span>
+    <span class="ann">@Scheduled</span>(fixedDelay = 300_000, initialDelay = 60_000)
+    <span class="kw">public void</span> <span class="fn">syncExternalData</span>() {
+        syncService.<span class="fn">sync</span>();
+    }
+}
+
+<span class="cmt">// For distributed environments: use ShedLock</span>
+<span class="ann">@Scheduled</span>(cron = <span class="str">"0 0 * * * ?"</span>)
+<span class="ann">@SchedulerLock</span>(name = <span class="str">"hourlyJob"</span>, lockAtMostFor = <span class="str">"PT55M"</span>)
+<span class="kw">public void</span> <span class="fn">hourlyJob</span>() { ... }</pre>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div>In a multi-instance environment, <code>@Scheduled</code> runs on every instance. Use <strong>ShedLock</strong> or <strong>Quartz</strong> for distributed locking to ensure a job runs only on one node.</div></div>
+</section>
+
+<!-- KAFKA -->
+<section id="kafka" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">📨</div>
+    <h2>Kafka Integration</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Kafka Producer + Consumer</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt">// Producer</span>
+<span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">OrderEventProducer</span> {
+    <span class="kw">private final</span> <span class="cls">KafkaTemplate</span>&lt;String, <span class="cls">OrderEvent</span>&gt; kafkaTemplate;
+
+    <span class="kw">public void</span> <span class="fn">publish</span>(<span class="cls">OrderEvent</span> event) {
+        kafkaTemplate.<span class="fn">send</span>(<span class="str">"orders.created"</span>, event.<span class="fn">orderId</span>().<span class="fn">toString</span>(), event)
+            .<span class="fn">whenComplete</span>((result, ex) -> {
+                <span class="kw">if</span> (ex != <span class="kw">null</span>) log.<span class="fn">error</span>(<span class="str">"Failed to publish"</span>, ex);
+                <span class="kw">else</span> log.<span class="fn">info</span>(<span class="str">"Published to partition {}"</span>,
+                    result.<span class="fn">getRecordMetadata</span>().<span class="fn">partition</span>());
+            });
+    }
+}
+
+<span class="cmt">// Consumer with manual offset commit</span>
+<span class="ann">@KafkaListener</span>(topics = <span class="str">"orders.created"</span>,
+               groupId = <span class="str">"notification-service"</span>,
+               containerFactory = <span class="str">"kafkaListenerContainerFactory"</span>)
+<span class="kw">public void</span> <span class="fn">handleOrderCreated</span>(<span class="ann">@Payload</span> <span class="cls">OrderEvent</span> event,
+        <span class="ann">@Header</span>(<span class="cls">KafkaHeaders</span>.RECEIVED_PARTITION) <span class="kw">int</span> partition,
+        <span class="cls">Acknowledgment</span> ack) {
+    <span class="kw">try</span> {
+        notificationService.<span class="fn">send</span>(event);
+        ack.<span class="fn">acknowledge</span>(); <span class="cmt">// manual commit after success</span>
+    } <span class="kw">catch</span> (<span class="cls">Exception</span> ex) {
+        log.<span class="fn">error</span>(<span class="str">"Failed to process event {}"</span>, event, ex);
+        <span class="cmt">// Don't ack — message will be redelivered (at-least-once)</span>
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- RABBITMQ -->
+<section id="rabbitmq" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">🐇</div>
+    <h2>RabbitMQ Basics</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-orange">
+      <span class="card-tag tag-infra">RabbitMQ</span>
+      <h3>Key Concepts</h3>
+      <ul>
+        <li><strong>Exchange</strong> — routes messages (Direct, Topic, Fanout, Headers)</li>
+        <li><strong>Queue</strong> — buffers messages for consumers</li>
+        <li><strong>Binding</strong> — connects exchange to queue with routing key</li>
+        <li><strong>DLQ</strong> — dead letter queue for failed messages</li>
+        <li><strong>Ack</strong> — consumer confirms processing</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">RabbitMQ Configuration + Consumer</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">RabbitConfig</span> {
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> <span class="cls">Queue</span> <span class="fn">orderQueue</span>() {
+        <span class="kw">return</span> <span class="cls">QueueBuilder</span>.<span class="fn">durable</span>(<span class="str">"orders.queue"</span>)
+            .<span class="fn">withArgument</span>(<span class="str">"x-dead-letter-exchange"</span>, <span class="str">"orders.dlx"</span>)
+            .<span class="fn">build</span>();
+    }
+
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> <span class="cls">TopicExchange</span> <span class="fn">ordersExchange</span>() {
+        <span class="kw">return new</span> <span class="cls">TopicExchange</span>(<span class="str">"orders.exchange"</span>);
+    }
+}
+
+<span class="ann">@RabbitListener</span>(queues = <span class="str">"orders.queue"</span>)
+<span class="kw">public void</span> <span class="fn">onOrder</span>(<span class="cls">OrderEvent</span> event, <span class="cls">Channel</span> channel,
+        <span class="ann">@Header</span>(<span class="cls">AmqpHeaders</span>.DELIVERY_TAG) <span class="kw">long</span> tag) <span class="kw">throws</span> <span class="cls">IOException</span> {
+    <span class="kw">try</span> {
+        processOrder(event);
+        channel.<span class="fn">basicAck</span>(tag, <span class="kw">false</span>);
+    } <span class="kw">catch</span> (<span class="cls">Exception</span> ex) {
+        channel.<span class="fn">basicNack</span>(tag, <span class="kw">false</span>, <span class="kw">false</span>); <span class="cmt">// to DLQ</span>
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- FILE UPLOAD -->
+<section id="file-upload" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">📁</div>
+    <h2>File Upload Handling</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Multipart upload to S3</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@RestController</span>
+<span class="ann">@RequestMapping</span>(<span class="str">"/api/v1/files"</span>)
+<span class="kw">public class</span> <span class="cls">FileController</span> {
+
+    <span class="ann">@PostMapping</span>(consumes = <span class="cls">MediaType</span>.MULTIPART_FORM_DATA_VALUE)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">FileResponse</span>&gt; <span class="fn">upload</span>(
+            <span class="ann">@RequestParam</span>(<span class="str">"file"</span>) <span class="cls">MultipartFile</span> file) {
+        <span class="fn">validateFile</span>(file);
+        String fileId = storageService.<span class="fn">upload</span>(file);
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">ok</span>(<span class="kw">new</span> <span class="cls">FileResponse</span>(fileId));
+    }
+
+    <span class="kw">private void</span> <span class="fn">validateFile</span>(<span class="cls">MultipartFile</span> file) {
+        <span class="kw">if</span> (file.<span class="fn">isEmpty</span>()) <span class="kw">throw new</span> <span class="cls">BadRequestException</span>(<span class="str">"Empty file"</span>);
+        <span class="kw">if</span> (file.<span class="fn">getSize</span>() > 10 * 1024 * 1024) <span class="cmt">// 10MB limit</span>
+            <span class="kw">throw new</span> <span class="cls">BadRequestException</span>(<span class="str">"File too large"</span>);
+        String contentType = file.<span class="fn">getContentType</span>();
+        <span class="kw">if</span> (!List.<span class="fn">of</span>(<span class="str">"image/jpeg"</span>,<span class="str">"image/png"</span>,<span class="str">"application/pdf"</span>)
+                .<span class="fn">contains</span>(contentType))
+            <span class="kw">throw new</span> <span class="cls">BadRequestException</span>(<span class="str">"Unsupported type"</span>);
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- RATE LIMITING -->
+<section id="rate-limit" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">🚦</div>
+    <h2>Rate Limiting</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-red">
+      <span class="card-tag tag-core">Algorithms</span>
+      <h3>Rate Limiting Algorithms</h3>
+      <ul>
+        <li><strong>Token Bucket</strong> — allows bursts, smooth average rate (Guava)</li>
+        <li><strong>Fixed Window</strong> — count per time window, reset at boundary</li>
+        <li><strong>Sliding Window</strong> — more accurate, no boundary spikes (Redis)</li>
+        <li><strong>Leaky Bucket</strong> — strict rate, queue overflow drops</li>
+      </ul>
+    </div>
+    <div class="card card-red">
+      <span class="card-tag tag-core">Implementation</span>
+      <h3>Spring + Bucket4j + Redis</h3>
+      <ul>
+        <li>Bucket4j library for in-memory / Redis rate limiting</li>
+        <li>Spring Cloud Gateway has built-in RequestRateLimiter</li>
+        <li>Return <code>429 Too Many Requests</code> with <code>Retry-After</code> header</li>
+        <li>Key by IP, user ID, or API key</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DOCKER -->
+<section id="docker" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🐳</div>
+    <h2>Dockerizing Spring Boot</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">dockerfile</span><span class="code-title">Multi-stage Dockerfile (optimized layers)</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="cmt"># Build stage</span>
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /app
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline -q
+COPY src ./src
+RUN ./mvnw package -DskipTests -q
+
+<span class="cmt"># Extract layers for caching</span>
+FROM builder AS extractor
+RUN java -Djarmode=layertools -jar target/*.jar extract
+
+<span class="cmt"># Runtime stage</span>
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+RUN addgroup -S app && adduser -S app -G app
+USER app
+
+COPY --from=extractor /app/dependencies/ ./
+COPY --from=extractor /app/spring-boot-loader/ ./
+COPY --from=extractor /app/snapshot-dependencies/ ./
+COPY --from=extractor /app/application/ ./
+
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=10s \
+  CMD wget -qO- http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT ["java", \
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "org.springframework.boot.loader.launch.JarLauncher"]</pre>
+  </div>
+</section>
+
+<!-- CI/CD -->
+<section id="cicd" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🔄</div>
+    <h2>CI/CD Concepts</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-title">Code Commit</div><div class="tl-desc">Developer pushes to feature branch. PR triggers CI pipeline.</div></div>
+    <div class="tl-item green"><div class="tl-title">Build &amp; Test</div><div class="tl-desc">Maven/Gradle build. Unit tests. Integration tests. Code coverage (JaCoCo &gt;80%).</div></div>
+    <div class="tl-item orange"><div class="tl-title">Code Quality</div><div class="tl-desc">SonarQube analysis. Security scan (OWASP). Dependency vulnerability check.</div></div>
+    <div class="tl-item purple"><div class="tl-title">Docker Image</div><div class="tl-desc">Build Docker image. Tag with git SHA. Push to registry (ECR/GCR/DockerHub).</div></div>
+    <div class="tl-item"><div class="tl-title">Deploy to Staging</div><div class="tl-desc">Kubernetes rolling update. Smoke tests. Performance tests.</div></div>
+    <div class="tl-item green"><div class="tl-title">Production Deploy</div><div class="tl-desc">Manual approval gate. Blue/Green or Canary deploy. Automated rollback on health check fail.</div></div>
+  </div>
+</section>
+
+<!-- TESTING -->
+<section id="testing" class="section">
+  <div class="section-header">
+    <div class="section-icon si-teal">🧪</div>
+    <h2>Unit Testing</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">JUnit5 + Mockito Service Test</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@ExtendWith</span>(<span class="cls">MockitoExtension</span>.class)
+<span class="kw">class</span> <span class="cls">OrderServiceTest</span> {
+
+    <span class="ann">@Mock</span> <span class="kw">private</span> <span class="cls">OrderRepository</span> orderRepository;
+    <span class="ann">@Mock</span> <span class="kw">private</span> <span class="cls">PaymentService</span> paymentService;
+    <span class="ann">@InjectMocks</span> <span class="kw">private</span> <span class="cls">OrderService</span> orderService;
+
+    <span class="ann">@Test</span>
+    <span class="ann">@DisplayName</span>(<span class="str">"createOrder: should return order when payment succeeds"</span>)
+    <span class="kw">void</span> <span class="fn">createOrder_success</span>() {
+        <span class="cmt">// Given</span>
+        <span class="kw">var</span> request = <span class="kw">new</span> <span class="cls">CreateOrderRequest</span>(...);
+        <span class="kw">var</span> savedOrder = <span class="fn">buildOrder</span>();
+        <span class="fn">when</span>(orderRepository.<span class="fn">save</span>(<span class="fn">any</span>())).<span class="fn">thenReturn</span>(savedOrder);
+        <span class="fn">when</span>(paymentService.<span class="fn">process</span>(<span class="fn">any</span>())).<span class="fn">thenReturn</span>(<span class="cls">PaymentResult</span>.SUCCESS);
+
+        <span class="cmt">// When</span>
+        <span class="cls">OrderResponse</span> result = orderService.<span class="fn">create</span>(request);
+
+        <span class="cmt">// Then</span>
+        <span class="fn">assertThat</span>(result).<span class="fn">isNotNull</span>();
+        <span class="fn">assertThat</span>(result.<span class="fn">status</span>()).<span class="fn">isEqualTo</span>(<span class="cls">OrderStatus</span>.CONFIRMED);
+        <span class="fn">verify</span>(orderRepository).<span class="fn">save</span>(<span class="fn">argThat</span>(o ->
+            o.<span class="fn">getUserId</span>().<span class="fn">equals</span>(request.<span class="fn">userId</span>())));
+    }
+
+    <span class="ann">@Test</span>
+    <span class="kw">void</span> <span class="fn">createOrder_paymentFails_shouldThrow</span>() {
+        <span class="fn">when</span>(paymentService.<span class="fn">process</span>(<span class="fn">any</span>())).<span class="fn">thenThrow</span>(<span class="kw">new</span> <span class="cls">PaymentException</span>());
+        <span class="fn">assertThatThrownBy</span>(() -> orderService.<span class="fn">create</span>(<span class="kw">new</span> <span class="cls">CreateOrderRequest</span>(...)))
+            .<span class="fn">isInstanceOf</span>(<span class="cls">PaymentException</span>.class);
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- INTEGRATION TESTING -->
+<section id="integration-test" class="section">
+  <div class="section-header">
+    <div class="section-icon si-teal">🔬</div>
+    <h2>Integration Testing</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">@SpringBootTest with Testcontainers</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@SpringBootTest</span>(webEnvironment = <span class="cls">SpringBootTest.WebEnvironment</span>.RANDOM_PORT)
+<span class="ann">@Testcontainers</span>
+<span class="kw">class</span> <span class="cls">OrderIntegrationTest</span> {
+
+    <span class="ann">@Container</span>
+    <span class="kw">static</span> <span class="cls">PostgreSQLContainer</span>&lt;?&gt; postgres =
+        <span class="kw">new</span> <span class="cls">PostgreSQLContainer</span>&lt;&gt;(<span class="str">"postgres:15-alpine"</span>);
+
+    <span class="ann">@DynamicPropertySource</span>
+    <span class="kw">static void</span> <span class="fn">setProps</span>(<span class="cls">DynamicPropertyRegistry</span> reg) {
+        reg.<span class="fn">add</span>(<span class="str">"spring.datasource.url"</span>, postgres::<span class="fn">getJdbcUrl</span>);
+        reg.<span class="fn">add</span>(<span class="str">"spring.datasource.username"</span>, postgres::<span class="fn">getUsername</span>);
+        reg.<span class="fn">add</span>(<span class="str">"spring.datasource.password"</span>, postgres::<span class="fn">getPassword</span>);
+    }
+
+    <span class="ann">@Autowired</span> <span class="kw">private</span> <span class="cls">TestRestTemplate</span> restTemplate;
+
+    <span class="ann">@Test</span>
+    <span class="kw">void</span> <span class="fn">createAndRetrieveOrder</span>() {
+        <span class="cls">ResponseEntity</span>&lt;<span class="cls">OrderResponse</span>&gt; createResponse =
+            restTemplate.<span class="fn">postForEntity</span>(<span class="str">"/api/v1/orders"</span>,
+                <span class="kw">new</span> <span class="cls">CreateOrderRequest</span>(...), <span class="cls">OrderResponse</span>.class);
+        <span class="fn">assertThat</span>(createResponse.<span class="fn">getStatusCode</span>()).<span class="fn">isEqualTo</span>(<span class="cls">HttpStatus</span>.CREATED);
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- MOCKITO + MOCKMVC -->
+<section id="mockito" class="section">
+  <div class="section-header">
+    <div class="section-icon si-teal">🎭</div>
+    <h2>Mockito &amp; MockMvc</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">MockMvc Controller Test</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@WebMvcTest</span>(<span class="cls">OrderController</span>.class)
+<span class="kw">class</span> <span class="cls">OrderControllerTest</span> {
+
+    <span class="ann">@Autowired</span> <span class="kw">private</span> <span class="cls">MockMvc</span> mockMvc;
+    <span class="ann">@MockBean</span> <span class="kw">private</span> <span class="cls">OrderService</span> orderService;
+    <span class="ann">@Autowired</span> <span class="kw">private</span> <span class="cls">ObjectMapper</span> objectMapper;
+
+    <span class="ann">@Test</span>
+    <span class="kw">void</span> <span class="fn">getOrder_exists_returns200</span>() <span class="kw">throws</span> Exception {
+        <span class="kw">var</span> id = <span class="cls">UUID</span>.<span class="fn">randomUUID</span>();
+        <span class="kw">var</span> response = <span class="kw">new</span> <span class="cls">OrderResponse</span>(id, <span class="str">"CONFIRMED"</span>, ...);
+        <span class="fn">when</span>(orderService.<span class="fn">findById</span>(id)).<span class="fn">thenReturn</span>(response);
+
+        mockMvc.<span class="fn">perform</span>(<span class="fn">get</span>(<span class="str">"/api/v1/orders/{id}"</span>, id)
+                .<span class="fn">accept</span>(<span class="cls">MediaType</span>.APPLICATION_JSON))
+            .<span class="fn">andExpect</span>(<span class="fn">status</span>().<span class="fn">isOk</span>())
+            .<span class="fn">andExpect</span>(<span class="fn">jsonPath</span>(<span class="str">"$.status"</span>).<span class="fn">value</span>(<span class="str">"CONFIRMED"</span>))
+            .<span class="fn">andExpect</span>(<span class="fn">jsonPath</span>(<span class="str">"$.id"</span>).<span class="fn">value</span>(id.<span class="fn">toString</span>()));
+    }
+
+    <span class="ann">@Test</span>
+    <span class="kw">void</span> <span class="fn">createOrder_invalidBody_returns400</span>() <span class="kw">throws</span> Exception {
+        mockMvc.<span class="fn">perform</span>(<span class="fn">post</span>(<span class="str">"/api/v1/orders"</span>)
+                .<span class="fn">contentType</span>(<span class="cls">MediaType</span>.APPLICATION_JSON)
+                .<span class="fn">content</span>(<span class="str">"{}"</span>))
+            .<span class="fn">andExpect</span>(<span class="fn">status</span>().<span class="fn">isBadRequest</span>())
+            .<span class="fn">andExpect</span>(<span class="fn">jsonPath</span>(<span class="str">"$.errors"</span>).<span class="fn">isNotEmpty</span>());
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- ACTUATOR -->
+<section id="actuator" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">📡</div>
+    <h2>Actuator &amp; Monitoring</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">yaml</span><span class="code-title">Actuator production config</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre">management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus, loggers
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true  # Kubernetes readiness/liveness
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active}</pre>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-core">Custom Health</span>
+      <h3>Custom HealthIndicator</h3>
+      <div class="code-wrap" style="margin-top:.5rem">
+        <div class="code-header"><span class="code-lang">java</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre><span class="ann">@Component</span>
+<span class="kw">public class</span> <span class="cls">ExternalApiHealth</span> <span class="kw">implements</span> <span class="cls">HealthIndicator</span> {
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="cls">Health</span> <span class="fn">health</span>() {
+        <span class="kw">if</span> (apiClient.<span class="fn">ping</span>())
+            <span class="kw">return</span> <span class="cls">Health</span>.<span class="fn">up</span>()
+                .<span class="fn">withDetail</span>(<span class="str">"latency"</span>, <span class="str">"12ms"</span>).<span class="fn">build</span>();
+        <span class="kw">return</span> <span class="cls">Health</span>.<span class="fn">down</span>()
+            .<span class="fn">withDetail</span>(<span class="str">"reason"</span>, <span class="str">"Timeout"</span>).<span class="fn">build</span>();
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROMETHEUS -->
+<section id="prometheus" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">📈</div>
+    <h2>Prometheus &amp; Grafana</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Custom Metrics with Micrometer</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">OrderService</span> {
+    <span class="kw">private final</span> <span class="cls">Counter</span> ordersCreated;
+    <span class="kw">private final</span> <span class="cls">Timer</span> orderProcessingTime;
+
+    <span class="kw">public</span> <span class="cls">OrderService</span>(<span class="cls">MeterRegistry</span> registry) {
+        ordersCreated = <span class="cls">Counter</span>.<span class="fn">builder</span>(<span class="str">"orders.created.total"</span>)
+            .<span class="fn">description</span>(<span class="str">"Total orders created"</span>)
+            .<span class="fn">tag</span>(<span class="str">"service"</span>, <span class="str">"order"</span>)
+            .<span class="fn">register</span>(registry);
+
+        orderProcessingTime = <span class="cls">Timer</span>.<span class="fn">builder</span>(<span class="str">"orders.processing.time"</span>)
+            .<span class="fn">description</span>(<span class="str">"Order processing duration"</span>)
+            .<span class="fn">publishPercentiles</span>(<span class="num">0.5</span>, <span class="num">0.95</span>, <span class="num">0.99</span>)
+            .<span class="fn">register</span>(registry);
+    }
+
+    <span class="kw">public</span> <span class="cls">OrderResponse</span> <span class="fn">create</span>(<span class="cls">CreateOrderRequest</span> req) {
+        <span class="kw">return</span> orderProcessingTime.<span class="fn">record</span>(() -> {
+            <span class="cls">OrderResponse</span> result = <span class="fn">processOrder</span>(req);
+            ordersCreated.<span class="fn">increment</span>();
+            <span class="kw">return</span> result;
+        });
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- MICROSERVICES COMMUNICATION -->
+<section id="ms-comm" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🔗</div>
+    <h2>Microservices Communication</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="comp-table">
+      <tr><th>Pattern</th><th>Protocol</th><th>Coupling</th><th>Use Case</th></tr>
+      <tr><td>Synchronous REST</td><td>HTTP/HTTPS</td><td>Tight</td><td>Query, real-time data</td></tr>
+      <tr><td>gRPC</td><td>HTTP/2</td><td>Tight</td><td>High-performance internal</td></tr>
+      <tr><td>Message Queue</td><td>AMQP/Kafka</td><td>Loose</td><td>Events, async workflows</td></tr>
+      <tr><td>Event Sourcing</td><td>Kafka</td><td>Very Loose</td><td>Audit log, eventual consistency</td></tr>
+      <tr><td>WebSocket</td><td>WS</td><td>Stateful</td><td>Real-time push to client</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- FEIGN -->
+<section id="feign" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">📡</div>
+    <h2>Feign Client</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">java</span><span class="code-title">Feign Client with Resilience</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><span class="ann">@FeignClient</span>(name = <span class="str">"payment-service"</span>,
+             url = <span class="str">"${services.payment.url}"</span>,
+             fallback = <span class="cls">PaymentClientFallback</span>.class)
+<span class="kw">public interface</span> <span class="cls">PaymentClient</span> {
+
+    <span class="ann">@PostMapping</span>(<span class="str">"/api/v1/payments"</span>)
+    <span class="ann">@CircuitBreaker</span>(name = <span class="str">"paymentService"</span>)
+    <span class="cls">PaymentResponse</span> <span class="fn">processPayment</span>(<span class="ann">@RequestBody</span> <span class="cls">PaymentRequest</span> req);
+
+    <span class="ann">@GetMapping</span>(<span class="str">"/api/v1/payments/{id}"</span>)
+    <span class="cls">PaymentStatus</span> <span class="fn">getStatus</span>(<span class="ann">@PathVariable</span> String id);
+}
+
+<span class="ann">@Component</span>
+<span class="kw">public class</span> <span class="cls">PaymentClientFallback</span> <span class="kw">implements</span> <span class="cls">PaymentClient</span> {
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="cls">PaymentResponse</span> <span class="fn">processPayment</span>(<span class="cls">PaymentRequest</span> req) {
+        <span class="kw">throw new</span> <span class="cls">ServiceUnavailableException</span>(<span class="str">"Payment service unavailable"</span>);
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- RESILIENCE4J -->
+<section id="resilience" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">🛡️</div>
+    <h2>Resilience4j</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-red">
+      <span class="card-tag tag-infra">Patterns</span>
+      <h3>Resilience Patterns</h3>
+      <ul>
+        <li><strong>Circuit Breaker</strong> — stop calls when failure rate &gt; threshold</li>
+        <li><strong>Retry</strong> — retry with backoff on transient failures</li>
+        <li><strong>Rate Limiter</strong> — limit call frequency</li>
+        <li><strong>Bulkhead</strong> — limit concurrent calls (isolation)</li>
+        <li><strong>TimeLimiter</strong> — timeout for async calls</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">yaml</span><span class="code-title">Resilience4j config</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre>resilience4j:
+  circuitbreaker:
+    instances:
+      paymentService:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+  retry:
+    instances:
+      paymentService:
+        max-attempts: 3
+        wait-duration: 500ms
+        retry-exceptions:
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException</pre>
+  </div>
+</section>
+
+<!-- CIRCUIT BREAKER -->
+<section id="circuit" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">⚡</div>
+    <h2>Circuit Breaker Pattern</h2>
+  </div>
+  <div class="arch-diagram">
+    <div class="arch-label">Circuit Breaker State Machine</div>
+    <div class="arch-row">
+      <div class="arch-box green">CLOSED (normal)</div>
+      <div class="arch-arrow">→ failure &gt; threshold →</div>
+      <div class="arch-box highlight">OPEN (blocking)</div>
+    </div>
+    <div class="arch-row">
+      <div class="arch-arrow" style="transform:rotate(90deg);display:inline-block">↑</div>
+      <div style="flex:1;text-align:center;font-size:.75rem;color:var(--text3)">success &gt; threshold</div>
+      <div class="arch-arrow" style="transform:rotate(90deg);display:inline-block">↓</div>
+    </div>
+    <div class="arch-row">
+      <div class="arch-box" style="flex:0">←  success  ←</div>
+      <div class="arch-box orange">HALF-OPEN (probing)</div>
+      <div class="arch-box" style="flex:0">← wait_duration →</div>
+    </div>
+    <div class="arch-sep"></div>
+    <div class="arch-row">
+      <div class="arch-box">CLOSED: all calls pass through</div>
+      <div class="arch-box highlight">OPEN: calls immediately fail (fail fast)</div>
+      <div class="arch-box orange">HALF-OPEN: limited calls to test recovery</div>
+    </div>
+  </div>
+</section>
+
+<!-- EUREKA -->
+<section id="eureka" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🔭</div>
+    <h2>Service Discovery — Eureka</h2>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">yaml</span><span class="code-title">Eureka client config</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre">eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    metadata-map:
+      version: ${build.version}
+      zone: ${AVAILABILITY_ZONE:default}</pre>
+  </div>
+  <div class="alert alert-tip"><span class="alert-icon">💡</span><div>In production Kubernetes environments, prefer native k8s service discovery over Eureka. Use <code>spring-cloud-kubernetes</code> which reads k8s Service and Endpoints objects directly.</div></div>
+</section>
+
+<!-- CONFIG SERVER -->
+<section id="config-server" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">🖥️</div>
+    <h2>Config Server</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-purple">
+      <span class="card-tag tag-infra">Server</span>
+      <h3>Spring Cloud Config Server</h3>
+      <ul>
+        <li>Central config store (Git, Vault, S3)</li>
+        <li>Config versioned in Git — audit trail</li>
+        <li>Clients fetch config at startup via bootstrap</li>
+        <li><code>/bus/refresh</code> endpoint to push updates</li>
+        <li>Encryption of sensitive properties</li>
+      </ul>
+    </div>
+    <div class="card card-purple">
+      <span class="card-tag tag-infra">Client</span>
+      <h3>Client Setup</h3>
+      <div class="code-wrap" style="margin-top:.5rem">
+        <div class="code-header"><span class="code-lang">yaml</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+        <pre">spring:
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      uri: http://config-server:8888
+      fail-fast: true
+      retry:
+        max-attempts: 6</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISTRIBUTED TRACING -->
+<section id="distributed-tracing" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">🔎</div>
+    <h2>Distributed Tracing</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-accent">
+      <span class="card-tag tag-infra">Micrometer Tracing</span>
+      <h3>Spring Boot 3.x Tracing</h3>
+      <p>Spring Boot 3.x uses Micrometer Tracing (replaces Sleuth). Integrates with Zipkin, Jaeger, or OTLP exporters.</p>
+      <ul>
+        <li>TraceId — unique per request across services</li>
+        <li>SpanId — unique per operation within trace</li>
+        <li>Auto-propagates via HTTP headers (W3C Trace Context)</li>
+        <li>Auto-instruments RestTemplate, WebClient, Kafka</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">yaml</span><span class="code-title">Tracing config</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre">management:
+  tracing:
+    sampling:
+      probability: 0.1  # 10% sampling in prod
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "</pre>
+  </div>
+</section>
+
+<!-- PRODUCTION BEST PRACTICES -->
+<section id="prod-best" class="section">
+  <div class="section-header">
+    <div class="section-icon si-green">🏆</div>
+    <h2>Production Best Practices</h2>
+  </div>
+  <div class="bp-list">
+    <div class="bp-item">✅ Use constructor injection — enables immutable, testable services</div>
+    <div class="bp-item">✅ Always validate input at the controller layer with @Valid</div>
+    <div class="bp-item">✅ Never expose entities directly — always use DTOs in API responses</div>
+    <div class="bp-item">✅ Use @Transactional(readOnly=true) for all read-only operations</div>
+    <div class="bp-item">✅ Structured JSON logging with correlation IDs in every log line</div>
+    <div class="bp-item">✅ Define pool sizes explicitly — never rely on defaults for Hikari/Redis/threads</div>
+    <div class="bp-item">✅ Externalize all secrets — never commit to source code</div>
+    <div class="bp-item">✅ Set JVM flags: -XX:+UseContainerSupport -XX:MaxRAMPercentage=75</div>
+    <div class="bp-item">✅ Expose /actuator/health/readiness and /liveness for k8s probes</div>
+    <div class="bp-item">✅ Use @SpringBootTest(webEnvironment=RANDOM_PORT) for integration tests</div>
+    <div class="bp-item warn">⚠️ Disable Swagger/OpenAPI in production or put behind auth</div>
+    <div class="bp-item warn">⚠️ Set spring.jpa.open-in-view=false to avoid OSIV anti-pattern</div>
+    <div class="bp-item danger">❌ Never use spring.profiles.active=dev in production</div>
+    <div class="bp-item danger">❌ Never ignore or swallow exceptions silently</div>
+    <div class="bp-item danger">❌ Never store sensitive data (passwords, SSN) in logs</div>
+  </div>
+</section>
+
+<!-- PRODUCTION ISSUES -->
+<section id="prod-issues" class="section">
+  <div class="section-header">
+    <div class="section-icon si-red">🐛</div>
+    <h2>Common Production Issues</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-red">
+      <span class="card-tag tag-core">Issue</span>
+      <h3>Connection Pool Exhaustion</h3>
+      <p><strong>Symptoms:</strong> Requests hang, timeout waiting for DB connection.</p>
+      <p><strong>Causes:</strong> Long transactions, connection leaks, pool too small.</p>
+      <p><strong>Fix:</strong> Enable <code>leak-detection-threshold</code>, check for missing <code>@Transactional</code>, tune pool size.</p>
+    </div>
+    <div class="card card-red">
+      <span class="card-tag tag-core">Issue</span>
+      <h3>OOM / Memory Leak</h3>
+      <p><strong>Causes:</strong> Static collection holding references, ThreadLocal not cleared, Metaspace growth from dynamic class loading.</p>
+      <p><strong>Fix:</strong> Heap dump analysis (Eclipse MAT), <code>-Xss, -Xmx</code> tuning, always clear MDC in finally blocks.</p>
+    </div>
+    <div class="card card-orange">
+      <span class="card-tag tag-core">Issue</span>
+      <h3>N+1 in Production</h3>
+      <p><strong>Detect:</strong> Enable <code>hibernate.generate_statistics</code>, alert on queries &gt;50/request.</p>
+      <p><strong>Fix:</strong> JOIN FETCH, @EntityGraph, @BatchSize, or DTO projections.</p>
+    </div>
+    <div class="card card-orange">
+      <span class="card-tag tag-core">Issue</span>
+      <h3>Slow Startup</h3>
+      <p><strong>Causes:</strong> Classpath scanning too broad, heavy eager beans, slow DB connections.</p>
+      <p><strong>Fix:</strong> Narrow <code>@ComponentScan</code> basePackages, use <code>spring.main.lazy-initialization</code> in dev.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PERFORMANCE OPTIMIZATION -->
+<section id="perf-opt" class="section">
+  <div class="section-header">
+    <div class="section-icon si-purple">⚡</div>
+    <h2>Performance Optimization Techniques</h2>
+  </div>
+  <div class="card-grid">
+    <div class="card card-purple">
+      <span class="card-tag tag-perf">JVM</span>
+      <h3>JVM Tuning</h3>
+      <ul>
+        <li>Use G1GC (default Java 17+) or ZGC for low latency</li>
+        <li>Set -XX:MaxRAMPercentage=75 in containers</li>
+        <li>Warm up with -XX:+TieredCompilation (default)</li>
+        <li>Profile with async-profiler, JFR</li>
+      </ul>
+    </div>
+    <div class="card card-purple">
+      <span class="card-tag tag-perf">Application</span>
+      <h3>Application Level</h3>
+      <ul>
+        <li>Cache frequently read, rarely changing data</li>
+        <li>Use async for I/O-bound operations</li>
+        <li>Virtual Threads (Java 21 + Spring 6.1) for high concurrency</li>
+        <li>Use reactive WebFlux for I/O-heavy services</li>
+        <li>Batch DB inserts/updates</li>
+        <li>Use database connection read replicas</li>
+      </ul>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">yaml</span><span class="code-title">Virtual Threads (Java 21 + Spring Boot 3.2+)</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre">spring:
+  threads:
+    virtual:
+      enabled: true  # Uses virtual threads for Tomcat request handling</pre>
+  </div>
+</section>
+
+<!-- MEMORY LEAKS -->
+<section id="memory" class="section">
+  <div class="section-header">
+    <div class="section-icon si-orange">🧠</div>
+    <h2>Memory Leak Scenarios</h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item open">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Static collections holding object references</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a" style="display:block">Static Maps/Lists that accumulate objects without eviction. Fix: use <code>WeakHashMap</code>, bounded caches (Caffeine/Guava), or scheduled cleanup.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">ThreadLocal not cleared (thread pool reuse)</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Thread pool threads are reused. If <code>ThreadLocal</code> set but not cleared (<code>MDC.clear()</code>), old data leaks to next request. Always clear in <code>finally</code> block.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Unclosed database/HTTP connections</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Not closing ResultSets, Connections, or HTTP clients causes leak. Use try-with-resources. Enable <code>hikari.leak-detection-threshold</code> to detect unreturned connections.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Spring Security SecurityContextHolder in async threads</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a">SecurityContext is ThreadLocal-based. In async threads, the context won't be propagated by default. Use <code>DelegatingSecurityContextExecutor</code> or set <code>SecurityContextHolder.MODE_INHERITABLETHREADLOCAL</code>.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Large Hibernate 1st-level cache in long transactions</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a">The 1st-level cache (session) holds every loaded entity. Long batch transactions can exhaust heap. Periodically call <code>entityManager.clear()</code> in batch loops, or use stateless sessions for bulk ops.</div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERVIEW QA -->
+<section id="interview-qa" class="section">
+  <div class="section-header">
+    <div class="section-icon si-blue">❓</div>
+    <h2>Frequently Asked Interview Questions</h2>
+    <span class="section-count">100+ Q&A</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab(this,'qa-core')">Core Spring</button>
+      <button class="tab-btn" onclick="switchTab(this,'qa-data')">Data & JPA</button>
+      <button class="tab-btn" onclick="switchTab(this,'qa-security')">Security</button>
+      <button class="tab-btn" onclick="switchTab(this,'qa-perf')">Performance</button>
+      <button class="tab-btn" onclick="switchTab(this,'qa-ms')">Microservices</button>
+      <button class="tab-btn" onclick="switchTab(this,'qa-design')">Design</button>
+    </div>
+
+    <div class="tab-pane active" id="qa-core">
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is @SpringBootApplication composed of?</span><span class="faq-chevron">▼</span></div><div class="faq-a">It's a composite annotation combining <code>@Configuration</code> (class as bean source), <code>@EnableAutoConfiguration</code> (triggers auto-config), and <code>@ComponentScan</code> (scans package and sub-packages for components). You can replace it with these three individually for finer control.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How does Spring Boot detect web application type?</span><span class="faq-chevron">▼</span></div><div class="faq-a">SpringApplication deduces the WebApplicationType by checking classpath: if <code>spring-webmvc</code> is present → SERVLET; if <code>spring-webflux</code> → REACTIVE; otherwise → NONE. You can override with <code>app.setWebApplicationType(WebApplicationType.SERVLET)</code>.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What's the difference between @Component, @Service, @Repository?</span><span class="faq-chevron">▼</span></div><div class="faq-a">All are specializations of <code>@Component</code>. <code>@Service</code> marks service layer (no extra behavior). <code>@Repository</code> additionally enables persistence exception translation — JPA/JDBC exceptions are translated to Spring's DataAccessException hierarchy. Use the most specific annotation for clarity.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is BeanPostProcessor?</span><span class="faq-chevron">▼</span></div><div class="faq-a">An interface with <code>postProcessBeforeInitialization</code> and <code>postProcessAfterInitialization</code> hooks called for every bean. AOP proxy creation happens in <code>postProcessAfterInitialization</code>. Used internally by Spring for many features. Implement to wrap or replace beans transparently.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What happens if two beans of the same type exist and @Primary is not set?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Spring throws <code>NoUniqueBeanDefinitionException</code> at startup. Resolve by: marking one <code>@Primary</code>, using <code>@Qualifier</code> at injection sites, or injecting a <code>List&lt;T&gt;</code> or <code>Map&lt;String, T&gt;</code> to get all beans.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is OSIV (Open Session In View) and why should you disable it?</span><span class="faq-chevron">▼</span></div><div class="faq-a">OSIV keeps the JPA session open until the HTTP response is sent, allowing lazy loading in view templates. It's enabled by default in Spring Boot. Problems: holds DB connections through view rendering, causes hidden N+1 in view layer, unclear transaction boundaries. Always set <code>spring.jpa.open-in-view=false</code> in production and load all needed data in the service layer.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How does @Conditional work internally?</span><span class="faq-chevron">▼</span></div><div class="faq-a">During context refresh, Spring evaluates all <code>@Conditional</code> annotations before registering bean definitions. Each condition implements the <code>Condition</code> interface with a <code>matches()</code> method that receives the <code>ConditionContext</code> (classpath, environment, BeanDefinitionRegistry). If any condition returns false, the bean definition is skipped entirely.</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="qa-data">
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is the difference between save() and saveAndFlush()?</span><span class="faq-chevron">▼</span></div><div class="faq-a"><code>save()</code> persists entity to the session (1st level cache) but may not flush to DB immediately — happens at transaction commit or when Hibernate decides. <code>saveAndFlush()</code> forces an immediate SQL flush. Use saveAndFlush() when you need the DB state visible immediately (e.g., before a native query in the same transaction).</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is the difference between @Entity merge() and persist()?</span><span class="faq-chevron">▼</span></div><div class="faq-a"><code>persist()</code> makes a transient entity managed — must be called on a new entity. Throws exception if entity already has an ID in the DB. <code>merge()</code> copies state from detached entity to a managed one, or inserts if not found. JPA's <code>save()</code> in Spring Data JPA uses persist() for new entities (no ID) and merge() for detached ones.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is the @Transactional propagation REQUIRED vs REQUIRES_NEW?</span><span class="faq-chevron">▼</span></div><div class="faq-a"><code>REQUIRED</code> (default): joins existing transaction or creates new one. Both methods participate in the same transaction — if inner rolls back, outer rolls back too. <code>REQUIRES_NEW</code>: always suspends outer transaction, creates fresh one. Inner transaction commits/rolls back independently. Use for audit logging that must always commit regardless of outer outcome.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How does Hibernate 2nd-level cache work?</span><span class="faq-chevron">▼</span></div><div class="faq-a">1st-level cache is per session. 2nd-level cache (e.g., Ehcache, Infinispan) is shared across sessions and can dramatically reduce DB reads for frequently read, rarely modified data. Enable per-entity: <code>@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)</code>. Requires <code>spring.jpa.properties.hibernate.cache.use_second_level_cache=true</code>.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is the difference between @SequenceGenerator and @TableGenerator for IDs?</span><span class="faq-chevron">▼</span></div><div class="faq-a">@SequenceGenerator uses DB sequences (PostgreSQL, Oracle) — efficient, minimal contention, batched with <code>allocationSize</code>. @TableGenerator uses a special DB table to simulate sequences — works on all DBs but has locking overhead. For MySQL without sequence support, use @GeneratedValue(strategy=IDENTITY) to use AUTO_INCREMENT.</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="qa-security">
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What's the difference between authentication and authorization?</span><span class="faq-chevron">▼</span></div><div class="faq-a"><strong>Authentication</strong>: verifying WHO you are (valid JWT token, correct password). <strong>Authorization</strong>: verifying WHAT you can do (do you have ADMIN role, do you own this resource). Spring Security's filter chain authenticates first, then the AccessDecisionManager authorizes.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What are the risks of storing JWT in localStorage vs httpOnly cookie?</span><span class="faq-chevron">▼</span></div><div class="faq-a">localStorage is vulnerable to XSS — any injected script can steal the token. httpOnly cookies cannot be accessed by JavaScript — protected from XSS. However, httpOnly cookies are vulnerable to CSRF attacks (mitigated by SameSite=Strict/Lax attribute or CSRF token). For SPAs, httpOnly cookies with SameSite=Strict is recommended over localStorage.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How do you invalidate a JWT token before expiry?</span><span class="faq-chevron">▼</span></div><div class="faq-a">JWTs are stateless by design — the server can't invalidate them. Solutions: (1) Short expiry (15 min) + refresh tokens. (2) Token blocklist in Redis — on logout, store token JTI in Redis with TTL = token remaining lifetime. Check on every request. (3) Token versioning — store user's token version in DB, increment on logout, validate in JWT claim.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is CORS and how to configure it in Spring Boot?</span><span class="faq-chevron">▼</span></div><div class="faq-a">CORS (Cross-Origin Resource Sharing) is a browser security mechanism that blocks requests from different origins. Configure in Spring Security's filterChain with <code>http.cors(c -> c.configurationSource(corsConfigurationSource()))</code> or globally via <code>@CrossOrigin</code> on controllers. Never use <code>allowedOrigins("*")</code> with <code>allowCredentials(true)</code> — they are mutually exclusive.</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="qa-perf">
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What causes Spring Boot to start slowly?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Common causes: (1) Component scanning too broad — use specific basePackages. (2) Too many eager singleton beans. (3) Slow DB connection at startup. (4) Spring Cloud config server timeout. (5) Heavy @PostConstruct initialization. Use <code>SpringApplication.addInitializers()</code> and startup events to profile. Spring Boot 3.x has startup actuator endpoint.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is the difference between WebMVC (blocking) and WebFlux (reactive)?</span><span class="faq-chevron">▼</span></div><div class="faq-a">WebMVC uses Servlet API — one thread per request, blocked during I/O (DB, HTTP calls). Scales with thread pool size. WebFlux uses Netty/reactive streams — non-blocking I/O, small fixed thread pool handles millions of concurrent connections. WebFlux excels when you have many concurrent I/O-bound operations. WebMVC is simpler and still perfectly fine for most enterprise apps.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How does @Cacheable interact with @Transactional?</span><span class="faq-chevron">▼</span></div><div class="faq-a"><code>@Cacheable</code> is applied before entering the method, while <code>@Transactional</code> wraps the method execution. Both work via AOP proxy. Important: cache is populated even if the transaction later rolls back — this can cause stale cache data. Use <code>@CacheEvict</code> carefully and consider transaction-aware cache implementations.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is the advantage of Virtual Threads in Java 21 for Spring Boot?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Virtual threads (Project Loom) are lightweight JVM-managed threads — millions can exist simultaneously. When a virtual thread blocks on I/O (DB query, HTTP call), the underlying platform thread is released (mounted on another task). For Spring Boot: enables traditional servlet model to handle much higher concurrency without reactive code. Enable with <code>spring.threads.virtual.enabled=true</code> in Boot 3.2+.</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="qa-ms">
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How do you handle distributed transactions in microservices?</span><span class="faq-chevron">▼</span></div><div class="faq-a">2PC (Two-Phase Commit) is generally avoided in microservices — it's blocking and couples services. Instead: (1) <strong>Saga Pattern</strong> — sequence of local transactions with compensating transactions for rollback (choreography or orchestration). (2) <strong>Outbox Pattern</strong> — write event to outbox table in same DB transaction, separate process publishes to Kafka. (3) <strong>Eventual consistency</strong> — accept temporary inconsistency, reconcile asynchronously.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is the Outbox Pattern?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Solves the dual-write problem (save to DB AND publish to Kafka atomically). Instead, write the event to an "outbox" table in the same DB transaction as your business data. A separate poller (Debezium CDC, or scheduled job) reads the outbox and publishes to Kafka, then marks as processed. Guarantees at-least-once delivery without distributed transactions.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What is service mesh and how does it relate to Spring Cloud?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Service mesh (Istio, Linkerd) moves cross-cutting concerns (mTLS, retries, circuit breaking, tracing) to the infrastructure sidecar proxy layer, making them language/framework agnostic. Spring Cloud implements these in-application. In Kubernetes-first environments, service mesh + Micrometer Tracing is often preferred over Spring Cloud Netflix stack. Both approaches are valid — choice depends on platform maturity.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How do you implement idempotent APIs?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Accept an <code>Idempotency-Key</code> header from the client (UUID). Before processing, check if this key exists in Redis. If found, return the cached response. If not, process the request, store the result in Redis with TTL (e.g., 24 hours) keyed by the idempotency key. Idempotent POST operations are safe to retry — critical for payment APIs.</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="qa-design">
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">When would you NOT use Spring Boot / microservices?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Microservices add operational complexity: multiple deployments, distributed tracing, eventual consistency challenges, service discovery, increased latency. Don't use if: small team (&lt;5 devs), simple domain, startup phase, tight deployment coupling needed. Start with a well-structured monolith ("modular monolith") and extract services only when you have clear team/scaling boundaries.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How do you design an API for pagination that supports large datasets?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Offset pagination (<code>?page=5&amp;size=20</code>) degrades at large offsets (DB must scan and skip). For large datasets use cursor-based pagination: return <code>nextCursor</code> (encoded last-seen ID or timestamp) in response, client passes <code>?after=cursor</code> in next request. DB query becomes <code>WHERE id &gt; :cursor ORDER BY id LIMIT 20</code> — uses index efficiently at any scale.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What are the SOLID principles and how do they apply to Spring?</span><span class="faq-chevron">▼</span></div><div class="faq-a"><strong>S</strong>ingle Responsibility: one service per domain concept. <strong>O</strong>pen/Closed: use interfaces + @Bean, extend via new implementations not modification. <strong>L</strong>iskov: ensure subtypes honor contracts — important for repository interfaces. <strong>I</strong>nterface Segregation: small focused interfaces (UserReader, UserWriter vs UserService). <strong>D</strong>ependency Inversion: inject interfaces not concretions — Spring DI enforces this naturally via constructor injection.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How do you handle breaking API changes without downtime?</span><span class="faq-chevron">▼</span></div><div class="faq-a">Use versioned APIs (/v1/, /v2/). Deploy v2 alongside v1. Migrate consumers gradually. Keep v1 alive during migration period. Use feature flags to route traffic. For DB changes: expand-contract pattern — add new column (nullable), deploy code supporting both old/new, migrate data, deploy code dropping old column, drop column. Never drop/rename columns in a single deploy.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+<div style="text-align:center;padding:2rem 0;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:.78rem">
+  Spring Boot Interview Prep Guide — 2+ Years Experience &nbsp;|&nbsp; Built for backend engineers
+</div>
+
+</main><!-- /main -->
+</div><!-- /layout -->
+
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── PROGRESS BAR ──
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (window.scrollY / total * 100) + '%';
+  document.getElementById('scroll-top').classList.toggle('visible', window.scrollY > 400);
+  updateActiveSidebarLink();
+});
+
+// ── THEME TOGGLE ──
+const themeBtn = document.getElementById('theme-toggle');
+themeBtn.addEventListener('click', () => {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  themeBtn.textContent = isDark ? '🌙' : '☀️';
+});
+
+// ── SIDEBAR TOGGLE ──
+const sidebar = document.getElementById('sidebar');
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+});
+function closeSidebar() { sidebar.classList.remove('open'); }
+
+// ── SCROLL TO SECTION ──
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  closeSidebar();
+}
+
+// ── ACTIVE SIDEBAR LINK ──
+function updateActiveSidebarLink() {
+  const sections = document.querySelectorAll('.section[id]');
+  let current = '';
+  sections.forEach(s => {
+    const top = s.getBoundingClientRect().top;
+    if (top <= 120) current = s.id;
+  });
+  document.querySelectorAll('.sidebar-link').forEach(link => {
+    const fn = link.getAttribute('onclick');
+    if (fn && fn.includes(`'${current}'`)) link.classList.add('active');
+    else link.classList.remove('active');
+  });
+}
+
+// ── FAQ TOGGLE ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  item.classList.toggle('open', !isOpen);
+  const answer = item.querySelector('.faq-a');
+  answer.style.display = isOpen ? 'none' : 'block';
+}
+
+// ── TABS ──
+function switchTab(btn, paneId) {
+  const nav = btn.closest('.tab-nav');
+  const tabs = btn.closest('.tabs');
+  nav.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  tabs.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const pane = document.getElementById(paneId);
+  if (pane) pane.classList.add('active');
+}
+
+// ── COPY CODE ──
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ── SEARCH ──
+const searchData = [];
+document.querySelectorAll('.section[id]').forEach(section => {
+  const id = section.id;
+  const h2 = section.querySelector('h2');
+  const title = h2 ? h2.textContent : id;
+  const text = section.textContent.toLowerCase();
+  searchData.push({ id, title, text });
+});
+// Also add cards
+document.querySelectorAll('.card').forEach(card => {
+  const h3 = card.querySelector('h3');
+  if (!h3) return;
+  const section = card.closest('.section');
+  if (!section) return;
+  searchData.push({
+    id: section.id,
+    title: h3.textContent,
+    text: card.textContent.toLowerCase(),
+    sub: true
+  });
+});
+
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+const searchOverlay = document.getElementById('search-overlay');
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q || q.length < 2) {
+    searchResults.style.display = 'none';
+    searchOverlay.style.display = 'none';
+    return;
+  }
+  const matches = searchData.filter(d => d.text.includes(q)).slice(0, 10);
+  if (!matches.length) {
+    searchResults.style.display = 'none';
+    searchOverlay.style.display = 'none';
+    return;
+  }
+  searchResults.innerHTML = matches.map((m, i) =>
+    `<div class="sr-item" onclick="scrollTo('${m.id}');closeSearch()">
+      <span class="sr-item-icon">${m.sub ? '•' : '📑'}</span>
+      <div>
+        <div class="sr-item-title">${m.title}</div>
+        ${m.sub ? '' : `<div class="sr-item-sub">#${m.id}</div>`}
+      </div>
+    </div>`
+  ).join('');
+  searchResults.style.display = 'block';
+  searchOverlay.style.display = 'block';
+});
+
+searchOverlay.addEventListener('click', closeSearch);
+function closeSearch() {
+  searchResults.style.display = 'none';
+  searchOverlay.style.display = 'none';
+  searchInput.value = '';
+}
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSearch();
+});
+
+// ── KEYBOARD SHORTCUT ──
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+});
+</script>
+</body>
+</html>

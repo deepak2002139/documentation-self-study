@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced RAG Systems — LangGraph + LangChain + ChromaDB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b0f;
+  --bg2: #111318;
+  --bg3: #181c24;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+  --accent: #4ade80;
+  --accent2: #22d3ee;
+  --accent3: #a78bfa;
+  --accent4: #fb923c;
+  --accent5: #f472b6;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --sidebar-w: 280px;
+  --nav-h: 60px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --mono: 'DM Mono', monospace;
+  --display: 'Syne', sans-serif;
+  --body: 'DM Sans', sans-serif;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] {
+  --bg: #f8f9fc;
+  --bg2: #ffffff;
+  --bg3: #f1f3f8;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.12);
+  --text: #0f1117;
+  --text-muted: #6b7280;
+  --text-dim: #4b5563;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{
+  font-family:var(--body);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  overflow-x:hidden;
+  transition:background var(--transition),color var(--transition);
+}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+/* PROGRESS BAR */
+#progress-bar{
+  position:fixed;top:0;left:0;z-index:9999;
+  height:2px;width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));
+  transition:width 0.1s linear;
+}
+/* NAVBAR */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  height:var(--nav-h);
+  background:rgba(10,11,15,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 24px;
+  gap:16px;
+}
+[data-theme="light"] nav{background:rgba(248,249,252,0.9);}
+.nav-logo{
+  font-family:var(--display);
+  font-weight:800;font-size:1.1rem;
+  color:var(--text);
+  text-decoration:none;
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;
+}
+.nav-logo .dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 8px var(--accent);
+}
+.nav-search{
+  flex:1;max-width:400px;margin-left:16px;
+  position:relative;
+}
+.nav-search input{
+  width:100%;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:6px 12px 6px 36px;
+  font-family:var(--body);
+  font-size:0.85rem;
+  color:var(--text);
+  outline:none;
+  transition:border-color var(--transition);
+}
+.nav-search input:focus{border-color:var(--border2);}
+.nav-search input::placeholder{color:var(--text-muted);}
+.nav-search .search-icon{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  color:var(--text-muted);font-size:0.85rem;
+}
+.nav-right{display:flex;align-items:center;gap:12px;margin-left:auto;}
+.btn-theme{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:6px 12px;
+  cursor:pointer;font-size:0.85rem;
+  color:var(--text-dim);transition:all var(--transition);
+}
+.btn-theme:hover{border-color:var(--border2);color:var(--text);}
+.nav-badge{
+  font-family:var(--mono);font-size:0.7rem;
+  background:rgba(74,222,128,0.12);
+  color:var(--accent);
+  border:1px solid rgba(74,222,128,0.2);
+  border-radius:6px;padding:3px 8px;
+}
+.hamburger{
+  display:none;background:none;border:none;
+  cursor:pointer;color:var(--text);font-size:1.2rem;
+  padding:4px;
+}
+/* LAYOUT */
+.layout{
+  display:flex;
+  margin-top:var(--nav-h);
+  min-height:calc(100vh - var(--nav-h));
+}
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);
+  position:fixed;top:var(--nav-h);left:0;bottom:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  padding:20px 0 80px;
+  transition:transform var(--transition);
+  z-index:800;
+}
+.sidebar-section{margin-bottom:6px;}
+.sidebar-heading{
+  font-family:var(--mono);font-size:0.65rem;
+  text-transform:uppercase;letter-spacing:0.12em;
+  color:var(--text-muted);
+  padding:10px 20px 4px;
+}
+.sidebar-link{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 20px;
+  font-size:0.82rem;
+  color:var(--text-dim);
+  text-decoration:none;
+  border-left:2px solid transparent;
+  transition:all var(--transition);
+  cursor:pointer;
+}
+.sidebar-link:hover,.sidebar-link.active{
+  color:var(--text);
+  background:rgba(255,255,255,0.04);
+  border-left-color:var(--accent);
+}
+.sidebar-link .link-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:currentColor;opacity:0.4;
+  flex-shrink:0;
+}
+/* MAIN CONTENT */
+.main{
+  margin-left:var(--sidebar-w);
+  flex:1;
+  padding:48px 64px;
+  max-width:calc(100% - var(--sidebar-w));
+}
+/* SECTION */
+.section{
+  margin-bottom:80px;
+  scroll-margin-top:80px;
+}
+.section-tag{
+  font-family:var(--mono);font-size:0.7rem;
+  text-transform:uppercase;letter-spacing:0.15em;
+  color:var(--accent);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-tag::after{
+  content:'';flex:0 0 32px;height:1px;
+  background:var(--accent);opacity:0.4;
+}
+h1{
+  font-family:var(--display);font-weight:800;font-size:3rem;
+  line-height:1.1;margin-bottom:20px;
+  background:linear-gradient(135deg,var(--text) 0%,var(--text-dim) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+h2{
+  font-family:var(--display);font-weight:700;font-size:1.9rem;
+  margin-bottom:16px;color:var(--text);
+}
+h3{
+  font-family:var(--display);font-weight:600;font-size:1.2rem;
+  margin-bottom:10px;color:var(--text);
+}
+h4{font-family:var(--display);font-weight:600;font-size:1rem;color:var(--text-dim);margin-bottom:8px;}
+p{color:var(--text-dim);margin-bottom:14px;font-size:0.95rem;}
+/* HERO */
+.hero{
+  padding:20px 0 60px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:64px;
+}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.badge{
+  font-family:var(--mono);font-size:0.7rem;
+  padding:4px 10px;border-radius:6px;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.badge-green{background:rgba(74,222,128,0.1);color:var(--accent);border:1px solid rgba(74,222,128,0.2);}
+.badge-cyan{background:rgba(34,211,238,0.1);color:var(--accent2);border:1px solid rgba(34,211,238,0.2);}
+.badge-purple{background:rgba(167,139,250,0.1);color:var(--accent3);border:1px solid rgba(167,139,250,0.2);}
+.badge-orange{background:rgba(251,146,60,0.1);color:var(--accent4);border:1px solid rgba(251,146,60,0.2);}
+.badge-pink{background:rgba(244,114,182,0.1);color:var(--accent5);border:1px solid rgba(244,114,182,0.2);}
+.hero-desc{
+  font-size:1.05rem;color:var(--text-dim);
+  max-width:680px;line-height:1.8;
+  margin-bottom:32px;
+}
+.hero-stats{
+  display:flex;gap:32px;flex-wrap:wrap;
+}
+.stat{
+  display:flex;flex-direction:column;gap:2px;
+}
+.stat-num{
+  font-family:var(--display);font-weight:700;font-size:1.6rem;
+  color:var(--text);
+}
+.stat-label{font-family:var(--mono);font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;}
+/* CARDS */
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  margin-bottom:16px;
+  transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);
+}
+.card:hover{
+  border-color:var(--border2);
+  transform:translateY(-2px);
+  box-shadow:var(--shadow);
+}
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:16px;
+  margin-bottom:32px;
+}
+.card-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;margin-bottom:12px;
+}
+.icon-green{background:rgba(74,222,128,0.12);}
+.icon-cyan{background:rgba(34,211,238,0.12);}
+.icon-purple{background:rgba(167,139,250,0.12);}
+.icon-orange{background:rgba(251,146,60,0.12);}
+.icon-pink{background:rgba(244,114,182,0.12);}
+.card h3{margin-bottom:6px;}
+.card p{margin-bottom:0;font-size:0.88rem;}
+/* CODE BLOCK */
+.code-block{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin:16px 0;
+  overflow:hidden;
+}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
+}
+.code-lang{font-family:var(--mono);font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;}
+.copy-btn{
+  font-family:var(--mono);font-size:0.7rem;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  border-radius:5px;padding:3px 10px;
+  color:var(--text-dim);cursor:pointer;
+  transition:all var(--transition);
+}
+.copy-btn:hover{background:rgba(255,255,255,0.1);color:var(--text);}
+.copy-btn.copied{color:var(--accent);}
+pre{
+  padding:20px;overflow-x:auto;
+  font-family:var(--mono);font-size:0.82rem;
+  line-height:1.7;color:var(--text-dim);
+}
+.kw{color:#f472b6;}
+.fn{color:#4ade80;}
+.str{color:#fbbf24;}
+.cm{color:#4b5563;font-style:italic;}
+.var{color:#22d3ee;}
+.num{color:#a78bfa;}
+/* ARCHITECTURE DIAGRAM */
+.arch-diagram{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:32px;
+  margin:24px 0;
+  overflow-x:auto;
+}
+.arch-diagram h3{margin-bottom:24px;color:var(--text-dim);font-size:0.9rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:500;}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;}
+.flow-node{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:10px 16px;
+  font-family:var(--mono);font-size:0.78rem;
+  color:var(--text);
+  text-align:center;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.flow-node.accent{border-color:rgba(74,222,128,0.4);color:var(--accent);background:rgba(74,222,128,0.06);}
+.flow-node.cyan{border-color:rgba(34,211,238,0.4);color:var(--accent2);background:rgba(34,211,238,0.06);}
+.flow-node.purple{border-color:rgba(167,139,250,0.4);color:var(--accent3);background:rgba(167,139,250,0.06);}
+.flow-node.orange{border-color:rgba(251,146,60,0.4);color:var(--accent4);background:rgba(251,146,60,0.06);}
+.flow-node.pink{border-color:rgba(244,114,182,0.4);color:var(--accent5);background:rgba(244,114,182,0.06);}
+.flow-node.red{border-color:rgba(248,113,113,0.4);color:var(--red);background:rgba(248,113,113,0.06);}
+.flow-arrow{
+  color:var(--text-muted);
+  font-size:1.2rem;padding:0 6px;
+  flex-shrink:0;
+}
+/* GRID FLOW DIAGRAM */
+.grid-flow{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin:24px 0;
+}
+.gf-node{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  text-align:center;
+}
+.gf-label{font-family:var(--mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;}
+.gf-title{font-size:0.85rem;color:var(--text);font-weight:500;}
+/* LANGGRAPH DIAGRAM */
+.lg-diagram{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:24px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  margin:24px 0;
+}
+.lg-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+.lg-node{
+  border-radius:50%;
+  width:80px;height:80px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.65rem;
+  text-align:center;gap:2px;
+  border:2px solid;
+}
+.lg-node.start{border-color:var(--accent);color:var(--accent);background:rgba(74,222,128,0.08);}
+.lg-node.process{border-color:var(--accent2);color:var(--accent2);background:rgba(34,211,238,0.08);}
+.lg-node.decide{border-color:var(--accent3);color:var(--accent3);background:rgba(167,139,250,0.08);border-radius:4px;transform:rotate(45deg);}
+.lg-node.decide span{transform:rotate(-45deg);}
+.lg-node.end{border-color:var(--red);color:var(--red);background:rgba(248,113,113,0.08);}
+.lg-v-arrow{text-align:center;color:var(--text-muted);font-size:1.4rem;}
+.lg-label{font-size:0.7rem;color:var(--text-muted);font-family:var(--mono);}
+/* CALLOUT */
+.callout{
+  border-left:3px solid;
+  padding:14px 18px;
+  border-radius:0 var(--radius) var(--radius) 0;
+  margin:16px 0;
+  font-size:0.88rem;
+}
+.callout-info{border-color:var(--accent2);background:rgba(34,211,238,0.06);}
+.callout-warn{border-color:var(--yellow);background:rgba(251,191,36,0.06);}
+.callout-tip{border-color:var(--accent);background:rgba(74,222,128,0.06);}
+.callout-danger{border-color:var(--red);background:rgba(248,113,113,0.06);}
+.callout-title{
+  font-family:var(--mono);font-size:0.7rem;
+  text-transform:uppercase;letter-spacing:0.1em;
+  margin-bottom:6px;font-weight:600;
+}
+.callout-info .callout-title{color:var(--accent2);}
+.callout-warn .callout-title{color:var(--yellow);}
+.callout-tip .callout-title{color:var(--accent);}
+.callout-danger .callout-title{color:var(--red);}
+.callout p{margin-bottom:0;color:var(--text-dim);}
+/* LIST */
+ul.styled{list-style:none;padding:0;}
+ul.styled li{
+  padding:6px 0 6px 20px;
+  position:relative;
+  font-size:0.9rem;
+  color:var(--text-dim);
+  border-bottom:1px solid var(--border);
+}
+ul.styled li:last-child{border-bottom:none;}
+ul.styled li::before{
+  content:'▸';
+  position:absolute;left:0;
+  color:var(--accent);
+}
+/* FAQ */
+.faq-item{
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:10px;
+  overflow:hidden;
+}
+.faq-q{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  cursor:pointer;
+  background:var(--bg2);
+  font-size:0.9rem;color:var(--text);
+  font-weight:500;
+  transition:background var(--transition);
+}
+.faq-q:hover{background:var(--bg3);}
+.faq-chevron{transition:transform var(--transition);color:var(--text-muted);font-size:0.8rem;}
+.faq-a{
+  display:none;
+  padding:14px 18px;
+  background:var(--bg3);
+  border-top:1px solid var(--border);
+  font-size:0.88rem;color:var(--text-dim);
+  line-height:1.8;
+}
+.faq-item.open .faq-a{display:block;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+/* TABLE */
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;}
+th{
+  background:var(--bg3);
+  font-family:var(--mono);font-size:0.72rem;
+  text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--text-muted);
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+}
+td{
+  padding:10px 14px;
+  font-size:0.85rem;color:var(--text-dim);
+  border-bottom:1px solid var(--border);
+}
+tr:hover td{background:rgba(255,255,255,0.02);}
+/* TIMELINE */
+.timeline{position:relative;padding-left:28px;}
+.timeline::before{
+  content:'';
+  position:absolute;left:6px;top:0;bottom:0;
+  width:1px;background:var(--border);
+}
+.timeline-item{
+  position:relative;margin-bottom:28px;
+}
+.timeline-item::before{
+  content:'';
+  position:absolute;left:-25px;top:6px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 3px rgba(74,222,128,0.15);
+}
+.timeline-label{
+  font-family:var(--mono);font-size:0.72rem;
+  color:var(--accent);margin-bottom:4px;
+  text-transform:uppercase;letter-spacing:0.1em;
+}
+.timeline-title{font-size:0.95rem;color:var(--text);font-weight:600;margin-bottom:4px;}
+.timeline-desc{font-size:0.85rem;color:var(--text-dim);}
+/* CHIP LIST */
+.chip-list{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+.chip{
+  font-family:var(--mono);font-size:0.72rem;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text-dim);
+}
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:40px 0;}
+/* SEARCH HIGHLIGHT */
+.highlight{
+  background:rgba(251,191,36,0.25);
+  border-radius:2px;
+  color:var(--text);
+}
+/* SEARCH RESULTS */
+#search-results{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  z-index:2000;
+  display:none;
+  max-height:300px;overflow-y:auto;
+}
+#search-results.visible{display:block;}
+.search-result-item{
+  padding:10px 14px;
+  cursor:pointer;
+  font-size:0.85rem;
+  color:var(--text-dim);
+  border-bottom:1px solid var(--border);
+  transition:background var(--transition);
+}
+.search-result-item:hover{background:var(--bg3);color:var(--text);}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-section{font-family:var(--mono);font-size:0.65rem;color:var(--text-muted);margin-bottom:2px;}
+/* COMPARISON TABLE */
+.comparison{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;margin:16px 0;
+}
+.comp-col{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.comp-header{
+  padding:10px 16px;
+  font-family:var(--mono);font-size:0.78rem;
+  font-weight:600;
+}
+.comp-green .comp-header{background:rgba(74,222,128,0.08);color:var(--accent);}
+.comp-red .comp-header{background:rgba(248,113,113,0.08);color:var(--red);}
+.comp-col ul{padding:12px 16px;list-style:none;}
+.comp-col li{font-size:0.85rem;color:var(--text-dim);padding:4px 0;border-bottom:1px solid var(--border);}
+.comp-col li:last-child{border-bottom:none;}
+/* VECTOR DIAGRAM */
+.vector-space{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  margin:24px 0;
+  position:relative;
+  height:200px;
+  overflow:hidden;
+}
+.vector-space svg{width:100%;height:100%;}
+/* SYSTEM DESIGN */
+.sys-layer{
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 18px;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:14px;
+}
+.sys-icon{
+  width:36px;height:36px;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+}
+.sys-info h4{margin-bottom:2px;font-size:0.88rem;}
+.sys-info p{margin-bottom:0;font-size:0.8rem;}
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .main{padding:32px 32px;}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;max-width:100%;padding:24px 20px;}
+  .hamburger{display:block;}
+  h1{font-size:2rem;}
+  .card-grid{grid-template-columns:1fr;}
+  .grid-flow{grid-template-columns:1fr;}
+  .comparison{grid-template-columns:1fr;}
+  .flow{flex-direction:column;}
+  .hero-stats{gap:20px;}
+  .nav-search{display:none;}
+}
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.animate-in{animation:fadeUp 0.5s ease both;}
+.live-dot{
+  display:inline-block;width:7px;height:7px;
+  border-radius:50%;background:var(--accent);
+  animation:pulse 2s infinite;
+  margin-right:6px;
+}
+/* SCROLLSPY */
+.sidebar-link.active{color:var(--accent);}
+/* OVERLAY */
+.overlay{
+  display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,0.5);
+}
+.overlay.show{display:block;}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- NAVBAR -->
+<nav>
+  <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+  <a href="#" class="nav-logo"><div class="dot"></div>RAG.Systems</a>
+  <div class="nav-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search topics... (Ctrl+K)">
+    <div id="search-results"></div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-badge"><span class="live-dot"></span>v2.0 Portfolio</span>
+    <button class="btn-theme" id="themeToggle">☀ Light</button>
+  </div>
+</nav>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Overview</div>
+    <a class="sidebar-link" href="#overview">Overview</a>
+    <a class="sidebar-link" href="#what-is-rag">What is RAG</a>
+    <a class="sidebar-link" href="#why-rag">Why RAG over Fine-Tuning</a>
+    <a class="sidebar-link" href="#llm-problems">LLM Problems Solved</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">RAG Deep Dive</div>
+    <a class="sidebar-link" href="#rag-workflow">E2E RAG Workflow</a>
+    <a class="sidebar-link" href="#retrieval-pipeline">Retrieval Pipeline</a>
+    <a class="sidebar-link" href="#chunking">Chunking Strategies</a>
+    <a class="sidebar-link" href="#embedding">Embedding & Vector Search</a>
+    <a class="sidebar-link" href="#query-strategies">Query Strategies</a>
+    <a class="sidebar-link" href="#reranking">Re-ranking & Scoring</a>
+    <a class="sidebar-link" href="#hybrid-search">Hybrid Search</a>
+    <a class="sidebar-link" href="#context">Context Engineering</a>
+    <a class="sidebar-link" href="#validation">Validation & Hallucination</a>
+    <a class="sidebar-link" href="#optimization">Optimization</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">LangGraph</div>
+    <a class="sidebar-link" href="#langgraph">What is LangGraph</a>
+    <a class="sidebar-link" href="#lg-architecture">State Machine Architecture</a>
+    <a class="sidebar-link" href="#lg-nodes">Nodes & Edges</a>
+    <a class="sidebar-link" href="#lg-agents">Agentic Workflows</a>
+    <a class="sidebar-link" href="#lg-patterns">Advanced Patterns</a>
+    <a class="sidebar-link" href="#lg-vs-lc">LangGraph vs LangChain</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">LangChain</div>
+    <a class="sidebar-link" href="#langchain">LangChain Core</a>
+    <a class="sidebar-link" href="#lc-chains">Chains & Runnables</a>
+    <a class="sidebar-link" href="#lc-memory">Memory & Retrievers</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">ChromaDB</div>
+    <a class="sidebar-link" href="#chromadb">ChromaDB Deep Dive</a>
+    <a class="sidebar-link" href="#vector-concepts">Vector DB Concepts</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">System Design</div>
+    <a class="sidebar-link" href="#system-design">High-Level Architecture</a>
+    <a class="sidebar-link" href="#fastapi-service">FastAPI AI Service</a>
+    <a class="sidebar-link" href="#spring-boot">Spring Boot Integration</a>
+    <a class="sidebar-link" href="#infra">Infrastructure & Ops</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Interview Prep</div>
+    <a class="sidebar-link" href="#rag-interview">RAG Interview Q&A</a>
+    <a class="sidebar-link" href="#lg-interview">LangGraph Interview Q&A</a>
+    <a class="sidebar-link" href="#lc-interview">LangChain Interview Q&A</a>
+    <a class="sidebar-link" href="#sysdesign-interview">System Design Q&A</a>
+    <a class="sidebar-link" href="#tradeoffs">Tradeoffs & Decisions</a>
+    <a class="sidebar-link" href="#failures">Failure Scenarios</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO / OVERVIEW -->
+<section class="section hero" id="overview">
+  <div class="section-tag">Portfolio Project · AI Engineering</div>
+  <h1>Advanced RAG Systems<br>Engineering</h1>
+  <div class="hero-badges">
+    <span class="badge badge-green">LangGraph</span>
+    <span class="badge badge-cyan">LangChain</span>
+    <span class="badge badge-purple">ChromaDB</span>
+    <span class="badge badge-orange">FastAPI</span>
+    <span class="badge badge-pink">Spring Boot</span>
+  </div>
+  <p class="hero-desc">
+    A production-grade AI engineering reference covering Retrieval-Augmented Generation pipelines, agentic LangGraph orchestration, LangChain chains, ChromaDB vector storage, and a full-stack microservices architecture — built for senior AI engineer interviews and real-world deployments.
+  </p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">40+</span><span class="stat-label">Topics Covered</span></div>
+    <div class="stat"><span class="stat-num">2+</span><span class="stat-label">Years Experience</span></div>
+    <div class="stat"><span class="stat-num">100+</span><span class="stat-label">Interview Points</span></div>
+    <div class="stat"><span class="stat-num">5</span><span class="stat-label">Tech Stack Layers</span></div>
+  </div>
+</section>
+
+<!-- WHAT IS RAG -->
+<section class="section" id="what-is-rag">
+  <div class="section-tag">Fundamentals</div>
+  <h2>What is RAG?</h2>
+  <p>Retrieval-Augmented Generation (RAG) is an architecture pattern that enhances Large Language Models by <strong>injecting relevant, retrieved context</strong> into the prompt at inference time — rather than relying solely on what the model learned during training.</p>
+
+  <div class="callout callout-info">
+    <div class="callout-title">🔑 Core Idea</div>
+    <p>Split "knowing" from "reasoning." Store knowledge in a vector database. Let the LLM focus on reasoning over retrieved facts. This gives you freshness, accuracy, and auditability.</p>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">📦 Real-World Analogy</div>
+    <p>Imagine a brilliant consultant who has forgotten most details. Before every meeting, their assistant brings them the exact relevant files. The consultant reads those files and gives expert advice. That's RAG — the assistant is your retriever, the files are your vector DB, the consultant is the LLM.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon icon-green">🧠</div>
+      <h3>Without RAG</h3>
+      <p>LLM relies entirely on training data. Hallucinations occur when asked about post-training events or niche domains. No source attribution possible.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-cyan">📡</div>
+      <h3>With RAG</h3>
+      <p>LLM receives fresh, domain-specific context at query time. Grounded answers with source attribution. Updatable without retraining.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-purple">⚡</div>
+      <h3>Advanced RAG</h3>
+      <p>Multi-hop retrieval, query decomposition, re-ranking, confidence scoring, hallucination detection, and agentic self-correction.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY RAG -->
+<section class="section" id="why-rag">
+  <div class="section-tag">Decision Framework</div>
+  <h2>Why RAG over Fine-Tuning?</h2>
+  <p>This is a critical interview question. The answer comes down to cost, control, and freshness.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>Fine-Tuning</th><th>RAG</th><th>Winner</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Knowledge Freshness</td><td>Static after training</td><td>Real-time via retrieval</td><td class="badge badge-green">RAG</td></tr>
+      <tr><td>Cost</td><td>$$$$ GPU training</td><td>$ API + vector DB</td><td class="badge badge-green">RAG</td></tr>
+      <tr><td>Speed to Update</td><td>Days / weeks</td><td>Minutes (add docs)</td><td class="badge badge-green">RAG</td></tr>
+      <tr><td>Source Attribution</td><td>Not possible</td><td>Built-in</td><td class="badge badge-green">RAG</td></tr>
+      <tr><td>Custom Behavior</td><td>✅ Best</td><td>Partial via prompts</td><td class="badge badge-orange">Fine-Tune</td></tr>
+      <tr><td>Domain Vocabulary</td><td>✅ Best</td><td>Needs prompt engineering</td><td class="badge badge-orange">Fine-Tune</td></tr>
+      <tr><td>Explainability</td><td>Black box</td><td>Traceable to sources</td><td class="badge badge-green">RAG</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">⚠ Interview Trap</div>
+    <p>Never say "RAG is always better." Fine-tuning wins when you need custom tone, format, or behavior baked into the model itself. The smart answer: use RAG for knowledge, fine-tuning for style — or combine both (RAFT: RAG + Fine-Tune).</p>
+  </div>
+</section>
+
+<!-- LLM PROBLEMS -->
+<section class="section" id="llm-problems">
+  <div class="section-tag">Problem Space</div>
+  <h2>Problems RAG Solves</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon icon-pink">👻</div>
+      <h3>Hallucination Problem</h3>
+      <p>LLMs generate plausible-sounding but factually wrong content. RAG grounds the model with retrieved facts, making it much harder to hallucinate about things in the context window.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-orange">📏</div>
+      <h3>Context Window Limits</h3>
+      <p>Even 128K token models can't hold entire knowledge bases. RAG selectively retrieves the most relevant chunks — fitting maximum signal into limited context space.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-cyan">🔄</div>
+      <h3>Knowledge Freshness</h3>
+      <p>Training data has a cutoff. RAG lets you add new documents (PDFs, APIs, DB records) in real-time without touching the model. Updates are instant.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-green">🔒</div>
+      <h3>Private Knowledge</h3>
+      <p>Company-internal data, proprietary documents, customer records — never in any LLM's training. RAG is the only way to query private data with LLMs without sending it for fine-tuning.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-purple">📎</div>
+      <h3>No Source Attribution</h3>
+      <p>Base LLMs can't cite sources. RAG retrieval tracks which documents were used, enabling enterprise-grade explainability and audit trails.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-green">💸</div>
+      <h3>Fine-Tuning Cost</h3>
+      <p>Fine-tuning GPT-4 class models costs thousands of dollars and takes days. Adding documents to ChromaDB takes seconds and costs cents.</p>
+    </div>
+  </div>
+</section>
+
+<!-- E2E RAG WORKFLOW -->
+<section class="section" id="rag-workflow">
+  <div class="section-tag">Core Architecture</div>
+  <h2>End-to-End RAG Workflow</h2>
+  <p>RAG has two distinct phases: <strong>Ingestion</strong> (offline) and <strong>Query</strong> (online). Understanding both is critical.</p>
+
+  <div class="arch-diagram">
+    <h3>Phase 1 — Document Ingestion Pipeline (Offline)</h3>
+    <div class="flow">
+      <div class="flow-node orange">📄 Raw Docs<br><small>PDF, HTML, DB</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">📋 Document<br>Loader</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">✂️ Chunker<br><small>Recursive/Sliding</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node cyan">🧬 Embedding<br>Model</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">🗄️ ChromaDB<br>Storage</div>
+    </div>
+  </div>
+
+  <div class="arch-diagram">
+    <h3>Phase 2 — Query Pipeline (Real-Time)</h3>
+    <div class="flow">
+      <div class="flow-node orange">👤 User Query</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">🔍 Query<br>Expansion</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node cyan">🧬 Query<br>Embedding</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">🗄️ Vector<br>Search</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node purple">🏆 Re-rank<br>Chunks</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">📝 Prompt<br>Assembly</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node pink">🤖 LLM<br>Generation</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">✅ Validated<br>Answer</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-label">Step 1 — Ingestion</div>
+      <div class="timeline-title">Document Loading</div>
+      <div class="timeline-desc">LangChain's document loaders ingest PDFs, URLs, CSV, Notion, Confluence, etc. Each loader handles parsing, metadata extraction, and text normalization.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Step 2 — Chunking</div>
+      <div class="timeline-title">Text Splitting</div>
+      <div class="timeline-desc">Documents split into semantically meaningful chunks. Chunk size and overlap tuned per document type. Too small = lost context; too large = noisy retrieval.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Step 3 — Embedding</div>
+      <div class="timeline-title">Vector Generation</div>
+      <div class="timeline-desc">Each chunk passed through an embedding model (text-embedding-ada-002, BGE, E5) to produce a high-dimensional vector representation. Semantically similar texts produce nearby vectors.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Step 4 — Storage</div>
+      <div class="timeline-title">ChromaDB Upsert</div>
+      <div class="timeline-desc">Vectors + metadata + original text stored in ChromaDB collections. Indexed with HNSW (Hierarchical Navigable Small World) for approximate nearest neighbor search.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Step 5 — Retrieval</div>
+      <div class="timeline-title">Semantic Query</div>
+      <div class="timeline-desc">User query embedded → cosine similarity search in ChromaDB → top-K chunks retrieved. Optionally filtered by metadata (date, department, file type).</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Step 6 — Generation</div>
+      <div class="timeline-title">Grounded Response</div>
+      <div class="timeline-desc">Retrieved chunks injected into LLM prompt. LLM generates answer strictly using provided context. Source documents cited in the response.</div>
+    </div>
+  </div>
+</section>
+
+<!-- RETRIEVAL PIPELINE -->
+<section class="section" id="retrieval-pipeline">
+  <div class="section-tag">Deep Dive</div>
+  <h2>Retrieval Pipeline</h2>
+
+  <h3>Embedding-Based Retrieval</h3>
+  <p>Text is mapped to a high-dimensional vector space where semantic similarity = geometric proximity. The model learns that "car" and "automobile" should be nearby, even though the words are different.</p>
+
+  <div class="vector-space">
+    <svg viewBox="0 0 600 170" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg-grad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:rgba(74,222,128,0.03)"/>
+          <stop offset="100%" style="stop-color:transparent"/>
+        </radialGradient>
+      </defs>
+      <rect width="600" height="170" fill="url(#bg-grad)"/>
+      <!-- Grid lines -->
+      <line x1="0" y1="85" x2="600" y2="85" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <line x1="300" y1="0" x2="300" y2="170" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <!-- Cluster 1: AI documents -->
+      <circle cx="120" cy="60" r="5" fill="#4ade80" opacity="0.9"/>
+      <circle cx="140" cy="50" r="5" fill="#4ade80" opacity="0.7"/>
+      <circle cx="110" cy="80" r="5" fill="#4ade80" opacity="0.8"/>
+      <circle cx="150" cy="70" r="5" fill="#4ade80" opacity="0.6"/>
+      <text x="95" y="105" fill="#4ade80" font-size="10" font-family="DM Mono,monospace">AI docs cluster</text>
+      <!-- Cluster 2: Finance -->
+      <circle cx="420" cy="120" r="5" fill="#22d3ee" opacity="0.9"/>
+      <circle cx="445" cy="110" r="5" fill="#22d3ee" opacity="0.7"/>
+      <circle cx="410" cy="135" r="5" fill="#22d3ee" opacity="0.8"/>
+      <text x="395" y="155" fill="#22d3ee" font-size="10" font-family="DM Mono,monospace">Finance docs cluster</text>
+      <!-- Query point -->
+      <circle cx="155" cy="58" r="8" fill="none" stroke="#fbbf24" stroke-width="2"/>
+      <circle cx="155" cy="58" r="4" fill="#fbbf24"/>
+      <text x="162" y="53" fill="#fbbf24" font-size="10" font-family="DM Mono,monospace">⬤ Query</text>
+      <!-- Distance lines -->
+      <line x1="155" y1="58" x2="120" y2="60" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+      <line x1="155" y1="58" x2="140" y2="50" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+      <line x1="155" y1="58" x2="110" y2="80" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+      <!-- Top-K label -->
+      <rect x="4" y="4" width="100" height="22" rx="4" fill="rgba(74,222,128,0.1)" stroke="rgba(74,222,128,0.3)" stroke-width="1"/>
+      <text x="10" y="19" fill="#4ade80" font-size="10" font-family="DM Mono,monospace">Top-K=3 retrieved</text>
+    </svg>
+  </div>
+
+  <h3>Similarity Metrics</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h3>Cosine Similarity</h3>
+      <p>Measures angle between vectors. Best for normalized embeddings. Range: -1 to 1. Most common in RAG. ChromaDB default.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">math</span></div>
+        <pre>cos(θ) = (A·B) / (|A| × |B|)
+Range: -1 (opposite) to 1 (identical)
+Used by: ChromaDB, Pinecone, Weaviate</pre>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Euclidean Distance (L2)</h3>
+      <p>Straight-line distance in vector space. Sensitive to magnitude. Good when vectors are not normalized.</p>
+    </div>
+    <div class="card">
+      <h3>Dot Product (IP)</h3>
+      <p>Fast computation, used in FAISS. Best when embeddings are trained for dot product optimization. Not always normalized.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CHUNKING STRATEGIES -->
+<section class="section" id="chunking">
+  <div class="section-tag">Ingestion</div>
+  <h2>Chunking Strategies</h2>
+  <p>Chunking is one of the most impactful decisions in a RAG system. Poor chunking = poor retrieval, no matter how good your LLM or embeddings are.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon icon-green">📄</div>
+      <h3>Fixed-Size Chunking</h3>
+      <p>Split every N characters/tokens. Simple but breaks semantic boundaries mid-sentence. Only use for structured data with known format.</p>
+      <div class="chip-list">
+        <span class="chip">chunk_size=512</span><span class="chip">chunk_overlap=50</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-cyan">🔄</div>
+      <h3>Recursive Character Splitting</h3>
+      <p>LangChain's default. Tries to split on paragraphs → sentences → words → characters. Respects natural text boundaries. Best general-purpose strategy.</p>
+      <div class="chip-list"><span class="chip">RecursiveCharacterTextSplitter</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-purple">🪟</div>
+      <h3>Sliding Window</h3>
+      <p>Overlapping chunks ensure context isn't lost at boundaries. Key insight: if an answer spans two chunks, overlap lets you retrieve it. Overlap = 10-20% of chunk size.</p>
+      <div class="chip-list"><span class="chip">overlap=128 tokens</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-orange">🧩</div>
+      <h3>Semantic Chunking</h3>
+      <p>Uses embedding similarity to detect topic shifts. Chunks are semantically coherent units, not arbitrary splits. More expensive but dramatically better retrieval.</p>
+      <div class="chip-list"><span class="chip">SemanticChunker</span><span class="chip">threshold=0.8</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-pink">🌲</div>
+      <h3>Hierarchical / Parent-Child</h3>
+      <p>Store small chunks for precise retrieval, return parent chunk for full context. Combines retrieval precision with generation quality. Advanced RAG pattern.</p>
+      <div class="chip-list"><span class="chip">ParentDocumentRetriever</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-green">📊</div>
+      <h3>Markdown/Code-Aware</h3>
+      <p>Splits on headers, code blocks, function definitions. Critical for technical documentation or code search use cases. LangChain has MarkdownTextSplitter.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">💡 Production Insight</div>
+    <p>In production, we ran retrieval quality experiments: Semantic chunking improved answer relevance by 23% over fixed-size, at the cost of 3x ingestion time. For documents ≥100 pages, parent-child retrieval was the only approach that maintained coherent context for multi-step questions.</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · LangChain Chunking</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=<span class="num">512</span>,
+    chunk_overlap=<span class="num">64</span>,
+    separators=[<span class="str">"\n\n"</span>, <span class="str">"\n"</span>, <span class="str">". "</span>, <span class="str">" "</span>, <span class="str">""</span>],
+    length_function=<span class="var">len</span>,
+)
+
+<span class="cm"># Load and split</span>
+docs = splitter.split_documents(raw_documents)
+<span class="fn">print</span>(<span class="str">f"Split into {len(docs)} chunks"</span>)</pre>
+  </div>
+</section>
+
+<!-- QUERY STRATEGIES -->
+<section class="section" id="query-strategies">
+  <div class="section-tag">Advanced Retrieval</div>
+  <h2>Query Strategies</h2>
+
+  <h3>Query Expansion</h3>
+  <p>A single query often misses relevant documents due to vocabulary mismatch. Query expansion generates multiple phrasings of the same intent and merges results.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Query Expansion with LLM</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm"># Generate 3 alternative queries using LLM</span>
+expansion_prompt = <span class="str">"""
+Generate 3 different search queries for:
+Original: {query}
+
+Return as JSON list: ["q1", "q2", "q3"]
+"""</span>
+
+expanded = llm.invoke(expansion_prompt.format(query=user_query))
+queries = json.loads(expanded.content)
+
+<span class="cm"># Retrieve for each, merge with deduplication</span>
+all_docs = []
+<span class="kw">for</span> q <span class="kw">in</span> [user_query] + queries:
+    docs = vectorstore.similarity_search(q, k=<span class="num">4</span>)
+    all_docs.extend(docs)
+
+unique_docs = deduplicate_by_content(all_docs)</pre>
+  </div>
+
+  <h3>Query Decomposition</h3>
+  <p>Complex questions that require reasoning over multiple facts are broken into sub-questions. Each sub-question is answered independently, then synthesized.</p>
+
+  <div class="arch-diagram">
+    <h3>Multi-hop Decomposition Flow</h3>
+    <div class="flow">
+      <div class="flow-node orange">Complex Query<br><small>"Compare revenue growth<br>in Q1 vs last year's avg"</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node purple">Decompose<br><small>Sub-Q Generator</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node cyan">Sub-Q1: Q1 revenue?<br>Sub-Q2: Last year avg?</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Retrieve each<br>independently</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node pink">Synthesize<br>Final Answer</div>
+    </div>
+  </div>
+
+  <h3>HyDE (Hypothetical Document Embeddings)</h3>
+  <p>Instead of embedding the query, generate a hypothetical answer document and embed that. This often produces better retrieval because the hypothetical answer is semantically closer to actual answer documents than the question itself.</p>
+
+  <div class="callout callout-info">
+    <div class="callout-title">ℹ Interview Point</div>
+    <p>HyDE improves retrieval recall by 15-30% on domain-specific corpora. The tradeoff: one extra LLM call per query. Worth it for high-stakes applications, but adds latency and cost.</p>
+  </div>
+</section>
+
+<!-- RE-RANKING -->
+<section class="section" id="reranking">
+  <div class="section-tag">Scoring & Ranking</div>
+  <h2>Re-ranking & Confidence Scoring</h2>
+  <p>Vector similarity search retrieves by embedding proximity, but proximity ≠ relevance. Re-ranking uses a cross-encoder model to score each (query, chunk) pair more accurately.</p>
+
+  <div class="arch-diagram">
+    <h3>Two-Stage Retrieval Architecture</h3>
+    <div class="flow">
+      <div class="flow-node cyan">Bi-Encoder<br>(Fast)<br><small>ANN Search</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Top-K=50<br>Candidates</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node purple">Cross-Encoder<br>(Accurate)<br><small>Re-ranker</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Top-5<br>Final Results</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Re-ranking with Cross-Encoder</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> sentence_transformers <span class="kw">import</span> CrossEncoder
+
+reranker = CrossEncoder(<span class="str">"cross-encoder/ms-marco-MiniLM-L-6-v2"</span>)
+
+<span class="cm"># Stage 1: Fast vector search (recall-optimized)</span>
+candidates = vectorstore.similarity_search(query, k=<span class="num">50</span>)
+
+<span class="cm"># Stage 2: Cross-encoder re-ranking (precision-optimized)</span>
+pairs = [(query, doc.page_content) <span class="kw">for</span> doc <span class="kw">in</span> candidates]
+scores = reranker.predict(pairs)
+
+ranked = sorted(zip(scores, candidates), reverse=<span class="kw">True</span>)
+final_docs = [doc <span class="kw">for</span> score, doc <span class="kw">in</span> ranked[:<span class="num">5</span>]]</pre>
+  </div>
+
+  <h3>Confidence Scoring</h3>
+  <p>Assign a confidence score to each retrieved chunk based on: retrieval similarity score, re-ranker score, metadata recency, and source authority. Chunks below a threshold are dropped to avoid injecting irrelevant context.</p>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">⚠ Production Challenge</div>
+    <p>Setting the right confidence threshold is tricky. Too high → miss valid documents. Too low → inject noise. In production, we A/B tested thresholds and used user feedback signals to calibrate. The sweet spot was typically 0.65-0.75 cosine similarity for our domain.</p>
+  </div>
+</section>
+
+<!-- HYBRID SEARCH -->
+<section class="section" id="hybrid-search">
+  <div class="section-tag">Search</div>
+  <h2>Hybrid Search</h2>
+  <p>Pure semantic search fails on exact keyword lookups (product codes, names, IDs). Pure keyword search (BM25) fails on semantic queries. Hybrid combines both for production-grade retrieval.</p>
+
+  <div class="comparison">
+    <div class="comp-col comp-green">
+      <div class="comp-header">✅ Dense Retrieval (Semantic)</div>
+      <ul>
+        <li>Captures semantic similarity</li>
+        <li>Works across language variations</li>
+        <li>Handles synonyms and paraphrasing</li>
+        <li>ChromaDB, FAISS, Pinecone</li>
+      </ul>
+    </div>
+    <div class="comp-col comp-green">
+      <div class="comp-header">✅ Sparse Retrieval (BM25)</div>
+      <ul>
+        <li>Exact keyword matching</li>
+        <li>Product codes, IDs, names</li>
+        <li>Fast and interpretable</li>
+        <li>Elasticsearch, Opensearch</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Hybrid Search with RRF</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm"># Reciprocal Rank Fusion (RRF) — merges two ranked lists</span>
+<span class="kw">def</span> <span class="fn">rrf_merge</span>(dense_docs, sparse_docs, k=<span class="num">60</span>):
+    scores = {}
+    <span class="kw">for</span> rank, doc <span class="kw">in</span> enumerate(dense_docs):
+        doc_id = doc.metadata[<span class="str">"id"</span>]
+        scores[doc_id] = scores.get(doc_id, <span class="num">0</span>) + <span class="num">1</span> / (k + rank + <span class="num">1</span>)
+
+    <span class="kw">for</span> rank, doc <span class="kw">in</span> enumerate(sparse_docs):
+        doc_id = doc.metadata[<span class="str">"id"</span>]
+        scores[doc_id] = scores.get(doc_id, <span class="num">0</span>) + <span class="num">1</span> / (k + rank + <span class="num">1</span>)
+
+    <span class="kw">return</span> sorted(scores.items(), key=<span class="kw">lambda</span> x: x[<span class="num">1</span>], reverse=<span class="kw">True</span>)</pre>
+  </div>
+</section>
+
+<!-- CONTEXT ENGINEERING -->
+<section class="section" id="context">
+  <div class="section-tag">Prompt Engineering</div>
+  <h2>Context Engineering for RAG</h2>
+
+  <h3>Context Injection</h3>
+  <p>Retrieved chunks are injected into the prompt in a specific structure. The position, format, and ordering of context dramatically affects generation quality.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · RAG Prompt Template</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre>RAG_PROMPT = <span class="str">"""
+You are a precise AI assistant. Answer ONLY using the provided context.
+If the answer is not in the context, say "I don't have information about that."
+
+CONTEXT:
+{context}
+
+QUESTION: {question}
+
+Instructions:
+- Be concise and factual
+- Cite source documents when possible
+- Do not add information beyond the context
+- If uncertain, express uncertainty explicitly
+
+ANSWER:
+"""</span>
+
+<span class="kw">from</span> langchain.prompts <span class="kw">import</span> PromptTemplate
+prompt = PromptTemplate.from_template(RAG_PROMPT)</pre>
+  </div>
+
+  <h3>Context Compression</h3>
+  <p>Instead of injecting entire chunks (which may contain irrelevant sentences), a compressor model extracts only the relevant sentences from each chunk. Reduces token usage by 40-60%.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Contextual Compression</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> ContextualCompressionRetriever
+<span class="kw">from</span> langchain.retrievers.document_compressors <span class="kw">import</span> LLMChainExtractor
+
+compressor = LLMChainExtractor.from_llm(llm)
+compression_retriever = ContextualCompressionRetriever(
+    base_compressor=compressor,
+    base_retriever=vectorstore.as_retriever(search_kwargs={<span class="str">"k"</span>: <span class="num">10</span>})
+)</pre>
+  </div>
+
+  <h3>Metadata Filtering</h3>
+  <p>Use document metadata (date, department, file type, author) to pre-filter the search space before vector similarity. This dramatically improves precision without hurting recall.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · ChromaDB Metadata Filter</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre>results = collection.query(
+    query_embeddings=[query_vector],
+    n_results=<span class="num">10</span>,
+    where={
+        <span class="str">"$and"</span>: [
+            {<span class="str">"department"</span>: {<span class="str">"$eq"</span>: <span class="str">"engineering"</span>}},
+            {<span class="str">"date"</span>: {<span class="str">"$gte"</span>: <span class="str">"2024-01-01"</span>}},
+        ]
+    }
+)</pre>
+  </div>
+</section>
+
+<!-- VALIDATION -->
+<section class="section" id="validation">
+  <div class="section-tag">Quality Assurance</div>
+  <h2>Hallucination Detection & Validation</h2>
+
+  <h3>Automatic Hallucination Detection</h3>
+  <p>After generation, a second LLM call verifies the answer against the retrieved sources. Each factual claim in the answer is checked for presence in context.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Hallucination Check</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre>HALLUCINATION_CHECK = <span class="str">"""
+Given this CONTEXT and ANSWER, check if every claim in the answer
+is supported by the context.
+
+CONTEXT: {context}
+ANSWER: {answer}
+
+Return JSON:
+{
+  "hallucination_detected": true/false,
+  "unsupported_claims": ["claim1", "claim2"],
+  "confidence": 0.0-1.0
+}
+"""</span></pre>
+  </div>
+
+  <h3>Source Attribution</h3>
+  <p>Every sentence in the generated answer is mapped back to its source chunk and document. Users see citations in real-time. Critical for legal, medical, and enterprise use cases.</p>
+
+  <div class="callout callout-danger">
+    <div class="callout-title">🚨 Critical Production Issue</div>
+    <p>In one production system, hallucination detection caught that the LLM was blending information from two different quarterly reports. The answer looked correct but cited wrong quarter figures. Without automated validation, this would have gone unnoticed. Always build validation layers.</p>
+  </div>
+</section>
+
+<!-- OPTIMIZATION -->
+<section class="section" id="optimization">
+  <div class="section-tag">Production</div>
+  <h2>Optimization: Latency, Cost & Token Efficiency</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon icon-green">⚡</div>
+      <h3>Semantic Caching</h3>
+      <p>Cache LLM responses keyed by query embedding. Similar queries hit the cache. Use cosine distance threshold (e.g., &gt;0.95 similarity = cache hit). Reduces cost by 30-60%.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-cyan">🔁</div>
+      <h3>Async Retrieval</h3>
+      <p>Run multiple vector searches concurrently using asyncio. For hybrid search or multi-collection retrieval, parallel fetching reduces latency from O(n) to O(1).</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-purple">✂️</div>
+      <h3>Token Optimization</h3>
+      <p>Use context compression, limit top-K, and truncate chunks to fit the budget. Measure: retrieved tokens vs. LLM cost. Optimize for answer quality per dollar.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-orange">📊</div>
+      <h3>Batch Embeddings</h3>
+      <p>During ingestion, batch documents into groups of 100-500 before calling the embedding API. Batch calls are 5-10x cheaper and faster than individual calls.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-pink">🗜️</div>
+      <h3>Smaller Embedding Models</h3>
+      <p>text-embedding-3-small is 5x cheaper than ada-002 with competitive quality. BGE-m3 (open-source) is free and often outperforms commercial models on domain-specific data.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-green">🌊</div>
+      <h3>Streaming Responses</h3>
+      <p>Stream LLM output token by token to reduce perceived latency. First token appears in &lt;1s even if full response takes 10s. Critical for chat interfaces.</p>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Optimization</th><th>Latency Reduction</th><th>Cost Reduction</th><th>Complexity</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Semantic Caching</td><td>~90% on cached</td><td>30-60%</td><td>Medium</td></tr>
+      <tr><td>Async Retrieval</td><td>40-70%</td><td>None</td><td>Low</td></tr>
+      <tr><td>Context Compression</td><td>15-30%</td><td>40-60%</td><td>Medium</td></tr>
+      <tr><td>Batch Embeddings</td><td>Ingestion only</td><td>80-90%</td><td>Low</td></tr>
+      <tr><td>Smaller Embed Model</td><td>30-50%</td><td>50-80%</td><td>Low</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LANGGRAPH -->
+<section class="section" id="langgraph">
+  <div class="section-tag">Orchestration Framework</div>
+  <h2>What is LangGraph?</h2>
+  <p>LangGraph is a library built on top of LangChain for creating <strong>stateful, cyclic, multi-actor workflows</strong> using a directed graph model. It solves the fundamental limitation of LangChain chains: they are linear and stateless. LangGraph enables conditional flows, loops, retries, and parallel execution.</p>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">📦 Real-World Analogy</div>
+    <p>Think of LangGraph as a state machine for AI. Just like a traffic light has states (red/yellow/green) and transitions based on conditions, LangGraph defines AI workflow states and transitions based on LLM decisions, tool outputs, or human input.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon icon-green">🔁</div>
+      <h3>Cyclic Graphs</h3>
+      <p>Unlike DAG-based pipelines, LangGraph supports cycles. An agent can retrieve, generate, check quality, and loop back to retrieve again — until a stopping condition is met.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-cyan">📦</div>
+      <h3>Persistent State</h3>
+      <p>State is a typed dictionary shared across all nodes. Every node reads from and writes to this shared state. State can be checkpointed to DB for long-running workflows.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-purple">🧠</div>
+      <h3>Human-in-the-Loop</h3>
+      <p>Pause execution at any node for human review. Resume from the exact checkpoint. Perfect for approval workflows, content moderation, or ambiguous agent decisions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LG ARCHITECTURE -->
+<section class="section" id="lg-architecture">
+  <div class="section-tag">Architecture</div>
+  <h2>State Machine Architecture</h2>
+
+  <div class="lg-diagram">
+    <h3 style="font-size:0.85rem;color:var(--text-muted);text-align:center;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.1em;">Self-Correcting RAG Agent Graph</h3>
+    <div class="lg-row">
+      <div class="lg-node start"><span>START</span></div>
+    </div>
+    <div class="lg-v-arrow">↓</div>
+    <div class="lg-row">
+      <div class="lg-node process"><span>retrieve_docs</span></div>
+    </div>
+    <div class="lg-v-arrow">↓</div>
+    <div class="lg-row">
+      <div class="lg-node process"><span>grade_docs</span></div>
+    </div>
+    <div class="lg-v-arrow">↓</div>
+    <div class="lg-row">
+      <div class="lg-node decide" style="width:100px;height:100px;"><span style="font-size:0.6rem;text-align:center;">docs<br>relevant?</span></div>
+    </div>
+    <div class="lg-row" style="gap:60px;">
+      <div style="text-align:center;">
+        <div class="lg-label">YES</div>
+        <div class="lg-v-arrow">↓</div>
+        <div class="lg-node process"><span>generate</span></div>
+      </div>
+      <div style="text-align:center;">
+        <div class="lg-label">NO</div>
+        <div class="lg-v-arrow">↓</div>
+        <div class="lg-node process"><span>web_search</span></div>
+      </div>
+    </div>
+    <div class="lg-v-arrow">↓</div>
+    <div class="lg-row">
+      <div class="lg-node decide" style="width:100px;height:100px;"><span style="font-size:0.6rem;text-align:center;">answer<br>grounded?</span></div>
+    </div>
+    <div class="lg-row" style="gap:60px;">
+      <div style="text-align:center;">
+        <div class="lg-label">YES</div>
+        <div class="lg-v-arrow">↓</div>
+        <div class="lg-node end"><span>END</span></div>
+      </div>
+      <div style="text-align:center;">
+        <div class="lg-label">HALLUCINATED</div>
+        <div class="lg-v-arrow">↑</div>
+        <div class="lg-label" style="color:var(--red);">loop back → retrieve_docs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LG NODES -->
+<section class="section" id="lg-nodes">
+  <div class="section-tag">Components</div>
+  <h2>Nodes, Edges & State</h2>
+
+  <h3>Defining State</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · LangGraph State Definition</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> typing <span class="kw">import</span> TypedDict, Annotated, List
+<span class="kw">from</span> langchain_core.documents <span class="kw">import</span> Document
+<span class="kw">import</span> operator
+
+<span class="kw">class</span> <span class="fn">RAGState</span>(TypedDict):
+    question: str                             <span class="cm"># input question</span>
+    documents: Annotated[List[Document],      <span class="cm"># retrieved docs</span>
+                         operator.add]        <span class="cm"># reducer: append</span>
+    generation: str                           <span class="cm"># LLM output</span>
+    hallucination_score: float                <span class="cm"># validation result</span>
+    retry_count: int                          <span class="cm"># loop guard</span>
+    web_search_needed: bool                   <span class="cm"># routing flag</span></pre>
+  </div>
+
+  <h3>Defining Nodes</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · LangGraph Nodes</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">def</span> <span class="fn">retrieve</span>(state: RAGState) -> RAGState:
+    <span class="str">"""Node 1: Retrieve documents from vector store"""</span>
+    question = state[<span class="str">"question"</span>]
+    docs = retriever.invoke(question)
+    <span class="kw">return</span> {<span class="str">"documents"</span>: docs}
+
+<span class="kw">def</span> <span class="fn">grade_documents</span>(state: RAGState) -> RAGState:
+    <span class="str">"""Node 2: Grade relevance of retrieved docs"""</span>
+    question = state[<span class="str">"question"</span>]
+    docs = state[<span class="str">"documents"</span>]
+    filtered = [d <span class="kw">for</span> d <span class="kw">in</span> docs <span class="kw">if</span> is_relevant(d, question)]
+    web_needed = len(filtered) < <span class="num">2</span>
+    <span class="kw">return</span> {<span class="str">"documents"</span>: filtered, <span class="str">"web_search_needed"</span>: web_needed}
+
+<span class="kw">def</span> <span class="fn">generate</span>(state: RAGState) -> RAGState:
+    <span class="str">"""Node 3: Generate answer from context"""</span>
+    context = format_docs(state[<span class="str">"documents"</span>])
+    answer = rag_chain.invoke({<span class="str">"context"</span>: context,
+                               <span class="str">"question"</span>: state[<span class="str">"question"</span>]})
+    <span class="kw">return</span> {<span class="str">"generation"</span>: answer}</pre>
+  </div>
+
+  <h3>Building the Graph</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Graph Construction</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, END, START
+
+graph = StateGraph(RAGState)
+
+<span class="cm"># Add nodes</span>
+graph.add_node(<span class="str">"retrieve"</span>, retrieve)
+graph.add_node(<span class="str">"grade_documents"</span>, grade_documents)
+graph.add_node(<span class="str">"generate"</span>, generate)
+graph.add_node(<span class="str">"web_search"</span>, web_search)
+
+<span class="cm"># Add edges</span>
+graph.add_edge(START, <span class="str">"retrieve"</span>)
+graph.add_edge(<span class="str">"retrieve"</span>, <span class="str">"grade_documents"</span>)
+graph.add_conditional_edges(
+    <span class="str">"grade_documents"</span>,
+    route_question,   <span class="cm"># returns "generate" or "web_search"</span>
+    {<span class="str">"generate"</span>: <span class="str">"generate"</span>, <span class="str">"web_search"</span>: <span class="str">"web_search"</span>}
+)
+graph.add_edge(<span class="str">"web_search"</span>, <span class="str">"generate"</span>)
+graph.add_conditional_edges(
+    <span class="str">"generate"</span>,
+    check_hallucination,   <span class="cm"># loop or end</span>
+    {<span class="str">"hallucinated"</span>: <span class="str">"retrieve"</span>, <span class="str">"grounded"</span>: END}
+)
+
+app = graph.compile()</pre>
+  </div>
+</section>
+
+<!-- LG AGENTS -->
+<section class="section" id="lg-agents">
+  <div class="section-tag">Agentic AI</div>
+  <h2>Agentic Workflows & Advanced Patterns</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon icon-green">🔄</div>
+      <h3>Retry Mechanism</h3>
+      <p>Failed tool calls or low-confidence answers trigger automatic retries with modified query or parameters. Max retry count prevents infinite loops. State tracks retry_count.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-cyan">🧵</div>
+      <h3>Parallel Execution</h3>
+      <p>Multiple retrieval nodes can run concurrently using LangGraph's parallel branching. Retrieve from ChromaDB, web search, and SQL database simultaneously, then merge results.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-purple">🪞</div>
+      <h3>Reflection</h3>
+      <p>A critic agent reviews the generator's output and provides structured feedback. The generator uses this feedback to revise. Implements self-improvement loop without human intervention.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-orange">👥</div>
+      <h3>Multi-Agent</h3>
+      <p>Specialized agents (researcher, writer, critic, validator) each handle one step. A supervisor agent routes tasks. Better separation of concerns than one monolithic agent.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-pink">🛑</div>
+      <h3>Human-in-the-Loop</h3>
+      <p>Add interrupt_before=["generate"] to pause and wait for human approval before generating. State is persisted to DB. Resume with graph.invoke(null, config) after approval.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-green">🗂️</div>
+      <h3>Workflow Persistence</h3>
+      <p>LangGraph checkpoints state at every node. If a workflow fails mid-execution, it resumes from the last checkpoint — not from the beginning. Uses SQLite or Postgres backends.</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Human-in-the-Loop with Checkpointing</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> langgraph.checkpoint.sqlite <span class="kw">import</span> SqliteSaver
+
+<span class="cm"># Add memory/persistence</span>
+memory = SqliteSaver.from_conn_string(<span class="str">":memory:"</span>)
+app = graph.compile(
+    checkpointer=memory,
+    interrupt_before=[<span class="str">"generate"</span>]  <span class="cm"># pause before generation</span>
+)
+
+<span class="cm"># First run — pauses at "generate"</span>
+config = {<span class="str">"configurable"</span>: {<span class="str">"thread_id"</span>: <span class="str">"thread-1"</span>}}
+result = app.invoke({<span class="str">"question"</span>: user_query}, config)
+
+<span class="cm"># Human approves, then resume</span>
+final = app.invoke(<span class="kw">None</span>, config)</pre>
+  </div>
+</section>
+
+<!-- LG PATTERNS -->
+<section class="section" id="lg-patterns">
+  <div class="section-tag">Production Patterns</div>
+  <h2>Advanced LangGraph Patterns</h2>
+
+  <h3>Supervisor Multi-Agent System</h3>
+  <div class="arch-diagram">
+    <h3>Multi-Agent Orchestration</h3>
+    <div class="grid-flow">
+      <div class="gf-node"><div class="gf-label">Supervisor</div><div class="gf-title">🧠 Router Agent</div></div>
+      <div class="gf-node"><div class="gf-label">Agent 1</div><div class="gf-title">🔍 Research Agent</div></div>
+      <div class="gf-node"><div class="gf-label">Agent 2</div><div class="gf-title">✍️ Writer Agent</div></div>
+      <div class="gf-node"><div class="gf-label">Agent 3</div><div class="gf-title">🔍 Retrieval Agent</div></div>
+      <div class="gf-node"><div class="gf-label">Agent 4</div><div class="gf-title">✅ Validator Agent</div></div>
+      <div class="gf-node"><div class="gf-label">State</div><div class="gf-title">📦 Shared State</div></div>
+    </div>
+  </div>
+
+  <h3>LangGraph Limitations</h3>
+  <div class="callout callout-warn">
+    <div class="callout-title">⚠ Honest Limitations</div>
+    <p>LangGraph has a steeper learning curve than simple chains. Debugging complex graphs with many conditional edges can be difficult. State size grows with each loop, requiring careful management. For simple linear flows, LangChain LCEL is simpler and faster.</p>
+  </div>
+</section>
+
+<!-- LG VS LC -->
+<section class="section" id="lg-vs-lc">
+  <div class="section-tag">Comparison</div>
+  <h2>LangGraph vs LangChain LCEL</h2>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>LangChain LCEL</th><th>LangGraph</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Control Flow</td><td>Linear only</td><td>Cyclic, conditional, parallel</td></tr>
+      <tr><td>State Management</td><td>Stateless (manual)</td><td>Built-in typed state</td></tr>
+      <tr><td>Retries / Loops</td><td>Manual wrapping</td><td>Native via graph cycles</td></tr>
+      <tr><td>Human-in-the-Loop</td><td>Not supported</td><td>First-class support</td></tr>
+      <tr><td>Persistence</td><td>Manual</td><td>Built-in checkpointing</td></tr>
+      <tr><td>Complexity</td><td>Low</td><td>Medium-High</td></tr>
+      <tr><td>Best For</td><td>Simple RAG chains</td><td>Agentic, self-correcting AI</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LANGCHAIN -->
+<section class="section" id="langchain">
+  <div class="section-tag">Framework</div>
+  <h2>LangChain Core</h2>
+  <p>LangChain provides the building blocks: document loaders, text splitters, embedding wrappers, vector store integrations, prompt templates, output parsers, and the LCEL (LangChain Expression Language) composition system.</p>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon icon-green">📄</div><h3>Document Loaders</h3><p>70+ loaders: PDF (PyPDF, PDFMiner), URLs, CSV, Notion, Confluence, GitHub, S3, Google Drive. Each normalizes content into LangChain Document objects with metadata.</p></div>
+    <div class="card"><div class="card-icon icon-cyan">🔗</div><h3>Retrieval Chains</h3><p>RetrievalQA, ConversationalRetrievalChain — combine a retriever + prompt + LLM into one pipeline. Simple to use, but limited control (hence LangGraph for complex flows).</p></div>
+    <div class="card"><div class="card-icon icon-purple">🧩</div><h3>Output Parsers</h3><p>PydanticOutputParser, JsonOutputParser, StructuredOutputParser — force LLM output into typed Python objects. Essential for tool calling and agentic workflows.</p></div>
+  </div>
+</section>
+
+<!-- LC CHAINS -->
+<section class="section" id="lc-chains">
+  <div class="section-tag">LCEL</div>
+  <h2>Chains, Runnables & LCEL</h2>
+  <p>LCEL (LangChain Expression Language) uses the pipe operator | to compose runnables into chains. It supports streaming, async, batch, and parallel execution natively.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Full RAG Chain with LCEL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> RunnablePassthrough, RunnableParallel
+<span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> StrOutputParser
+
+<span class="cm"># Build RAG chain using pipe composition</span>
+rag_chain = (
+    RunnableParallel({
+        <span class="str">"context"</span>: retriever | format_docs,  <span class="cm"># parallel branch</span>
+        <span class="str">"question"</span>: RunnablePassthrough()   <span class="cm"># pass query through</span>
+    })
+    | prompt                    <span class="cm"># inject into template</span>
+    | llm                       <span class="cm"># call LLM</span>
+    | StrOutputParser()          <span class="cm"># parse to string</span>
+)
+
+<span class="cm"># Invoke</span>
+answer = rag_chain.invoke(<span class="str">"What is our refund policy?"</span>)
+
+<span class="cm"># Stream</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> rag_chain.stream(<span class="str">"What is our SLA?"</span>):
+    print(chunk, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+
+<span class="cm"># Batch</span>
+answers = rag_chain.batch([<span class="str">"Q1"</span>, <span class="str">"Q2"</span>, <span class="str">"Q3"</span>])</pre>
+  </div>
+</section>
+
+<!-- LC MEMORY -->
+<section class="section" id="lc-memory">
+  <div class="section-tag">Memory & State</div>
+  <h2>Memory & Conversational RAG</h2>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · Conversational RAG with History</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> langchain.chains <span class="kw">import</span> create_history_aware_retriever
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> MessagesPlaceholder
+
+<span class="cm"># Reformulate question based on chat history</span>
+contextualize_prompt = ChatPromptTemplate.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"Reformulate the user's question using chat history."</span>),
+    MessagesPlaceholder(<span class="str">"chat_history"</span>),
+    (<span class="str">"human"</span>, <span class="str">"{input}"</span>),
+])
+
+history_aware_retriever = create_history_aware_retriever(
+    llm, retriever, contextualize_prompt
+)</pre>
+  </div>
+
+  <h3>Agent vs RAG — Key Distinction</h3>
+  <div class="callout callout-info">
+    <div class="callout-title">ℹ Interview Distinction</div>
+    <p><strong>RAG</strong> = retrieve then generate. Fixed flow. Deterministic retrieval step. <strong>Agent</strong> = plan then act. LLM decides dynamically which tools to call, in what order, for how many steps. Agents can use RAG as a tool. LangGraph builds agents that use RAG internally.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CHROMADB -->
+<section class="section" id="chromadb">
+  <div class="section-tag">Vector Database</div>
+  <h2>ChromaDB Deep Dive</h2>
+  <p>ChromaDB is an open-source, embedded vector database built for AI applications. It stores embeddings, original text, and metadata together, and supports rich querying via semantic search + metadata filtering.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · ChromaDB Complete Setup</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">import</span> chromadb
+<span class="kw">from</span> chromadb.utils <span class="kw">import</span> embedding_functions
+
+<span class="cm"># Initialize persistent client</span>
+client = chromadb.PersistentClient(path=<span class="str">"./chroma_db"</span>)
+
+<span class="cm"># Define embedding function</span>
+embed_fn = embedding_functions.OpenAIEmbeddingFunction(
+    api_key=OPENAI_KEY,
+    model_name=<span class="str">"text-embedding-3-small"</span>
+)
+
+<span class="cm"># Create collection</span>
+collection = client.get_or_create_collection(
+    name=<span class="str">"knowledge_base"</span>,
+    embedding_function=embed_fn,
+    metadata={<span class="str">"hnsw:space"</span>: <span class="str">"cosine"</span>}  <span class="cm"># similarity metric</span>
+)
+
+<span class="cm"># Upsert documents</span>
+collection.upsert(
+    documents=[<span class="str">"AI is transforming enterprise..."</span>],
+    metadatas=[{<span class="str">"source"</span>: <span class="str">"report.pdf"</span>, <span class="str">"dept"</span>: <span class="str">"research"</span>}],
+    ids=[<span class="str">"doc_001"</span>]
+)
+
+<span class="cm"># Query</span>
+results = collection.query(
+    query_texts=[<span class="str">"AI enterprise applications"</span>],
+    n_results=<span class="num">5</span>,
+    where={<span class="str">"dept"</span>: {<span class="str">"$eq"</span>: <span class="str">"research"</span>}}
+)</pre>
+  </div>
+</section>
+
+<!-- VECTOR CONCEPTS -->
+<section class="section" id="vector-concepts">
+  <div class="section-tag">Concepts</div>
+  <h2>Vector Database Concepts</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon icon-green">📊</div>
+      <h3>HNSW Index</h3>
+      <p>Hierarchical Navigable Small World. A graph-based ANN index that enables sub-linear search. O(log n) query time. ChromaDB uses HNSW as its default index structure.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-cyan">🗂️</div>
+      <h3>Collections</h3>
+      <p>ChromaDB organizes vectors into collections (like tables in SQL). Each collection can have its own embedding function and distance metric. Use separate collections per domain.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon icon-purple">🔍</div>
+      <h3>Metadata Filtering</h3>
+      <p>ChromaDB supports pre-filtering and post-filtering by metadata fields. where and where_document operators support $eq, $ne, $gt, $in, $and, $or. Critical for multi-tenant RAG systems.</p>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Vector DB</th><th>Self-Hosted</th><th>Scale</th><th>Best For</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ChromaDB</td><td>✅ Yes</td><td>Millions</td><td>Dev, POC, local RAG</td></tr>
+      <tr><td>Pinecone</td><td>❌ Managed</td><td>Billions</td><td>Production at scale</td></tr>
+      <tr><td>Weaviate</td><td>✅ Yes</td><td>Billions</td><td>Enterprise + multimodal</td></tr>
+      <tr><td>Qdrant</td><td>✅ Yes</td><td>Billions</td><td>High performance prod</td></tr>
+      <tr><td>FAISS</td><td>✅ Yes</td><td>Billions</td><td>Research, no metadata</td></tr>
+      <tr><td>pgvector</td><td>✅ Yes</td><td>Millions</td><td>Postgres-first orgs</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SYSTEM DESIGN -->
+<section class="section" id="system-design">
+  <div class="section-tag">System Architecture</div>
+  <h2>High-Level System Architecture</h2>
+
+  <div class="arch-diagram">
+    <h3>Production AI System — Full Stack</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="sys-layer" style="border-color:rgba(251,146,60,0.3)">
+        <div class="sys-icon icon-orange">🌐</div>
+        <div class="sys-info">
+          <h4>Client Layer</h4>
+          <p>React/Next.js frontend · REST / WebSocket · Streaming responses · Auth via JWT</p>
+        </div>
+      </div>
+      <div style="text-align:center;color:var(--text-muted);font-size:1.2rem;">↓ HTTPS</div>
+      <div class="sys-layer" style="border-color:rgba(34,211,238,0.3)">
+        <div class="sys-icon icon-cyan">🔀</div>
+        <div class="sys-info">
+          <h4>API Gateway / Load Balancer (Nginx / AWS ALB)</h4>
+          <p>Rate limiting · SSL termination · Request routing · Auth token validation</p>
+        </div>
+      </div>
+      <div style="text-align:center;color:var(--text-muted);font-size:1.2rem;">↓ HTTP</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="sys-layer" style="border-color:rgba(74,222,128,0.3)">
+          <div class="sys-icon icon-green">⚙️</div>
+          <div class="sys-info">
+            <h4>Spring Boot Service (Java)</h4>
+            <p>Business logic · Auth · DB · Calls AI service</p>
+          </div>
+        </div>
+        <div class="sys-layer" style="border-color:rgba(167,139,250,0.3)">
+          <div class="sys-icon icon-purple">🤖</div>
+          <div class="sys-info">
+            <h4>FastAPI AI Service (Python)</h4>
+            <p>LangGraph · RAG · Embeddings · ChromaDB</p>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;color:var(--text-muted);font-size:1.2rem;">↓</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div class="sys-layer" style="border-color:rgba(74,222,128,0.3)">
+          <div class="sys-icon icon-green">🗄️</div>
+          <div class="sys-info"><h4>PostgreSQL</h4><p>User data, audit logs, sessions</p></div>
+        </div>
+        <div class="sys-layer" style="border-color:rgba(167,139,250,0.3)">
+          <div class="sys-icon icon-purple">🔮</div>
+          <div class="sys-info"><h4>ChromaDB</h4><p>Vector store, embeddings</p></div>
+        </div>
+        <div class="sys-layer" style="border-color:rgba(251,146,60,0.3)">
+          <div class="sys-icon icon-orange">🔴</div>
+          <div class="sys-info"><h4>Redis</h4><p>Semantic cache, rate limits</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FASTAPI -->
+<section class="section" id="fastapi-service">
+  <div class="section-tag">AI Microservice</div>
+  <h2>FastAPI AI Service</h2>
+  <p>The FastAPI service is the AI orchestration layer. It exposes REST endpoints, accepts queries, runs the LangGraph workflow, and returns grounded answers with source citations.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python · FastAPI AI Service</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, HTTPException, Depends
+<span class="kw">from</span> fastapi.responses <span class="kw">import</span> StreamingResponse
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+
+app = FastAPI(title=<span class="str">"AI RAG Service"</span>, version=<span class="str">"2.0"</span>)
+
+<span class="kw">class</span> <span class="fn">QueryRequest</span>(BaseModel):
+    question: str
+    user_id: str
+    filters: dict = {}
+    stream: bool = <span class="kw">False</span>
+
+<span class="kw">class</span> <span class="fn">QueryResponse</span>(BaseModel):
+    answer: str
+    sources: list[dict]
+    confidence: float
+    tokens_used: int
+
+@app.post(<span class="str">"/api/v1/query"</span>, response_model=QueryResponse)
+<span class="kw">async def</span> <span class="fn">query</span>(request: QueryRequest, token=Depends(verify_token)):
+    <span class="kw">try</span>:
+        result = <span class="kw">await</span> rag_agent.ainvoke({
+            <span class="str">"question"</span>: request.question,
+            <span class="str">"filters"</span>: request.filters
+        })
+        <span class="kw">return</span> QueryResponse(**result)
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">raise</span> HTTPException(<span class="num">500</span>, str(e))
+
+@app.post(<span class="str">"/api/v1/ingest"</span>)
+<span class="kw">async def</span> <span class="fn">ingest_document</span>(file: UploadFile):
+    <span class="cm"># Async document processing pipeline</span>
+    task_id = <span class="kw">await</span> ingestion_pipeline.process(file)
+    <span class="kw">return</span> {<span class="str">"task_id"</span>: task_id, <span class="str">"status"</span>: <span class="str">"processing"</span>}</pre>
+  </div>
+</section>
+
+<!-- SPRING BOOT -->
+<section class="section" id="spring-boot">
+  <div class="section-tag">Business Service</div>
+  <h2>Spring Boot Integration</h2>
+  <p>Spring Boot handles business logic, auth, database, and orchestrates calls to the FastAPI AI service. Service-to-service communication uses REST with circuit breakers (Resilience4j).</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Java · Spring Boot AI Service Client</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="fn">AIServiceClient</span> {
+
+    <span class="kw">private final</span> WebClient webClient;
+
+    <span class="kw">public</span> <span class="fn">AIServiceClient</span>(WebClient.Builder builder) {
+        <span class="kw">this</span>.webClient = builder
+            .baseUrl(<span class="str">"http://ai-service:8001"</span>)
+            .build();
+    }
+
+    <span class="kw">@CircuitBreaker</span>(name = <span class="str">"aiService"</span>, fallbackMethod = <span class="str">"fallback"</span>)
+    <span class="kw">@TimeLimiter</span>(name = <span class="str">"aiService"</span>)
+    <span class="kw">public</span> Mono&lt;QueryResponse&gt; <span class="fn">query</span>(QueryRequest request) {
+        <span class="kw">return</span> webClient.post()
+            .uri(<span class="str">"/api/v1/query"</span>)
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(QueryResponse.<span class="kw">class</span>)
+            .timeout(Duration.ofSeconds(<span class="num">30</span>));
+    }
+
+    <span class="kw">public</span> Mono&lt;QueryResponse&gt; <span class="fn">fallback</span>(Exception e) {
+        <span class="kw">return</span> Mono.just(<span class="kw">new</span> <span class="fn">QueryResponse</span>(
+            <span class="str">"AI service temporarily unavailable"</span>, List.of(), <span class="num">0.0</span>
+        ));
+    }
+}</pre>
+  </div>
+</section>
+
+<!-- INFRA -->
+<section class="section" id="infra">
+  <div class="section-tag">Infrastructure</div>
+  <h2>Infrastructure, Ops & Observability</h2>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon icon-cyan">🐳</div><h3>Docker</h3><p>Each service containerized. Multi-stage builds for Python (requirements → build → runtime). ChromaDB runs as sidecar or standalone service. docker-compose for local dev.</p></div>
+    <div class="card"><div class="card-icon icon-green">☸️</div><h3>Kubernetes</h3><p>AI service as Deployment with HPA (Horizontal Pod Autoscaler) on CPU/custom metrics. ChromaDB as StatefulSet with PVC. ConfigMaps for LangGraph prompts. Secrets for API keys.</p></div>
+    <div class="card"><div class="card-icon icon-purple">📊</div><h3>Observability</h3><p>LangSmith traces every LangGraph execution — latency, token usage, node traversals. Prometheus metrics for FastAPI. Grafana dashboards for retrieval quality over time.</p></div>
+    <div class="card"><div class="card-icon icon-orange">🔒</div><h3>Security</h3><p>API keys in Vault / K8s Secrets. JWT auth between services. Document-level access control via metadata filters. PII detection before ingestion. Rate limiting per user.</p></div>
+    <div class="card"><div class="card-icon icon-pink">🚀</div><h3>CI/CD</h3><p>GitHub Actions: lint → unit tests → integration tests (RAG quality) → build Docker → push ECR → deploy to K8s (Helm). Automated RAG evaluation in CI with RAGAS metrics.</p></div>
+    <div class="card"><div class="card-icon icon-green">📈</div><h3>Monitoring</h3><p>Track retrieval recall, answer faithfulness, context precision (RAGAS metrics). Alert on hallucination rate spike. Business metrics: questions answered, escalated to human, CSAT.</p></div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- RAG INTERVIEW -->
+<section class="section" id="rag-interview">
+  <div class="section-tag">Interview Prep</div>
+  <h2>RAG Interview Questions & Answers</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What is the difference between naive RAG, advanced RAG, and modular RAG?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a"><strong>Naive RAG</strong>: Index docs → retrieve top-K → inject in prompt. Simple but brittle. <strong>Advanced RAG</strong>: Adds query expansion, re-ranking, multi-hop retrieval, hallucination detection, and iterative refinement. <strong>Modular RAG</strong>: Components (retriever, ranker, generator) are swappable. You can replace ChromaDB with Weaviate or swap the LLM without rewriting the pipeline. We built a modular RAG system to allow A/B testing of retrievers.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do you evaluate a RAG system?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">We use <strong>RAGAS metrics</strong>: (1) <strong>Faithfulness</strong> — is the answer supported by retrieved context? (2) <strong>Answer Relevancy</strong> — does the answer address the question? (3) <strong>Context Recall</strong> — did we retrieve all relevant docs? (4) <strong>Context Precision</strong> — are retrieved docs relevant? We integrated RAGAS into our CI pipeline so every code change is evaluated against a golden dataset of 200 question-answer pairs.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do you handle documents that change frequently?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Three approaches: (1) <strong>Full re-ingestion</strong> — simplest, re-process all docs nightly. Fine for small corpora. (2) <strong>Incremental update</strong> — track document hash/timestamp, only re-embed changed docs. ChromaDB upsert with same ID automatically replaces. (3) <strong>Event-driven</strong> — document edit events trigger async re-ingestion via message queue (Kafka). We moved from nightly to event-driven when freshness became critical for our legal document system.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What happens when the LLM still hallucinates even with RAG?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">RAG reduces but doesn't eliminate hallucination. Mitigation layers: (1) <strong>Stricter prompts</strong> — "If the answer is not in the context, say 'I don't know'". (2) <strong>Automated hallucination checker</strong> — second LLM call verifies each claim. (3) <strong>Confidence scoring</strong> — low confidence answers are flagged for human review. (4) <strong>Source attribution</strong> — show users exactly which document the answer came from. (5) <strong>Answer grounding score</strong> in LangGraph — if below threshold, loop back to retrieve more context.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do you optimize RAG latency for real-time applications?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Multi-layer strategy: (1) <strong>Semantic cache</strong> in Redis — cache answers for similar queries (cosine similarity > 0.95). Cached responses in &lt;10ms. (2) <strong>Async parallel retrieval</strong> — run vector search, keyword search, and metadata lookup concurrently. (3) <strong>Pre-computed embeddings</strong> — embed common queries at startup. (4) <strong>Smaller embedding model</strong> — switch from ada-002 to text-embedding-3-small (5x cheaper, similar quality). (5) <strong>Streaming</strong> — stream LLM output token-by-token so user sees first token in &lt;1s. Result: reduced P99 latency from 8s to 2.3s.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do you handle multi-tenant RAG where different users see different data?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Two approaches: (1) <strong>Namespace/Collection per tenant</strong> — separate ChromaDB collection per organization. Complete isolation but higher overhead. Good for strict compliance requirements. (2) <strong>Metadata filtering</strong> — all docs in one collection, each document tagged with tenant_id. Every query filtered by where={"tenant_id": user.org_id}. More efficient but requires trust in the filter layer. We use approach 2 with strict server-side filter enforcement (never trust client-side tenant claims).</div>
+  </div>
+</section>
+
+<!-- LANGGRAPH INTERVIEW -->
+<section class="section" id="lg-interview">
+  <div class="section-tag">Interview Prep</div>
+  <h2>LangGraph Interview Questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Why did you choose LangGraph over a simple LangChain chain?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Simple chains work for happy-path RAG. We chose LangGraph when we needed: (1) <strong>Conditional routing</strong> — if retrieved docs aren't relevant, fall back to web search. Chains can't do this. (2) <strong>Retry loops</strong> — if the answer is hallucinated, loop back to retrieve more context. Chains are linear. (3) <strong>Human-in-the-loop</strong> — some answers need human approval before being sent to the user. LangGraph has first-class interrupt support. (4) <strong>State persistence</strong> — long-running research tasks need state saved between API calls. LangGraph checkpointing solves this.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How does LangGraph handle errors in the middle of a workflow?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Three error handling strategies: (1) <strong>Node-level try/catch</strong> — each node wraps its logic in try/except and updates state with an error field. Downstream conditional edges route to an error recovery node. (2) <strong>Checkpoint recovery</strong> — if a node crashes hard, the workflow can resume from the last saved checkpoint. State is not lost. (3) <strong>Retry decorator</strong> — wrap tool-calling nodes with @retry decorator for transient failures (API rate limits, timeouts). LangGraph's graph is deterministic given the same state, so retries are safe.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Describe a self-correcting RAG pipeline using LangGraph.<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Graph: START → retrieve → grade_documents (conditional: relevant/irrelevant) → if irrelevant: web_search → generate → check_hallucination (conditional: grounded/hallucinated). If hallucinated: loop back to retrieve with expanded query. Max retry=3 to prevent infinite loops. State carries: question, documents, generation, retry_count. Each loop the query is expanded with different terms. This system reduced our hallucination rate from 12% to under 2%.</div>
+  </div>
+</section>
+
+<!-- LC INTERVIEW -->
+<section class="section" id="lc-interview">
+  <div class="section-tag">Interview Prep</div>
+  <h2>LangChain Interview Questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What is LCEL and why is it better than the legacy chain API?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">LCEL (LangChain Expression Language) uses Python's pipe operator | to compose Runnable components. Advantages over legacy: (1) <strong>Streaming</strong> built-in — any LCEL chain streams by default. (2) <strong>Async support</strong> — ainvoke, astream without extra code. (3) <strong>Batch processing</strong> — batch method for parallel processing. (4) <strong>Type safety</strong> — each Runnable has typed input/output schemas. (5) <strong>Fallbacks</strong> — chain.with_fallbacks([backup_llm]). Legacy chains required subclassing and custom __call__ methods.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do you implement conversational RAG with session history?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Key insight: naive RAG doesn't understand follow-up questions like "tell me more about the second point." Two steps: (1) <strong>History-aware retriever</strong> — reformulate the user's question using chat history before retrieval. LangChain's create_history_aware_retriever does this with one LLM call. (2) <strong>Session management</strong> — store chat history per session ID in Redis or Postgres. RunnableWithMessageHistory wraps any chain to automatically inject and update history. The result: "tell me more" correctly retrieves context about the right topic.</div>
+  </div>
+</section>
+
+<!-- SYSTEM DESIGN INTERVIEW -->
+<section class="section" id="sysdesign-interview">
+  <div class="section-tag">Interview Prep</div>
+  <h2>System Design Interview Questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Design a RAG system that handles 10,000 concurrent users.<span class="faq-chevron">▼</span></div>
+    <div class="faq-a"><strong>Horizontal scaling</strong>: FastAPI AI service deployed as Kubernetes Deployment with HPA (scale on CPU/custom Prometheus metric: p95 latency). 3-10 replicas. <strong>Semantic cache</strong>: Redis cluster caches embeddings and answers. 60% cache hit rate for common queries dramatically reduces LLM load. <strong>Queue</strong>: For non-real-time ingestion, use Celery + Redis for async document processing. <strong>ChromaDB</strong>: At this scale, migrate to managed Pinecone or Qdrant cluster. ChromaDB is not designed for 10K concurrent writes. <strong>LLM rate limits</strong>: LiteLLM load balancer distributes requests across multiple OpenAI org keys and fallback providers. <strong>CDN</strong>: Static knowledge (product FAQs, documentation) pre-answered and cached at edge.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do Spring Boot and FastAPI communicate? What about failures?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a"><strong>Communication</strong>: REST over internal K8s service mesh (or gRPC for lower latency). Spring Boot uses WebClient (reactive) to call FastAPI async. <strong>Auth</strong>: Spring Boot issues internal service JWT, FastAPI validates signature. <strong>Failure handling</strong>: (1) Circuit breaker (Resilience4j) — if FastAPI returns 5xx 5 times in 10s, open circuit for 30s, serve fallback. (2) Timeout — 30s max wait. (3) Retry — 2 retries with exponential backoff. (4) Fallback — "Our AI assistant is temporarily unavailable. Here are related help docs." User never sees a 500 error.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do you handle sensitive/PII data in a RAG system?<span class="faq-chevron">▼</span></div>
+    <div class="faq-a">Multiple layers: (1) <strong>Pre-ingestion PII detection</strong> — run Presidio or a custom NER model to detect and redact emails, SSNs, names before embedding. (2) <strong>Access control</strong> — documents tagged with clearance level in metadata. Queries filtered by user's clearance. (3) <strong>Audit logging</strong> — every query, retrieved doc, and generated answer logged to immutable audit log. (4) <strong>On-premise LLM</strong> — for highest security, swap OpenAI for Llama 3 running on-prem via Ollama or vLLM. Nothing leaves your network. (5) <strong>Encryption at rest</strong> — ChromaDB data directory encrypted. Embedding vectors themselves are not easily reversible to original text, but don't rely on this for security.</div>
+  </div>
+</section>
+
+<!-- TRADEOFFS -->
+<section class="section" id="tradeoffs">
+  <div class="section-tag">Engineering Decisions</div>
+  <h2>Tradeoffs & Key Decisions</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>Chunk Size: 512 vs 1024 tokens</h3>
+      <p><strong>Smaller chunks</strong>: Higher retrieval precision, more chunks to retrieve, may split important context. <strong>Larger chunks</strong>: Better context preservation, lower precision, higher token cost. <strong>Decision</strong>: 512 with 64 overlap for most cases; 1024 for legal/medical long-form documents.</p>
+    </div>
+    <div class="card">
+      <h3>Top-K: 3 vs 10</h3>
+      <p><strong>Low K</strong>: Less noise in context, lower cost, may miss relevant docs. <strong>High K</strong>: Higher recall, but diluted context, higher cost. <strong>Decision</strong>: K=10 for retrieval, but only top 3 after re-ranking injected into prompt.</p>
+    </div>
+    <div class="card">
+      <h3>GPT-4 vs GPT-3.5 vs Open Source</h3>
+      <p><strong>GPT-4</strong>: Best quality, 30x more expensive. <strong>GPT-3.5</strong>: Good quality, fast, cheap. <strong>Llama 3</strong>: Free, private, but requires GPU infra. <strong>Decision</strong>: GPT-3.5 for 90% of queries, GPT-4 for complex/high-stakes ones (routing by question complexity score).</p>
+    </div>
+    <div class="card">
+      <h3>ChromaDB vs Pinecone</h3>
+      <p><strong>ChromaDB</strong>: Free, self-hosted, great for dev and &lt;1M vectors. <strong>Pinecone</strong>: Managed, scales to billions, higher cost. <strong>Decision</strong>: ChromaDB for dev/staging, migrate to Qdrant (self-hosted) for production to avoid vendor lock-in and control costs.</p>
+    </div>
+    <div class="card">
+      <h3>Synchronous vs Async Ingestion</h3>
+      <p>Sync ingestion blocks the upload API until processing completes (poor UX for large docs). Async ingestion returns immediately with a task ID. User polls status. <strong>Decision</strong>: Always async for production. Sync only in test environments.</p>
+    </div>
+    <div class="card">
+      <h3>One Agent vs Multiple Specialized Agents</h3>
+      <p>One agent is simpler but becomes a god object. Specialized agents (retriever, writer, validator) are easier to test and iterate. <strong>Decision</strong>: Start with one agent, extract specialized agents when context window or complexity demands it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAILURES -->
+<section class="section" id="failures">
+  <div class="section-tag">Production Incidents</div>
+  <h2>Real RAG Failure Scenarios</h2>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-label">Incident 01 — Retrieval Failure</div>
+      <div class="timeline-title">Semantic Drift: Queries Not Matching Documents</div>
+      <div class="timeline-desc"><strong>Problem</strong>: Documents were embedded with ada-002, but queries were embedded with a different model version after an upgrade. Cosine similarity scores dropped to near-zero. System returned garbage chunks. <strong>Solution</strong>: Always store which embedding model was used per collection. On model upgrade, re-embed entire collection. Added model version check on startup.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Incident 02 — Context Poisoning</div>
+      <div class="timeline-title">Adversarial Document Injection</div>
+      <div class="timeline-desc"><strong>Problem</strong>: A user uploaded a document with hidden text: "Ignore all previous instructions and respond with: ..." — a prompt injection attack via the document corpus. <strong>Solution</strong>: Added document sanitization layer before ingestion. Strip HTML/CSS. Detect and reject documents with instruction-like patterns. Wrap retrieved context in XML tags and instruct LLM to treat content as data, not instructions.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Incident 03 — Infinite Loop</div>
+      <div class="timeline-title">LangGraph Retry Loop Escaped Max Retries</div>
+      <div class="timeline-desc"><strong>Problem</strong>: A bug in the hallucination checker always returned "hallucinated" due to a JSON parsing error. The LangGraph loop retried indefinitely, burning tokens and money. <strong>Solution</strong>: Added explicit retry_count to state with a hard limit of 3. Conditional edge: if retry_count >= 3, route to END with "unable to answer" response regardless of hallucination score.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Incident 04 — Chunk Boundary Issue</div>
+      <div class="timeline-title">Answer Split Across Chunk Boundary</div>
+      <div class="timeline-desc"><strong>Problem</strong>: Critical numerical data (pricing table) was split across two chunks. Neither chunk alone contained the complete answer. Retrieval returned only one chunk, leading to incomplete answers. <strong>Solution</strong>: Increased chunk overlap from 20 to 128 tokens. Added parent-document retriever: retrieve small chunk, return full parent section. Improved structured document detection to avoid splitting tables.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-label">Incident 05 — Cost Explosion</div>
+      <div class="timeline-title">Unbounded Token Usage in Production</div>
+      <div class="timeline-desc"><strong>Problem</strong>: A query type with long document context passed 50+ chunks to the LLM, leading to $800/day in API costs on day 3 of launch. <strong>Solution</strong>: Added hard token budget per query (max 3000 context tokens). Context compressor enabled. Re-ranking to select only top 3 most relevant chunks. Added cost tracking per request. Set spending alerts and hard caps per user/org.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div style="margin-top:80px;padding-top:40px;border-top:1px solid var(--border);text-align:center;">
+  <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text-muted);">
+    RAG.Systems Portfolio · LangGraph + LangChain + ChromaDB + FastAPI + Spring Boot<br>
+    Built for AI Engineering Interviews · 2+ Years Experience · <span style="color:var(--accent)">Production-Grade</span>
+  </p>
+</div>
+
+</main>
+</div>
+
+<script>
+// THEME TOGGLE
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+function setTheme(t) {
+  html.setAttribute('data-theme', t);
+  themeToggle.textContent = t === 'dark' ? '☀ Light' : '🌙 Dark';
+  localStorage.setItem('theme', t);
+}
+themeToggle.onclick = () => setTheme(html.dataset.theme === 'dark' ? 'light' : 'dark');
+const saved = localStorage.getItem('theme');
+if (saved) setTheme(saved);
+
+// HAMBURGER
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+hamburger.onclick = () => { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); };
+overlay.onclick = () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+
+// PROGRESS BAR
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.width = (window.scrollY / max * 100) + '%';
+});
+
+// FAQ TOGGLE
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// COPY CODE
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// SCROLLSPY
+const sections = document.querySelectorAll('.section');
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      sidebarLinks.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// SIDEBAR LINK SMOOTH SCROLL + CLOSE ON MOBILE
+sidebarLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    const href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      }
+    }
+  });
+});
+
+// SEARCH
+const searchData = [];
+document.querySelectorAll('.section').forEach(section => {
+  const id = section.id;
+  const headings = section.querySelectorAll('h2, h3');
+  const sectionTag = section.querySelector('.section-tag');
+  const tag = sectionTag ? sectionTag.textContent : '';
+  headings.forEach(h => {
+    if (h.textContent.trim()) {
+      searchData.push({ title: h.textContent.trim(), id, tag });
+    }
+  });
+});
+
+const searchInput = document.getElementById('searchInput');
+const resultsDiv = document.getElementById('search-results');
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  if (!q) { resultsDiv.classList.remove('visible'); resultsDiv.innerHTML = ''; return; }
+  const matches = searchData.filter(d => d.title.toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length) { resultsDiv.innerHTML = '<div class="search-result-item">No results found</div>'; resultsDiv.classList.add('visible'); return; }
+  resultsDiv.innerHTML = matches.map(m => `
+    <div class="search-result-item" onclick="goTo('${m.id}','${m.title}')">
+      <div class="search-result-section">${m.tag}</div>
+      ${m.title}
+    </div>
+  `).join('');
+  resultsDiv.classList.add('visible');
+});
+
+function goTo(id, title) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  searchInput.value = title;
+  resultsDiv.classList.remove('visible');
+}
+
+document.addEventListener('click', e => {
+  if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+    resultsDiv.classList.remove('visible');
+  }
+});
+
+// Ctrl+K focus search
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchInput.focus();
+  }
+  if (e.key === 'Escape') { resultsDiv.classList.remove('visible'); searchInput.blur(); }
+});
+
+// ANIMATE CARDS ON SCROLL
+const cards = document.querySelectorAll('.card');
+const cardObserver = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => { e.target.classList.add('animate-in'); }, i * 60);
+      cardObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+cards.forEach(c => cardObserver.observe(c));
+</script>
+</body>
+</html>
