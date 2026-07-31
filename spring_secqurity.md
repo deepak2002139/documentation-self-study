@@ -582,32 +582,60 @@ For a typical web app you usually need:
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Spring Boot parent: gives you sensible default versions -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.0</version>
-        <relativePath/>
+        <relativePath/> <!-- look up parent from repository -->
     </parent>
 
+    <!-- Your project details -->
     <groupId>com.example</groupId>
     <artifactId>security-demo</artifactId>
     <version>1.0.0</version>
     <name>security-demo</name>
+    <description>Spring Security Complete Guide Demo</description>
 
     <properties>
         <java.version>17</java.version>
+        <!-- JWT library version -->
+        <jjwt.version>0.12.6</jjwt.version>
     </properties>
 
     <dependencies>
-        <!-- Web -->
+
+        <!-- ============================================= -->
+        <!-- CORE: Web + Security (required)               -->
+        <!-- ============================================= -->
+
+        <!-- REST APIs and web controllers -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Security -->
+        <!-- Spring Security (authentication + authorization) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- ============================================= -->
+        <!-- JWT SUPPORT (for token-based auth)            -->
+        <!-- ============================================= -->
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+```
