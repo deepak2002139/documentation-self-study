@@ -9,7 +9,7 @@ automating diagnostics, and writing services.
 
 For this guide, think of a Python integration as a pipeline:
 
-```text name=python_integration_pipeline.txt
+```text
 Configuration
      |
      v
@@ -183,7 +183,7 @@ concurrency.
 
 ### Example 1 — Variables and a payment record
 
-```python name=example01_variables.py
+```python
 payment_id = "pay_001"
 amount_minor = 12500
 currency = "INR"
@@ -207,7 +207,7 @@ print(payment)
 
 ### Example 2 — Loops and filtering
 
-```python name=example02_loops.py
+```python
 payments = [
     {"id": "p1", "status": "succeeded", "amount_minor": 1000},
     {"id": "p2", "status": "failed", "amount_minor": 2000},
@@ -232,7 +232,7 @@ print(total)
 
 ### Example 3 — Functions and validation
 
-```python name=example03_functions.py
+```python
 def validate_amount(amount_minor: int) -> int:
     if type(amount_minor) is not int:
         raise TypeError("amount_minor must be an integer")
@@ -257,7 +257,7 @@ except TypeError:
 
 ### Example 4 — Find duplicates
 
-```python name=example04_duplicates.py
+```python
 def find_duplicates(values):
     seen = set()
     duplicates = set()
@@ -287,7 +287,7 @@ assert find_duplicates([]) == set()
 
 ### Example 5 — Reverse a string
 
-```python name=example05_reverse.py
+```python
 def reverse_string(value: str) -> str:
     return value[::-1]
 
@@ -305,7 +305,7 @@ characters containing combining marks or multi-code-point emoji.
 
 ### Example 6 — Count frequency
 
-```python name=example06_frequency.py
+```python
 from collections import Counter
 
 statuses = ["success", "failed", "success", "pending", "failed", "success"]
@@ -323,7 +323,7 @@ print(counts)
 
 ### Example 7 — Group payments by merchant
 
-```python name=example07_grouping.py
+```python
 from collections import defaultdict
 
 payments = [
@@ -346,7 +346,7 @@ assert dict(totals) == {"m1": 400, "m2": 200}
 
 ### Example 8 — Parse and serialize JSON
 
-```python name=example08_json.py
+```python
 import json
 
 raw = '{"payment_id": "p1", "amount_minor": 1000, "currency": "USD"}'
@@ -370,7 +370,7 @@ print(serialized)
 
 ### Example 9 — Validate parsed JSON
 
-```python name=example09_schema_validation.py
+```python
 import json
 
 ALLOWED_CURRENCIES = {"USD", "INR", "EUR"}
@@ -410,7 +410,7 @@ lengths, allowed values, and schema version.
 
 ### Example 10 — Specific exceptions and exception chaining
 
-```python name=example10_exceptions.py
+```python
 import json
 
 
@@ -443,7 +443,7 @@ configuration error without losing its cause.
 
 ### Example 11 — Read a large JSON Lines file
 
-```python name=example11_large_file.py
+```python
 import json
 
 
@@ -480,7 +480,7 @@ malformed record stops processing or enters a quarantine workflow.
 
 ### Example 12 — Parse a CSV settlement file
 
-```python name=example12_csv.py
+```python
 import csv
 import io
 
@@ -511,7 +511,7 @@ unexpected encodings, and reconciliation totals.
 
 ### Example 13 — Structured logging with safe fields
 
-```python name=example13_logging.py
+```python
 import json
 import logging
 
@@ -541,7 +541,7 @@ customer payloads.
 
 ### Example 14 — OOP through dependency injection
 
-```python name=example14_oop.py
+```python
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -577,7 +577,7 @@ the business rule.
 
 ### Example 15 — A bounded HTTP request
 
-```python name=example15_api_call.py
+```python
 import os
 import requests
 
@@ -622,7 +622,7 @@ if __name__ == "__main__":
 
 ### Example 16 — Bounded retries for a safe read
 
-```python name=example16_retry.py
+```python
 import random
 import time
 import requests
@@ -672,7 +672,7 @@ def get_with_retry(session, url, attempts=3):
 
 ### Example 17 — Cursor pagination with a page limit
 
-```python name=example17_pagination.py
+```python
 def iter_payments(session, url, headers, max_pages=100):
     cursor = None
     seen_cursors = set()
@@ -730,7 +730,7 @@ arbitrary next-page URL carrying credentials to another host.
 
 ### Example 18 — Replace a local checkpoint file
 
-```python name=example18_checkpoint.py
+```python
 import json
 import os
 import tempfile
@@ -778,7 +778,7 @@ business operation is durably complete?
 
 ### Example 19 — Bounded thread workers
 
-```python name=example19_threads.py
+```python
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 
@@ -814,7 +814,7 @@ or use a bounded producer-consumer queue.
 
 ### Example 20 — Async tasks with bounded concurrency
 
-```python name=example20_async.py
+```python
 import asyncio
 
 
@@ -1150,7 +1150,7 @@ notifications.
 
 ### Proposed workflow
 
-```text name=reconciliation_job.txt
+```text
 Load configuration
        |
        v
@@ -1181,7 +1181,7 @@ Build report-only behavior first.
 
 A report record could contain:
 
-```json name=reconciliation_record.json
+```json
 {
   "payment_id": "payment_demo_001",
   "local_status": "pending",
@@ -1227,7 +1227,7 @@ A report record could contain:
 
 ## 2.8 Cheat sheet
 
-```text name=python_cheatsheet.txt
+```text
 Uniqueness                -> set
 Keyed lookup              -> dict
 Frequency                 -> collections.Counter
@@ -1265,3 +1265,4 @@ request timed out."
 - How do you prevent one bad record from stopping all useful work?
 - How do you compare performance fairly?
 - What happens to queued work when the process shuts down?
+
