@@ -1,5 +1,3 @@
----
-
 # Module 4 — REST APIs and Integration
 
 ## 4.1 Beginner explanation
